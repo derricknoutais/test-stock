@@ -1,0 +1,12 @@
+.tw-btn{
+    @apply tw-px-10 tw-py-3 tw-rounded-full tw-text-center tw-no-underline ;
+}
+
+.tw-btn-dark {
+    @apply tw-bg-gray-900 tw-text-white;
+}
+
+.tw-btn-white {
+    @apply tw-bg-white tw-text-gray-900;
+}
+
