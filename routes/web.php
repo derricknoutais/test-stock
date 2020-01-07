@@ -32,8 +32,10 @@ Route::get('/test', 'CommandeController@addReorderPoint');
 Route::post('/commande-quantité', 'CommandeController@addQuantities');
 
 
-
-
+Route::get('/t', function(){
+    $produits = App\Product::where('handle', 'PlateauDembrayageAisin')->get();
+    return view('work', compact('produits'));
+});
 
 
 
@@ -157,7 +159,7 @@ Route::get('/api/products', function () {
 
     $pages = array();
 
-    for ($j = 1; $j <= 18; $j++) {
+    for ($j = 17; $j <= 18; $j++) {
 
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/products?page_size=200&page=' . $j, ['headers' => $headers]);
         $data = json_decode((string) $response->getBody(), true);

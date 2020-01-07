@@ -27,7 +27,7 @@ class CommandeController extends Controller
         $products = Product::all();
         $templates = Template::with('products')->get();
 
-        return view('commande.show', compact('commande', 'products','templates', ));
+        return view('commande.show', compact('commande', 'products','templates' ));
     }
 
     public function store(Request $request){

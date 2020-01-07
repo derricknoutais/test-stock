@@ -2118,12 +2118,15 @@ __webpack_require__.r(__webpack_exports__);
     sendForm: function sendForm() {
       if (this.template) {
         var products = [];
-        this.template.products.forEach(function (product) {
-          products.push({
-            'type': 'product',
-            'value': product.id
+
+        if (this.template.products) {
+          this.template.products.forEach(function (product) {
+            products.push({
+              'type': 'product',
+              'value': product.id
+            });
           });
-        });
+        }
       }
 
       axios.post('/api/inventory', {
