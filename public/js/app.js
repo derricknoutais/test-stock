@@ -1881,6 +1881,7 @@ __webpack_require__.r(__webpack_exports__);
     addProduct: function addProduct() {
       var _this = this;
 
+      console.log(this.selected_product);
       axios.post('/product-commande', {
         commande_id: this.commande.id,
         product_id: this.selected_product.id
@@ -1889,7 +1890,7 @@ __webpack_require__.r(__webpack_exports__);
           _this.commande.products.push(_this.selected_product);
         }
       })["catch"](function (error) {
-        alert('Un problème est survenu lors du chargement des stocks. Veuillez relancer la MàJ des Stocks');
+        console.log(error); // alert('Un problème est survenu lors du chargement des stocks. Veuillez relancer la MàJ des Stocks')
       });
     },
     addTemplate: function addTemplate() {

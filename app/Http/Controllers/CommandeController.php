@@ -41,8 +41,8 @@ class CommandeController extends Controller
 
     public function addProduct( Request $request ){
         DB::table('commandables')->insert([
-            'commande_id' => $request->commande_id,
-            'commandable_id' => $request->product_id,
+            'commande_id' => $request['commande_id'],
+            'commandable_id' => $request['product_id'],
             'commandable_type' => 'App\Product'
         ]);
         return 'OK';

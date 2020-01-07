@@ -18,12 +18,14 @@ export default {
     },
     methods:{
         addProduct(){
+            console.log(this.selected_product)
             axios.post('/product-commande', {commande_id : this.commande.id, product_id : this.selected_product.id } ).then(response => {
                 if(response.data === 'OK'){
                     this.commande.products.push(this.selected_product)
                 }
             }).catch(error => {
-                alert('Un problème est survenu lors du chargement des stocks. Veuillez relancer la MàJ des Stocks')
+                console.log(error)
+                // alert('Un problème est survenu lors du chargement des stocks. Veuillez relancer la MàJ des Stocks')
             });
         },
         addTemplate(){

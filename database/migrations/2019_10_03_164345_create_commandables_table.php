@@ -16,7 +16,7 @@ class CreateCommandablesTable extends Migration
         Schema::create('commandables', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('commande_id');
-            $table->unsignedBigInteger('commandable_id');
+            $table->string('commandable_id');
             $table->string('commandable_type');
             $table->timestamps();
         });
