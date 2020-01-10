@@ -10,7 +10,12 @@ class Commande extends Model
 
     public function products()
     {
-        return $this->belongsToMany('App\Product')->withPivot('section', 'id', 'quantity');
+        return $this->morphedByMany('App\Product', 'commandable');
+    }
+
+    public function sections()
+    {
+        return $this->morphedByMany('App\Section', 'commandable');
     }
     
     public function templates()

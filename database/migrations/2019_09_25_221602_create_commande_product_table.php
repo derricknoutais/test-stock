@@ -32,6 +32,6 @@ class CreateCommandeProductTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('commandable');
+        Schema::dropIfExists('commande_product');
     }
 }

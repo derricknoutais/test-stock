@@ -14,11 +14,17 @@ Route::resource('/template', 'TemplateController');
 
 Route::resource('/commande', 'CommandeController');
 
+Route::resource('/section', 'SectionController');
+Route::post('/product-section', 'SectionController@addProduct');
+
+
 Route::post('/product-template', 'ProductTemplateController@addProduct');
 Route::post('/product-template/delete', 'ProductTemplateController@removeProduct');
 
 Route::post('/product-commande', 'CommandeController@addProduct');
 Route::post('/template-commande', 'CommandeController@addTemplate');
+
+
 
 
 Route::post('/reorderpoint-commande', 'CommandeController@addReorderPoint');
@@ -36,6 +42,8 @@ Route::get('/t', function(){
     $produits = App\Product::where('handle', 'PlateauDembrayageAisin')->get();
     return view('work', compact('produits'));
 });
+
+
 
 
 

@@ -21,7 +21,6 @@ class CreateProductTemplateTable extends Migration
 
             $table->foreign('template_id')->references('id')->on('templates')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
-            
             $table->timestamps();
         });
     }

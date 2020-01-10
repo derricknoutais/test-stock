@@ -1,11 +1,13 @@
-
 <script>
 export default {
     props: ['commande_prop', 'products_prop' ],
     data(){
         return {
+            show_products: false,
             selected_product: false,
             selected_template: false,
+            selected_article: false,
+            new_section: false,
             commande: null,
             isLoading : {
                 stock: false,
@@ -14,6 +16,7 @@ export default {
             reorderPoint : null,
             products : null,
             editing: false,
+            articles: false
         }
     },
     methods:{
@@ -34,6 +37,30 @@ export default {
                     this.commande.templates.push(this.selected_template)
                     this.$forceUpdate()
                 }
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        addSection(){
+            if(this.new_section){
+                axios.post('/section', {commande: this.commande_prop.id, section: this.new_section} ).then(response => {
+                    this.commande.sections.push(this.new_section)
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+        },
+        addProductToSection(section){
+            this.new_section = section
+            axios.post('/product-section',{ section: section, product: this.selected_article.id, type: 'App\\Article'} ).then(response => {
+                var found = this.commande.sections.find( (sect, section) => {
+                    return sect.id ===  this.new_section
+                })  
+                console.log(found)
+                found.articles.push({
+                    nom : this.selected_article.nom
+                })
+                this.new_section = false       
             }).catch(error => {
                 console.log(error);
             });
@@ -135,7 +162,7 @@ export default {
             });
         },
         mapArrays(){
-            if(this.commande){
+            if(this.commande && this.commande.templates[0] && this.commande.templates[0].products){
                 this.commande.templates[0].products.map( template_product => {
                     var found = this.commande.products.find( product => {
                         return product.id === template_product.id
@@ -180,6 +207,7 @@ export default {
         // if(this.numberOfProducts)
             // this.majStock()
         // this.addReorderpoint()
+        
     },
     created(){
         if (this.commande_prop) {
@@ -188,7 +216,33 @@ export default {
         if(this.products_prop){
             this.products = this.products_prop
         }
+        axios.get('http://azimuts.ga/article/api/non-commandé').then(response => {
+            this.articles = response.data
+            this.articles.map( article => {
+                if(article.fiche_renseignement){
+
+                    if(article.fiche_renseignement.marque){
+                        article.marque = article.fiche_renseignement.marque.nom
+                        article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom
+                    }
+
+                    if(article.fiche_renseignement.type){
+                        article.type = article.fiche_renseignement.type.nom
+                        article.search_name += ' ' + article.fiche_renseignement.type.nom
+                    }
+                    if(article.fiche_renseignement.moteur){
+                        article.moteur = article.fiche_renseignement.moteur.nom
+                        article.search_name += ' ' + article.fiche_renseignement.moteur.nom
+                    }
+                }
+
+            })
+        }).catch(error => {
+            console.log(error);
+        });
         this.mapArrays()
+
+        
     }
 }
 </script>

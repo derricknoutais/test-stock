@@ -83,6 +83,61 @@
 
         <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-mt-5">
 
+            {{-- Sections --}}
+
+            <button class="tw-btn tw-bg-red-500 tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
+
+
+            <div id="accordianId" role="tablist" aria-multiselectable="true" class="tw-mt-5 tw-w-1/2">
+                <div class="card" v-for="section in commande.sections">
+                    <div class="card-header" role="tab" id="section1HeaderId">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">@{{section.nom}}</a>
+                        </h5>
+                    </div>
+                    <div :id="'section' + section.id" class="collapse in" role="tabpanel" aria-labelledby="section1HeaderId">
+                        <div class="card-body tw-flex-col tw-items-center tw-justify-center">
+
+                            <div class="tw-flex ">
+                                
+                                <div class="tw-w-1/2 tw-mr-4">
+                                    <multiselect v-model="selected_article" :options="articles" :searchable="true" :close-on-select="true" :show-labels="false"
+                                    placeholder="Pick a value" label="nom"></multiselect>
+                                </div>
+                                <button class="tw-btn tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
+                            </div>
+
+                            <ul class="list-group tw-mt-3 tw-w-1/2">
+                                <li class="list-group-item " v-for="article in section.articles">@{{ article.nom }} </li>
+                            </ul>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="section" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label for="">Nom de Section</label>
+                              <input type="text" class="form-control" v-model="new_section" aria-describedby="helpId" placeholder="">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="tw-btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="tw-btn btn-primary" @click="addSection()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Templates --}}
             <article class="tw-flex tw-flex-col tw-w-full tw-items-center" v-if="commande.templates">
                 <h4 class="tw-mt-6 tw-text-xl tw-font-semibold" >Templates</h4>

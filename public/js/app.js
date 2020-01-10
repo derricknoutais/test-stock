@@ -1860,13 +1860,15 @@ module.exports = function isBuffer (obj) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['commande_prop', 'products_prop'],
   data: function data() {
     return {
+      show_products: false,
       selected_product: false,
       selected_template: false,
+      selected_article: false,
+      new_section: false,
       commande: null,
       isLoading: {
         stock: false,
@@ -1874,7 +1876,8 @@ __webpack_require__.r(__webpack_exports__);
       },
       reorderPoint: null,
       products: null,
-      editing: false
+      editing: false,
+      articles: false
     };
   },
   methods: {
@@ -1909,17 +1912,53 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    majStock: function majStock() {
+    addSection: function addSection() {
       var _this3 = this;
+
+      if (this.new_section) {
+        axios.post('/section', {
+          commande: this.commande_prop.id,
+          section: this.new_section
+        }).then(function (response) {
+          _this3.commande.sections.push(_this3.new_section);
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
+    },
+    addProductToSection: function addProductToSection(section) {
+      var _this4 = this;
+
+      this.new_section = section;
+      axios.post('/product-section', {
+        section: section,
+        product: this.selected_article.id,
+        type: 'App\\Article'
+      }).then(function (response) {
+        var found = _this4.commande.sections.find(function (sect, section) {
+          return sect.id === _this4.new_section;
+        });
+
+        console.log(found);
+        found.articles.push({
+          nom: _this4.selected_article.nom
+        });
+        _this4.new_section = false;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    majStock: function majStock() {
+      var _this5 = this;
 
       if (this.numberOfProducts > 0) {
         // Turn Stock isLoading Flag On 
         this.isLoading.stock = true; // Grab stock from vend
 
         axios.get('/api/stock').then(function (response) {
-          if (_this3.commande.products) {
+          if (_this5.commande.products) {
             // If I get response Iterate over Products
-            _this3.commande.products.forEach(function (product) {
+            _this5.commande.products.forEach(function (product) {
               // Foreach Product Iterate over Stock
               response.data.forEach(function (stock) {
                 // If Product Matches Stock ... 
@@ -1931,9 +1970,9 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
 
-          if (_this3.commande.templates) {
+          if (_this5.commande.templates) {
             // Iterate over Templates
-            _this3.commande.templates.forEach(function (template) {
+            _this5.commande.templates.forEach(function (template) {
               // Foreach Template Iterate over products
               template.products.forEach(function (product) {
                 // Foreach Product Iterate over Stock
@@ -1948,9 +1987,9 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
 
-          if (_this3.commande.reorderpoint[0]) {
+          if (_this5.commande.reorderpoint[0]) {
             // For Reorder Point Iterate over products
-            _this3.commande.reorderpoint[0].products.forEach(function (product) {
+            _this5.commande.reorderpoint[0].products.forEach(function (product) {
               // Foreach Product Iterate over Stock
               response.data.forEach(function (stock) {
                 // If Product Matches Stock ... 
@@ -1962,9 +2001,9 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
 
-          _this3.$forceUpdate();
+          _this5.$forceUpdate();
 
-          _this3.isLoading.stock = false;
+          _this5.isLoading.stock = false;
         })["catch"](function (error) {
           console.log(error);
         });
@@ -2003,11 +2042,11 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     mapArrays: function mapArrays() {
-      var _this4 = this;
+      var _this6 = this;
 
-      if (this.commande) {
+      if (this.commande && this.commande.templates[0] && this.commande.templates[0].products) {
         this.commande.templates[0].products.map(function (template_product) {
-          var found = _this4.commande.products.find(function (product) {
+          var found = _this6.commande.products.find(function (product) {
             return product.id === template_product.id;
           });
 
@@ -2050,6 +2089,8 @@ __webpack_require__.r(__webpack_exports__);
     // this.addReorderpoint()
   },
   created: function created() {
+    var _this7 = this;
+
     if (this.commande_prop) {
       this.commande = this.commande_prop;
     }
@@ -2058,6 +2099,30 @@ __webpack_require__.r(__webpack_exports__);
       this.products = this.products_prop;
     }
 
+    axios.get('http://azimuts.ga/article/api/non-commandé').then(function (response) {
+      _this7.articles = response.data;
+
+      _this7.articles.map(function (article) {
+        if (article.fiche_renseignement) {
+          if (article.fiche_renseignement.marque) {
+            article.marque = article.fiche_renseignement.marque.nom;
+            article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom;
+          }
+
+          if (article.fiche_renseignement.type) {
+            article.type = article.fiche_renseignement.type.nom;
+            article.search_name += ' ' + article.fiche_renseignement.type.nom;
+          }
+
+          if (article.fiche_renseignement.moteur) {
+            article.moteur = article.fiche_renseignement.moteur.nom;
+            article.search_name += ' ' + article.fiche_renseignement.moteur.nom;
+          }
+        }
+      });
+    })["catch"](function (error) {
+      console.log(error);
+    });
     this.mapArrays();
   }
 });
