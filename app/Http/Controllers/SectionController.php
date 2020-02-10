@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use DB;
 use App\Section;
+use App\Template;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
@@ -49,11 +50,29 @@ class SectionController extends Controller
     }
 
     public function addProduct(Request $request){
-        DB::table('sectionnables')->insert([
-            'section_id' => $request['section'],
-            'sectionnable_id' => $request['product'],
-            'sectionnable_type' => $request['type']
-        ]);
+        // return $request['type'];
+        if($request['type'] !== 'App\Template'){
+            DB::table('sectionnables')->insert([
+                'section_id' => $request['section'],
+                'sectionnable_id' => $request['product']['id'],
+                'sectionnable_type' => $request['type'],
+                'quantite' => $request['product']['quantite']
+            ]);
+        } else {
+            
+            $template = Template::where('id', $request['product'])->with('products')->first();
+            $products = $template->products;
+            foreach ($products as $product) {
+                DB::table('sectionnables')->insert([
+                    'section_id' => $request['section'],
+                    'sectionnable_id' => $product->id,
+                    'sectionnable_type' => 'App\Product'
+                ]);
+            }
+            return $products;
+
+        }
+        
     }
 
     /**

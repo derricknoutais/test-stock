@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSectionsTable extends Migration
+class CreateDemandeSectionnableTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('demande_sectionnable', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('commande_id');
-            $table->string('nom');
+            $table->unsignedBigInteger('sectionnable_id');
+            $table->unsignedBigInteger('demande_id');
+            $table->unsignedBigInteger('offre');
+            $table->boolean('checked');
 
-            $table->foreign('commande_id')->references('id')->on('commandes')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreateSectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists('demande_sectionnable');
     }
 }

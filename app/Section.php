@@ -10,11 +10,13 @@ class Section extends Model
 
     public function articles()
     {
-        return $this->morphedByMany('App\Article', 'sectionnable');
+        return $this->morphedByMany('App\Article', 'sectionnable')->withPivot('id', 'quantite');
     }
     public function products()
     {
-        return $this->morphToMany('App\Product', 'sectionnable');
+        return $this->morphedByMany('App\Product', 'sectionnable')->withPivot('id', 'quantite');
     }
-    
+    public function sectionnables(){
+        return $this->articles()->union($this->products()->toBase());
+    }
 }

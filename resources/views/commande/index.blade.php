@@ -5,14 +5,14 @@
 
     <section class="tw-flex tw-flex-col tw-items-center tw-bg-gray-800 tw-text-white">
         <p class="tw-text-4xl tw-text-bold tw-my-4">Mes Commandes</p>
-        <p class="tw-mb-4">
+        <p class="tw-mb-4 tw-text-lg">
             Les commandes vous permettent d'enregistrer un groupe de produits que vous pouvez réutiliser dans vos commandes
         </p>
         <button class="tw-btn tw-btn-white tw-mb-4" data-toggle="modal" data-target="#modelId">Créer commande</button>
         <!-- Modal -->
     </section>
     <section class="container mx-auto mt-5">
-        <table class="table">
+        <table class="table tw-text-lg">
             <thead>
                 <tr>
                     <th>Nom</th>
@@ -26,7 +26,9 @@
                             <a href="/commande/{{ $commande->id }}">{{ $commande->name }}</a>
                             
                         </td>
-                        {{-- <td>{{ sizeof($commande) }}</td> --}}
+                        <td>
+                            
+                        </td>
                     </tr>
                 @endforeach
                 

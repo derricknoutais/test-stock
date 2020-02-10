@@ -1,11 +1,15 @@
 <?php
 
+// use DB;
 use App\Product;
+use App\Commande;
+use App\BonCommande;
+use App\Demande;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('layouts.welcome');
+    return view('accueil');
 });
 
 Route::resource('/product', 'ProductController');
@@ -14,7 +18,125 @@ Route::resource('/template', 'TemplateController');
 
 Route::resource('/commande', 'CommandeController');
 
+Route::get('/commande/{commande}/prepa-demande', function(Commande $commande){
+    $commande->loadMissing(['sections', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
+    return view('commande.prepa-demande', compact('commande'));
+});
+
+Route::get('/commande/{commande}/demandes', function(Commande $commande){
+    $commande->loadMissing('demandes', 'demandes.sectionnables');
+    return view('commande.demandes', compact('commande'));
+});
+
+Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
+    $commande->loadMissing('demandes', 'demandes.sectionnables');
+    
+    // Pour Chaque Demande d'Offre de Cette Commande... 
+    for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
+        
+        // Pour Chaque Section de Chaque Demande
+        foreach($commande->demandes[$i]->sectionnables as $sectionnable){
+
+            //  Si le produit n'a pas encore été checké
+            if(! $sectionnable->pivot->checked){
+
+                $produitRetenu = $sectionnable;
+
+                $moinsCher = $sectionnable->pivot->offre;
+
+                $nom = $commande->demandes[$i]->nom;
+
+                for ($j=0; $j < sizeof($commande->demandes); $j++) { 
+                    if($j != $i){
+                        foreach($commande->demandes[$j]->sectionnables as $sectionnable_comparatif){
+                            if($sectionnable->sectionnable_id == $sectionnable_comparatif->sectionnable_id ){
+                                if($moinsCher > $sectionnable_comparatif->pivot->offre){
+                                    $produitRetenu = $sectionnable_comparatif;
+                                    $moinsCher = $sectionnable_comparatif->pivot->offre;
+                                    $nom = $commande->demandes[$j]->nom;
+                                }
+                                $sectionnable_comparatif->pivot->checked = 1;
+                                DB::table('demande_sectionnable')
+                                    ->where('id', $sectionnable_comparatif->pivot->id)
+                                    ->update([
+                                        'checked' => 1
+                                    ]);
+                            }
+                        }
+                    }
+                }
+
+                if( $bc = BonCommande::where('demande_id', $commande->demandes[$i]->id)->first() ){
+                    DB::table('bon_commande_sectionnable')->insert([
+                        'bon_commande_id' => $bc->id,
+                        'sectionnable_id' => $produitRetenu->id,
+                        'quantite' => $produitRetenu->quantite,
+                        'prix_achat' => $produitRetenu->pivot->offre
+                    ]);
+                } 
+                else
+                {
+                    $bc = BonCommande::create([
+                        'commande_id' => $commande->id,
+                        'nom' => $nom,
+                        'demande_id' => $produitRetenu->pivot->demande_id
+                    ]);
+                    DB::table('bon_commande_sectionnable')->insert([
+                        'bon_commande_id' => $bc->id,
+                        'sectionnable_id' => $produitRetenu->pivot->id,
+                        'quantite' => $produitRetenu->quantite,
+                        'prix_achat' => $produitRetenu->pivot->offre
+                    ]);
+                }
+                DB::table('demande_sectionnable')
+                ->where('id', $sectionnable->pivot->id)
+                ->update([
+                    'checked' => 1
+                ]);
+                
+
+            }
+            
+
+        }
+        
+        
+    }
+});
+
+Route::get('/commande/{commande}/bon-commandes', function(Commande $commande){
+    return $commande->bonsCommandes;
+});
+
+
 Route::resource('/section', 'SectionController');
+
+Route::resource('/demande', 'DemandeController');
+Route::post('/demande-sectionnable', function(Request $request){
+    // return $request->all();
+    foreach ($request['demandes'] as $demande ) {
+        foreach ($request['products'] as $product) {
+            DB::table('demande_sectionnable')->insert([
+                'demande_id' => $demande['id'],
+                'sectionnable_id' => $product['pivot']['id'],
+                'offre' => 0
+            ]); 
+        }
+    }
+});
+
+Route::put('demande/{demande}/update-product', function (Demande $demande, Request $request) {
+
+    DB::table('demande_sectionnable')->where('id', $request['pivot']['id'])->update([
+        'offre' => $request['pivot']['offre']
+    ]);
+
+});
+Route::get('/kd', function(){
+    return App\Sectionnable::all();
+});
+
+
 Route::post('/product-section', 'SectionController@addProduct');
 
 
@@ -45,9 +167,28 @@ Route::get('/t', function(){
 
 
 
+// /section-product/delete/' + article.id + '/' + section.id
 
+Route::get('/section-product/delete/{article}/{section}', function($article, $section){
+    $var = DB::table('sectionnables')->where(['section_id' => $section, 'sectionnable_id' => $article])->delete();
+    return $var;
+});
 
+Route::put('product-template', function ( Request $request) {
+    foreach ($request->all() as $prodTemp) {
+        DB::table('product_template')->where(['template_id' => $prodTemp['template_id'] , 'product_id' => $prodTemp['product_id']])->update([
+            'quantite' => $prodTemp['quantite']
+        ]);
+    }
+    return $request->all();
+});
 
+Route::put('article-update', function( Request $request){
+    // return $request->all();
+    $art = DB::table('sectionnables')->where('id', $request['article']['pivot']['id'])->update([
+            'quantite' => $request['article']['pivot']['quantite']
+        ]);
+});
 
 
 

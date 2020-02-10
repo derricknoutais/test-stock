@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSectionsTable extends Migration
+class CreateBonCommandesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('bon_commandes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('commande_id');
             $table->string('nom');
+            $table->unsignedBigInteger('commande_id');
+            $table->unsignedBigInteger('demande_id');
+            $table->unsignedBigInteger('fournisseur_id')->nullable();
+
 
             $table->foreign('commande_id')->references('id')->on('commandes')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
@@ -30,6 +33,6 @@ class CreateSectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists('bon_commandes');
     }
 }

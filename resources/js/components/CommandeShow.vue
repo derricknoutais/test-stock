@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: ['commande_prop', 'products_prop' ],
+    props: ['commande_prop', 'products_prop', 'templates_prop' ],
     data(){
         return {
             show_products: false,
@@ -14,9 +14,17 @@ export default {
                 reorder_point: false,
             },
             reorderPoint : null,
+
             products : null,
+            templates: null,
+            articles: false,
+
             editing: false,
-            articles: false
+            
+            article: false,
+            sectionnable_type: false, 
+            list: false,
+            label: '',
         }
     },
     methods:{
@@ -44,7 +52,12 @@ export default {
         addSection(){
             if(this.new_section){
                 axios.post('/section', {commande: this.commande_prop.id, section: this.new_section} ).then(response => {
-                    this.commande.sections.push(this.new_section)
+                    this.commande.sections.push({
+                        id: response.data.id,
+                        nom: this.new_section
+                    });
+                    $('#section').modal('hide')
+                    window.location.reload()
                 }).catch(error => {
                     console.log(error);
                 });
@@ -52,14 +65,37 @@ export default {
         },
         addProductToSection(section){
             this.new_section = section
-            axios.post('/product-section',{ section: section, product: this.selected_article.id, type: 'App\\Article'} ).then(response => {
+            
+            axios.post('/product-section',{ section: section, product: this.selected_article, type: 'App\\' + this.sectionnable_type} ).then(response => {
+                console.log(response.data)
                 var found = this.commande.sections.find( (sect, section) => {
                     return sect.id ===  this.new_section
                 })  
-                console.log(found)
-                found.articles.push({
-                    nom : this.selected_article.nom
-                })
+                if(this.sectionnable_type === 'Article'){
+                    found.articles.push({
+                        pivot: {
+                            quantite : this.selected_article.quantite
+                        },
+                        nom : this.selected_article.nom
+                    });
+
+                    
+                } else if(this.sectionnable_type === 'Template'){
+                    response.data.forEach(element => {
+                        found.products.push({
+                            name: element.name
+                        })
+                    });
+                } else {
+                    found.products.push({
+                        name:this.selected_article.name,
+                        pivot: {
+                            quantite : this.selected_article.quantite
+                        },
+                    })
+
+                }
+                
                 this.new_section = false       
             }).catch(error => {
                 console.log(error);
@@ -170,8 +206,51 @@ export default {
                     template_product.quantity = found.pivot.quantity
                 })
             }
-        }
+        },
+        deleteProductSection(section, article, type){
+        
+            axios.get('/section-product/delete/' + article.id + '/' + section.id ).then(response => {
+                console.log(response.data);
+                if(response.data === 0){
+                    alert('Article Pas Supprimé. Veuillez Reesayé')
+                } else {
+                    var section_trouvée = this.commande.sections.find(sect => {
+                        return sect.id === section.id
+                    })
+                    if(type === 'Article'){
+                        var article_trouvée = section_trouvée.articles.find( art => {
+                            return art.id === article.id
+                        })
+                        var index = section_trouvée.articles.indexOf(article_trouvée)
+                        section_trouvée.articles.splice(index, 1)
+                        this.$forceUpdate()
 
+                    } else if (type === 'Product'){
+                        var article_trouvée = section_trouvée.products.find( prod => {
+                            return prod.id === article.id
+                        })
+
+                        var index = section_trouvée.products.indexOf(article_trouvée)
+                        section_trouvée.products.splice(index, 1)
+                        this.$forceUpdate()
+                    }
+                    
+                    
+                    // alert('Article Suprrimé')
+                }
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        saveQuantity(section, article){
+            console.log(article)
+            axios.put('/article-update',  {section : section, article: article}).then(response => {
+                console.log(response.data);
+                
+            }).catch(error => {
+                console.log(error);
+            });
+        }
 
     },
     computed : {
@@ -201,6 +280,20 @@ export default {
 
             }
             return total;
+        }, 
+        list_type(){
+            if(this.sectionnable_type === 'Product'){
+                this.label = 'name'
+                return this.products
+            } else if(this.sectionnable_type === 'Article'){
+                this.label = 'nom'
+                return this.articles
+            } else if(this.sectionnable_type === 'Template'){
+                this.label = 'name'
+                return this.templates
+            } else {
+                return this.products
+            }
         }
     },
     mounted(){
@@ -216,6 +309,11 @@ export default {
         if(this.products_prop){
             this.products = this.products_prop
         }
+
+        if(this.templates_prop){
+            this.templates = this.templates_prop
+        }
+
         axios.get('http://azimuts.ga/article/api/non-commandé').then(response => {
             this.articles = response.data
             this.articles.map( article => {
@@ -235,11 +333,15 @@ export default {
                         article.search_name += ' ' + article.fiche_renseignement.moteur.nom
                     }
                 }
-
             })
+
+
         }).catch(error => {
             console.log(error);
         });
+
+        
+        
         this.mapArrays()
 
         

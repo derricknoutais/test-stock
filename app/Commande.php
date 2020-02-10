@@ -27,5 +27,9 @@ class Commande extends Model
     {
         return $this->morphedByMany('App\Reorderpoint', 'commandable');
     }
+    public function demandes()
+    {
+        return $this->hasMany('App\Demande');
+    }
 
 }

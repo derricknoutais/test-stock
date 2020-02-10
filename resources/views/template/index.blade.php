@@ -3,7 +3,7 @@
 
 @section('content')
 
-    <section class="tw-flex tw-flex-col tw-items-center tw-bg-gray-800 tw-text-white">
+    <section class="tw-flex tw-flex-col tw-items-center tw-bg-gray-800 tw-text-white tw-w-full">
         <p class="tw-text-4xl tw-text-bold tw-my-4">Mes Templates</p>
         <p class="tw-mb-4">
             Les Templates vous permettent d'enregistrer un groupe de produits que vous pouvez réutiliser dans vos commandes

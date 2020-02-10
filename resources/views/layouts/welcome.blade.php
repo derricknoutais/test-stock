@@ -11,11 +11,12 @@
 <body>
     {{-- Navigation --}}
     <div id="app" class="tw-h-screen tw-flex tw-flex-col">
+
         <header class="tw-container-fluid tw-flex tw-bg-gray-900 tw-text-white tw-justify-between tw-p-5">
             <div>
-                <p>
-                    Logo
-                </p>
+                <a href="/">
+                    SHIPPER
+                </a>
             </div>
             <nav>
                 <a class="tw-mx-3" href="/template">Templates</a>
@@ -25,13 +26,22 @@
             </nav>
         </header>
 
-        <main class="tw-container-fluid tw-flex-1 ">
+        <main class="tw-container-fluid tw-flex-1 tw-flex-col tw-justify-center tw-items-center">
+            
             @yield('content')
         </main>
 
-        <footer class="tw-container-fluid tw-bg-gray-900 tw-text-white tw-p-5 tw-sticky tw-bottom-0">
+        <footer class="tw-container-fluid tw-bg-gray-900 tw-text-white tw-p-5 tw-bottom-0">
             <p>Services Tous Azimuts</p>
+            <div class="tw-flex tw-items-center">
+                <img src="https://cdn.icon-icons.com/icons2/159/PNG/256/facebook_22567.png" class="tw-w-5 tw-m-3"/> 
+                <img src="https://upload.wikimedia.org/wikipedia/fr/thumb/c/c8/Twitter_Bird.svg/300px-Twitter_Bird.svg.png" class="tw-w-5 tw-m-3"/>
+                <img src="https://cdn.icon-icons.com/icons2/914/PNG/512/Instagram_Color_icon-icons.com_71811.png" class="tw-w-6 tw-m-3" />
+            </div>
+           
+            
         </footer>
+
     </div>
     
 

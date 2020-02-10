@@ -6,24 +6,43 @@ export default {
     data(){
         return {
             selected_product: false,
-            template: null
+            template: null,
+            quantite: null,
         }
     },
     methods:{
         addProduct(){
             var data = [];
             this.selected_product.forEach(product => {
-                data.push({template_id : this.template.id, product_id : product.id })
+                if(data.length > 1){
+                    data.push({
+                        template_id : this.template.id, 
+                        product_id : product.id,
+                        quantite: null
+                    })
+                } else {
+                    data.push({
+                        template_id : this.template.id, 
+                        product_id : product.id,
+                        quantite: this.quantite
+                        
+                    })
+                }
+                
             });
+            console.log(data)
             axios.post('/product-template', data ).then(response => {
-
+                console.log('response' + response.data)
                 if(response.data === 'OK'){
                     this.selected_product.forEach( element => {
+                        element.pivot = {
+                            quantite: this.quantite
+                        }
                         this.template.products.unshift(element)
                     })
                     
-                    this.selected_product = false
-                    this.$refs.searchBar.focus()
+                    // this.selected_product = false
+                    // this.$refs.searchBar.focus()
                 }
 
             }).catch(error => {
@@ -38,8 +57,26 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
+        },
+        enregistrer(){
+            var data = [];
+            this.template.products.forEach( product => {
+                data.push({
+                    'product_id':  product.id,
+                    'template_id': this.template.id,
+                    'quantite' : product.pivot.quantite
+                })
+            })
+            axios.put('/product-template' , data).then(response => {
+                data.forEach( datum => {
+                    
+                });
+                console.log(response.data);
+                
+            }).catch(error => {
+                console.log(error);
+            });
         }
-
     },
     created(){
         this.template = this.template_prop

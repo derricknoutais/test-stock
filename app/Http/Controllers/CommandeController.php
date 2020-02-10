@@ -21,8 +21,8 @@ class CommandeController extends Controller
     }
 
     public function show(Commande $commande){
-
-        $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles');
+        
+        $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes');
 
         $products = Product::all();
         $templates = Template::with('products')->get();

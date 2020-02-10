@@ -13,12 +13,14 @@ class CreateArticleSectionTable extends Migration
      */
     public function up()
     {
-        Schema::create('sectionnable', function (Blueprint $table) {
+        Schema::create('sectionnables', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('section_id');
             $table->string('sectionnable_id');
             $table->string('sectionnable_type');
+            $table->unsignedBigInteger('quantite');
+
 
             $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade')->onUpdate('cascade');
 
@@ -34,6 +36,6 @@ class CreateArticleSectionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_section');
+        Schema::dropIfExists('sectionnables');
     }
 }

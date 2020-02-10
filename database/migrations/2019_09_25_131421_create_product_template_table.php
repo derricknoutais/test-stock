@@ -18,6 +18,7 @@ class CreateProductTemplateTable extends Migration
             
             $table->unsignedBigInteger('template_id');
             $table->string('product_id');
+            $table->unsignedInteger('quantite');
 
             $table->foreign('template_id')->references('id')->on('templates')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
