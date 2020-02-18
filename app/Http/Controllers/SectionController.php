@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use DB;
 use App\Section;
 use App\Template;
+use App\Sectionnable;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
@@ -59,7 +60,6 @@ class SectionController extends Controller
                 'quantite' => $request['product']['quantite']
             ]);
         } else {
-            
             $template = Template::where('id', $request['product'])->with('products')->first();
             $products = $template->products;
             foreach ($products as $product) {
@@ -106,7 +106,10 @@ class SectionController extends Controller
      */
     public function update(Request $request, Section $section)
     {
-        //
+
+        $section->update([
+            'nom' => $request['nom']
+        ]);
     }
 
     /**
@@ -117,6 +120,13 @@ class SectionController extends Controller
      */
     public function destroy(Section $section)
     {
-        //
+        $section->delete();
+        
+    }
+    public function destroyProduct(Sectionnable $product){
+        $product->delete();
+    }
+    public function destroyArticle(Sectionnable $article){
+        $article->delete();
     }
 }

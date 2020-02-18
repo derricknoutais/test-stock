@@ -15,18 +15,19 @@ use Illuminate\Http\Request;
 class CommandeController extends Controller
 {
     public function index(){
-        $commandes = Commande::all();
+        $commandes = Commande::with('sections', 'sections.products', 'sections.articles', 'bonsCommandes', 'bonsCommandes.sectionnables')->get();
+
 
         return view('commande.index', compact('commandes'));
     }
 
     public function show(Commande $commande){
         
-        $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes');
+        $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables');
 
         $products = Product::all();
         $templates = Template::with('products')->get();
-
+        
         return view('commande.show', compact('commande', 'products','templates' ));
     }
 

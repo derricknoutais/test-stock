@@ -17,7 +17,8 @@ class CreateDemandeSectionnableTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('sectionnable_id');
             $table->unsignedBigInteger('demande_id');
-            $table->unsignedBigInteger('offre');
+            $table->unsignedBigInteger('quantite_offerte')->default(0);
+            $table->unsignedBigInteger('offre')->default(0);
             $table->boolean('checked');
 
             $table->timestamps();

@@ -31,5 +31,27 @@ class Commande extends Model
     {
         return $this->hasMany('App\Demande');
     }
+    public function bonsCommandes()
+    {
+        return $this->hasMany('App\BonCommande');
+    }
+
+
+
+    public function total(){
+        // $total = 0;
+        // $this->loadMissing('bonsCommandes');
+        // if($this->bons_commandes){
+        //     foreach($this->bons_commandes as $bon ) {
+        //         if(sizeof($bon->sectionnables) > 0 ){
+        //             foreach ($bon->sectionnables as $sectionnable ) {
+        //                 $total += $sectionnable->pivot->prix_achat * $sectionnable->pivot->quantite;
+        //             }
+        //         }
+        //     }
+        // }
+        
+        // return $total;
+    }
 
 }

@@ -1851,6 +1851,139 @@ module.exports = function isBuffer (obj) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BonCommandeShow.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/BonCommandeShow.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['bc_prop'],
+  data: function data() {
+    return {
+      bc: null
+    };
+  },
+  computed: {
+    montantTotal: function montantTotal() {
+      var total = 0;
+      this.bc.sectionnables.forEach(function (sect) {
+        total += sect.pivot.quantite * sect.pivot.prix_achat;
+      });
+      return total;
+    }
+  },
+  created: function created() {
+    this.bc = this.bc_prop;
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BonsCommandes.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/BonsCommandes.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['bc_prop'],
+  data: function data() {
+    return {
+      commande: null,
+      bcs: null
+    };
+  },
+  computed: {
+    montantTotal: function montantTotal() {
+      var _this = this;
+
+      var total = 0;
+      this.bcs.forEach(function (bc) {
+        total += _this.totalBC(bc);
+      });
+      return total;
+    }
+  },
+  methods: {
+    totalBC: function totalBC(bc) {
+      console.log(bc);
+      var total = 0;
+      bc.sectionnables.forEach(function (sectionnable) {
+        total += sectionnable.pivot.quantite * sectionnable.pivot.prix_achat;
+      });
+      return total;
+    }
+  },
+  created: function created() {
+    this.commande = this.bc_prop;
+    this.bcs = this.bc_prop.bons_commandes;
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CommandeIndex.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CommandeIndex.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['commandes_prop'],
+  data: function data() {
+    return {
+      commandes: null
+    };
+  },
+  methods: {
+    total: function total(commande) {
+      var total = 0;
+
+      if (commande.bons_commandes) {
+        commande.bons_commandes.forEach(function (bon) {
+          if (bon.sectionnables) {
+            bon.sectionnables.forEach(function (sectionnable) {
+              total += sectionnable.pivot.prix_achat * sectionnable.pivot.quantite;
+            });
+          }
+        });
+      }
+
+      return total;
+    },
+    nombreProduits: function nombreProduits(commande) {
+      var total = 0;
+
+      if (commande.bons_commandes) {
+        commande.bons_commandes.forEach(function (bon) {
+          if (bon.sectionnables) {
+            total += bon.sectionnables.length;
+          }
+        });
+      }
+
+      return total;
+    }
+  },
+  created: function created() {
+    this.commandes = this.commandes_prop;
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CommandeShow.vue?vue&type=script&lang=js&":
 /*!***********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CommandeShow.vue?vue&type=script&lang=js& ***!
@@ -1868,7 +2001,8 @@ __webpack_require__.r(__webpack_exports__);
       selected_product: false,
       selected_template: false,
       selected_article: false,
-      new_section: false,
+      new_section: 'Huiles Moteur',
+      isUpdating: false,
       commande: null,
       isLoading: {
         stock: false,
@@ -1878,6 +2012,7 @@ __webpack_require__.r(__webpack_exports__);
       products: null,
       templates: null,
       articles: false,
+      section_being_updated: false,
       editing: false,
       article: false,
       sectionnable_type: false,
@@ -2131,6 +2266,63 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    openEditModal: function openEditModal(section) {
+      this.isUpdating = true;
+      this.section_being_updated = section;
+      $('#section').modal('show');
+      this.new_section = section.nom;
+    },
+    updateSection: function updateSection(section) {
+      var _this8 = this;
+
+      axios.put('/section/' + this.section_being_updated.id, {
+        nom: this.new_section
+      }).then(function (response) {
+        console.log(response.data);
+        _this8.section_being_updated.nom = _this8.new_section;
+        _this8.isUpdating = false;
+        _this8.section_being_updated = false;
+        _this8.new_section = false;
+
+        _this8.$forceUpdate();
+
+        $('#section').modal('hide');
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    removeSection: function removeSection(section) {
+      var _this9 = this;
+
+      axios["delete"]('/section/' + section.id).then(function (response) {
+        var index = _this9.commande.sections.indexOf(section);
+
+        _this9.commande.sections.splice(index, 1);
+
+        _this9.$forceUpdate();
+
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    removeProduct: function removeProduct(section, produit, type) {
+      var _this10 = this;
+
+      axios["delete"]('/sectionnable/' + produit.pivot.id).then(function (response) {
+        if (type === 'Product') {
+          var index = section.products.indexOf(produit);
+          section.products.splice(index, 1);
+        } else {
+          var index = section.articles.indexOf(produit);
+          section.articles.splice(index, 1);
+        }
+
+        _this10.$forceUpdate();
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   computed: {
@@ -2157,10 +2349,75 @@ __webpack_require__.r(__webpack_exports__);
         if (this.commande.products) {
           total += this.commande.products.length;
         }
+
+        if (this.commande.sections) {
+          this.commande.sections.forEach(function (section) {
+            if (section.articles.length > 0 || section.products.length > 0) {
+              total += section.articles.length + section.products.length;
+            }
+          });
+        }
       }
 
       return total;
     },
+    numberOfNewProducts: function numberOfNewProducts() {
+      var total = 0;
+
+      if (this.commande.sections) {
+        this.commande.sections.forEach(function (section) {
+          if (section.articles.length > 0) {
+            total += section.articles.length;
+          }
+        });
+      }
+
+      return total;
+    },
+    numberOfVendProducts: function numberOfVendProducts() {
+      var total = 0;
+
+      if (this.commande.sections) {
+        this.commande.sections.forEach(function (section) {
+          if (section.products.length > 0) {
+            total += section.products.length;
+          }
+        });
+      }
+
+      return total;
+    },
+    prixMoyenDemande: function prixMoyenDemande() {
+      var total = 0;
+
+      if (this.commande.demandes.length > 1) {
+        total = this.commande.demandes.reduce(function (a, b) {
+          if (a.sectionnables.length > 0) {
+            a.total = a.sectionnables.reduce(function (x, y) {
+              return x.pivot.quantite_offerte * x.pivot.offre + y.pivot.quantite_offerte * y.pivot.offre;
+            });
+          }
+
+          if (b.sectionnables.length > 0) {
+            b.total = b.sectionnables.reduce(function (x, y) {
+              return x.pivot.quantite_offerte * x.pivot.offre + y.pivot.quantite_offerte * y.pivot.offre;
+            });
+          }
+
+          return a.total + b.total;
+        });
+      } else if (this.commande.demandes.length === 1) {
+        total = this.commande.demandes[0].sectionnables.reduce(function (x, y) {
+          return x.pivot.quantite_offerte * x.pivot.offre + y.pivot.quantite_offerte * y.pivot.offre;
+        });
+      } else {
+        return '*********';
+      }
+
+      var prix_moyen = 0;
+      return prix_moyen = total / this.commande.demandes.length;
+    },
+    totalBonsCommandes: function totalBonsCommandes() {},
     list_type: function list_type() {
       if (this.sectionnable_type === 'Product') {
         this.label = 'name';
@@ -2176,12 +2433,8 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
   },
-  mounted: function mounted() {// if(this.numberOfProducts)
-    // this.majStock()
-    // this.addReorderpoint()
-  },
   created: function created() {
-    var _this8 = this;
+    var _this11 = this;
 
     if (this.commande_prop) {
       this.commande = this.commande_prop;
@@ -2196,9 +2449,9 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     axios.get('http://azimuts.ga/article/api/non-commandé').then(function (response) {
-      _this8.articles = response.data;
+      _this11.articles = response.data;
 
-      _this8.articles.map(function (article) {
+      _this11.articles.map(function (article) {
         if (article.fiche_renseignement) {
           if (article.fiche_renseignement.marque) {
             article.marque = article.fiche_renseignement.marque.nom;
@@ -2238,14 +2491,19 @@ __webpack_require__.r(__webpack_exports__);
   props: ['demande_prop'],
   data: function data() {
     return {
-      demande: null
+      demande: null,
+      cardNumber: null,
+      options: {
+        creditCard: true,
+        delimiter: '-'
+      }
     };
   },
   computed: {
     totalDemande: function totalDemande() {
       var total = 0;
       this.demande.sectionnables.forEach(function (sectionnable) {
-        total += sectionnable.quantite * sectionnable.pivot.offre;
+        total += sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre;
       });
       return total;
     }
@@ -2288,7 +2546,7 @@ __webpack_require__.r(__webpack_exports__);
     totalDemande: function totalDemande(demande) {
       var total = 0;
       demande.sectionnables.forEach(function (sectionnable) {
-        total += sectionnable.quantite * sectionnable.pivot.offre;
+        total += sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre;
       });
       return total;
     },
@@ -2439,11 +2697,21 @@ __webpack_require__.r(__webpack_exports__);
         section.products.forEach(function (product) {
           if (!_this2.selected_products.includes(product)) _this2.selected_products.push(product);
         });
+        section.articles.forEach(function (article) {
+          if (!_this2.selected_products.includes(article)) _this2.selected_products.push(article);
+        });
       } else {
         // alert('unselect')
         section.products.forEach(function (product) {
           _this2.selected_products.forEach(function (prod, index) {
             if (prod === product) {
+              _this2.selected_products.splice(index, 1);
+            }
+          });
+        });
+        section.articles.forEach(function (article) {
+          _this2.selected_products.forEach(function (prod, index) {
+            if (prod === article) {
               _this2.selected_products.splice(index, 1);
             }
           });
@@ -2459,6 +2727,7 @@ __webpack_require__.r(__webpack_exports__);
         demandes: this.selected_demandes
       }).then(function (response) {
         console.log(response.data);
+        location.reload();
 
         _this3.commande.demandes.forEach(function (demande) {
           _this3.selected_demandes.forEach(function (dem) {
@@ -38488,6 +38757,370 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-currency-filter/lib-out/VueCurrencyFilter.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/vue-currency-filter/lib-out/VueCurrencyFilter.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+exports.__esModule = true;
+var accounting_1 = __webpack_require__(/*! ./accounting */ "./node_modules/vue-currency-filter/lib-out/accounting.js");
+var utils_1 = __webpack_require__(/*! ./utils */ "./node_modules/vue-currency-filter/lib-out/utils.js");
+var VueCurrencyFilter = {
+    install: function (Vue, options) {
+        var defaultConfig = {
+            name: 'currency',
+            symbol: '',
+            thousandsSeparator: '.',
+            fractionCount: 0,
+            fractionSeparator: ',',
+            symbolPosition: 'front',
+            symbolSpacing: true
+        };
+        if (utils_1.__isNull(options))
+            options = {};
+        var globalConfigs = utils_1.__defaults(options, defaultConfig);
+        var name = globalConfigs.name, configs = __rest(globalConfigs, ["name"]);
+        var filterCurrency = function (value, _symbol, _thousandsSeparator, _fractionCount, _fractionSeparator, _symbolPosition, _symbolSpacing) {
+            var runtimeConfig = utils_1.__defaults({
+                symbol: _symbol,
+                thousandsSeparator: _thousandsSeparator,
+                fractionCount: _fractionCount,
+                fractionSeparator: _fractionSeparator,
+                symbolPosition: _symbolPosition,
+                symbolSpacing: _symbolSpacing
+            }, configs);
+            if (typeof _symbol === 'object') {
+                runtimeConfig = utils_1.__defaults(_symbol, configs);
+            }
+            var result = 0.0;
+            var isNegative = String(value).charAt(0) === '-';
+            if (isNegative) {
+                value = String(value).slice(1);
+            }
+            var amount = parseFloat(value);
+            if (!isNaN(amount)) {
+                result = amount;
+            }
+            var formatConfig = '%s%v';
+            if (runtimeConfig.symbolPosition === 'front') {
+                formatConfig = runtimeConfig.symbolSpacing ? '%s %v' : '%s%v';
+            }
+            else {
+                formatConfig = runtimeConfig.symbolSpacing ? '%v %s' : '%v%s';
+            }
+            if (runtimeConfig.fractionCount > 0) {
+                value = accounting_1.toFixed(value, runtimeConfig.fractionCount);
+            }
+            // @ts-ignore
+            result = accounting_1.formatMoney(value, {
+                format: formatConfig,
+                symbol: runtimeConfig.symbol,
+                precision: runtimeConfig.fractionCount,
+                thousand: runtimeConfig.thousandsSeparator,
+                decimal: runtimeConfig.fractionSeparator
+            });
+            if (isNegative) {
+                // @ts-ignore
+                result = '-' + result;
+            }
+            return result;
+        };
+        Vue.filter(name, filterCurrency);
+        Vue.prototype.$CurrencyFilter = {
+            setConfig: function (options) {
+                configs = utils_1.__defaults(options, defaultConfig);
+            },
+            getConfig: function () {
+                return configs;
+            }
+        };
+    }
+};
+exports["default"] = VueCurrencyFilter;
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-currency-filter/lib-out/accounting.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/vue-currency-filter/lib-out/accounting.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var utils_1 = __webpack_require__(/*! ./utils */ "./node_modules/vue-currency-filter/lib-out/utils.js");
+var lib = {
+    settings: {
+        currency: {
+            symbol: '$',
+            format: '%s%v',
+            decimal: '.',
+            thousand: ',',
+            precision: 2,
+            grouping: 3 // digit grouping (not implemented yet)
+        },
+        number: {
+            precision: 0,
+            grouping: 3,
+            thousand: ',',
+            decimal: '.'
+        }
+    }
+};
+/**
+ * Check and normalise the value of precision (must be positive integer)
+ */
+function checkPrecision(val, base) {
+    val = Math.round(Math.abs(val));
+    return isNaN(val) ? base : val;
+}
+exports.checkPrecision = checkPrecision;
+/**
+ * Parses a format string or object and returns format obj for use in rendering
+ *
+ * `format` is either a string with the default (positive) format, or object
+ * containing `pos` (required), `neg` and `zero` values (or a function returning
+ * either a string or object)
+ *
+ * Either string or format.pos must contain "%v" (value) to be valid
+ */
+function checkCurrencyFormat(format) {
+    var defaults = lib.settings.currency.format;
+    // Allow function as format parameter (should return string or object):
+    if (typeof format === 'function')
+        format = format();
+    // Format can be a string, in which case `value` ("%v") must be present:
+    if (utils_1.__isString(format) && format.match('%v')) {
+        // Create and return positive, negative and zero formats:
+        return {
+            pos: format,
+            neg: format.replace('-', '').replace('%v', '-%v'),
+            zero: format
+        };
+        // If no format, or object is missing valid positive value, use defaults:
+    }
+    else if (!format || !format.pos || !format.pos.match('%v')) {
+        // If defaults is a string, casts it to an object for faster checking next time:
+        return !utils_1.__isString(defaults)
+            ? defaults
+            // @ts-ignore
+            : (lib.settings.currency.format = {
+                pos: defaults,
+                neg: defaults.replace('%v', '-%v'),
+                zero: defaults
+            });
+    }
+    // Otherwise, assume format was fine:
+    return format;
+}
+exports.checkCurrencyFormat = checkCurrencyFormat;
+exports.unformat = function (value, decimal) {
+    // Recursively unformat arrays:
+    if (utils_1.__isArray(value)) {
+        return utils_1.__map(value, function (val) {
+            return exports.unformat(val, decimal);
+        });
+    }
+    // Fails silently (need decent errors):
+    value = value || 0;
+    // Return the value as-is if it's already a number:
+    if (typeof value === 'number')
+        return value;
+    // Default decimal point comes from settings, but could be set to eg. "," in opts:
+    decimal = decimal || lib.settings.number.decimal;
+    // Build regex to strip out everything except digits, decimal point and minus sign:
+    // @ts-ignore
+    var regex = new RegExp('[^0-9-' + decimal + ']', ['g']);
+    var unformatted = parseFloat(('' + value)
+        .replace(/\((?=\d+)(.*)\)/, '-$1') // replace bracketed values with negatives
+        .replace(regex, '') // strip out any cruft
+        .replace(decimal, '.') // make sure decimal point is standard
+    );
+    // This will fail silently which may cause trouble, let's wait and see:
+    return !isNaN(unformatted) ? unformatted : 0;
+};
+/**
+ * Implementation of toFixed() that treats floats more like decimals
+ *
+ * Fixes binary rounding issues (eg. (0.615).toFixed(2) === "0.61") that present
+ * problems for accounting- and finance-related software.
+ */
+exports.toFixed = function (value, precision) {
+    precision = checkPrecision(precision, lib.settings.number.precision);
+    var exponentialForm = Number(exports.unformat(value) + 'e' + precision);
+    var rounded = Math.round(exponentialForm);
+    var finalResult = Number(rounded + 'e-' + precision).toFixed(precision);
+    return finalResult;
+};
+/**
+ * Format a number, with comma-separated thousands and custom precision/decimal places
+ * Alias: `accounting.format()`
+ *
+ * Localise by overriding the precision and thousand / decimal separators
+ * 2nd parameter `precision` can be an object matching `settings.number`
+ */
+exports.formatNumber = function (number, precision, thousand, decimal) {
+    // Resursively format arrays:
+    if (utils_1.__isArray(number)) {
+        return utils_1.__map(number, function (val) {
+            return exports.formatNumber(val, precision, thousand, decimal);
+        });
+    }
+    // Clean up number:
+    number = exports.unformat(number);
+    // Build options object from second param (if object) or all params, extending defaults:
+    var opts = utils_1.__defaults(utils_1.__isObject(precision)
+        ? precision
+        : {
+            precision: precision,
+            thousand: thousand,
+            decimal: decimal
+        }, lib.settings.number);
+    // Clean up precision
+    var usePrecision = checkPrecision(opts.precision);
+    // Do some calc:
+    var negative = number < 0 ? '-' : '';
+    var base = parseInt(exports.toFixed(Math.abs(number || 0), usePrecision), 10) + '';
+    var mod = base.length > 3 ? base.length % 3 : 0;
+    // Format the number:
+    return (negative +
+        (mod ? base.substr(0, mod) + opts.thousand : '') +
+        base.substr(mod).replace(/(\d{3})(?=\d)/g, '$1' + opts.thousand) +
+        (usePrecision
+            ? opts.decimal + exports.toFixed(Math.abs(number), usePrecision).split('.')[1]
+            : ''));
+};
+/**
+ * Format a number into currency
+ *
+ * Usage: accounting.formatMoney(number, symbol, precision, thousandsSep, decimalSep, format)
+ * defaults: (0, "$", 2, ",", ".", "%s%v")
+ *
+ * Localise by overriding the symbol, precision, thousand / decimal separators and format
+ * Second param can be an object matching `settings.currency` which is the easiest way.
+ *
+ * To do: tidy up the parameters
+ */
+exports.formatMoney = function (number, symbol, precision, thousand, decimal, format) {
+    // Resursively format arrays:
+    if (utils_1.__isArray(number)) {
+        return utils_1.__map(number, function (val) {
+            return exports.formatMoney(val, symbol, precision, thousand, decimal, format);
+        });
+    }
+    // Clean up number:
+    number = exports.unformat(number);
+    // Build options object from second param (if object) or all params, extending defaults:
+    var opts = utils_1.__defaults(utils_1.__isObject(symbol)
+        ? symbol
+        : {
+            symbol: symbol,
+            precision: precision,
+            thousand: thousand,
+            decimal: decimal,
+            format: format
+        }, lib.settings.currency);
+    // Check format (returns object with pos, neg and zero):
+    var formats = checkCurrencyFormat(opts.format);
+    // Choose which format to use for this value:
+    var useFormat = number > 0 ? formats.pos : number < 0 ? formats.neg : formats.zero;
+    // Return with currency symbol added:
+    return useFormat
+        .replace('%s', opts.symbol)
+        .replace('%v', exports.formatNumber(Math.abs(number), checkPrecision(opts.precision), opts.thousand, opts.decimal));
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-currency-filter/lib-out/utils.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/vue-currency-filter/lib-out/utils.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var nativeMap = Array.prototype.map;
+var nativeIsArray = Array.isArray;
+var toString = Object.prototype.toString;
+function __isNull(obj) {
+    return typeof obj === 'undefined' || obj === null;
+}
+exports.__isNull = __isNull;
+;
+function __isString(obj) {
+    return !!(obj === '' || (obj && obj.charCodeAt && obj.substr));
+}
+exports.__isString = __isString;
+;
+function __isArray(obj) {
+    return nativeIsArray ? nativeIsArray(obj) : toString.call(obj) === '[object Array]';
+}
+exports.__isArray = __isArray;
+;
+function __isObject(obj) {
+    return obj && toString.call(obj) === '[object Object]';
+}
+exports.__isObject = __isObject;
+;
+function __defaults(object, defs) {
+    var key;
+    object = object || {};
+    defs = defs || {};
+    // Iterate over object non-prototype properties:
+    for (key in defs) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (defs.hasOwnProperty(key)) {
+            // Replace values with defaults only if undefined (allow empty/zero values):
+            if (object[key] == null)
+                object[key] = defs[key];
+        }
+    }
+    return object;
+}
+exports.__defaults = __defaults;
+;
+function __map(obj, iterator, context) {
+    if (!obj)
+        return [];
+    // Use native .map method if it exists:
+    if (nativeMap && obj.map === nativeMap)
+        return obj.map(iterator, context);
+    var results = [];
+    var i = 0;
+    var j = 0;
+    // Fallback for native .map:
+    for (i = 0, j = obj.length; i < j; i++) {
+        results[i] = iterator.call(context, obj[i], i, obj);
+    }
+    return results;
+}
+exports.__map = __map;
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
 /*!*******************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
@@ -50706,6 +51339,9 @@ module.exports = function(module) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
+	"./components/BonCommandeShow.vue": "./resources/js/components/BonCommandeShow.vue",
+	"./components/BonsCommandes.vue": "./resources/js/components/BonsCommandes.vue",
+	"./components/CommandeIndex.vue": "./resources/js/components/CommandeIndex.vue",
 	"./components/CommandeShow.vue": "./resources/js/components/CommandeShow.vue",
 	"./components/DemandeShow.vue": "./resources/js/components/DemandeShow.vue",
 	"./components/DemandesCommandeList.vue": "./resources/js/components/DemandesCommandeList.vue",
@@ -50748,10 +51384,21 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue_currency_filter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-currency-filter */ "./node_modules/vue-currency-filter/lib-out/VueCurrencyFilter.js");
+/* harmony import */ var vue_currency_filter__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_currency_filter__WEBPACK_IMPORTED_MODULE_1__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+
+
+Vue.use(vue_currency_filter__WEBPACK_IMPORTED_MODULE_1___default.a, {
+  symbol: 'XAF',
+  thousandsSeparator: '.',
+  fractionCount: 0,
+  fractionSeparator: ',',
+  symbolPosition: 'front',
+  symbolSpacing: true
+});
 
 var files = __webpack_require__("./resources/js sync recursive \\.vue$/");
 
@@ -50821,6 +51468,156 @@ if (token) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/BonCommandeShow.vue":
+/*!*****************************************************!*\
+  !*** ./resources/js/components/BonCommandeShow.vue ***!
+  \*****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _BonCommandeShow_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BonCommandeShow.vue?vue&type=script&lang=js& */ "./resources/js/components/BonCommandeShow.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+var render, staticRenderFns
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  _BonCommandeShow_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"],
+  render,
+  staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/BonCommandeShow.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/BonCommandeShow.vue?vue&type=script&lang=js&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/BonCommandeShow.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BonCommandeShow_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./BonCommandeShow.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BonCommandeShow.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BonCommandeShow_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/BonsCommandes.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/components/BonsCommandes.vue ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _BonsCommandes_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BonsCommandes.vue?vue&type=script&lang=js& */ "./resources/js/components/BonsCommandes.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+var render, staticRenderFns
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  _BonsCommandes_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"],
+  render,
+  staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/BonsCommandes.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/BonsCommandes.vue?vue&type=script&lang=js&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/BonsCommandes.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BonsCommandes_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./BonsCommandes.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/BonsCommandes.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_BonsCommandes_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/CommandeIndex.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/components/CommandeIndex.vue ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CommandeIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CommandeIndex.vue?vue&type=script&lang=js& */ "./resources/js/components/CommandeIndex.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+var render, staticRenderFns
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  _CommandeIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"],
+  render,
+  staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/CommandeIndex.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/CommandeIndex.vue?vue&type=script&lang=js&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/CommandeIndex.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CommandeIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./CommandeIndex.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CommandeIndex.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CommandeIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 

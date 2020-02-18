@@ -30,11 +30,22 @@ export default {
                     if( ! this.selected_products.includes(product))
                         this.selected_products.push(product)
                 })
+                section.articles.forEach( article => {
+                    if( ! this.selected_products.includes(article) )
+                        this.selected_products.push(article)
+                })
             } else {
                 // alert('unselect')
                 section.products.forEach( product => {
                     this.selected_products.forEach((prod, index) => {
                         if(prod === product){
+                            this.selected_products.splice(index, 1)
+                        }
+                    });
+                });
+                section.articles.forEach( article => {
+                    this.selected_products.forEach((prod, index) => {
+                        if(prod === article){
                             this.selected_products.splice(index, 1)
                         }
                     });
@@ -46,6 +57,7 @@ export default {
         addProductsToDemandes(){
             axios.post('/demande-sectionnable', { products: this.selected_products, demandes: this.selected_demandes}).then(response => {
                 console.log(response.data);
+                location.reload()
                 this.commande.demandes.forEach( demande => {
                     this.selected_demandes.forEach( dem => {
                         if( dem.id === demande.id ){

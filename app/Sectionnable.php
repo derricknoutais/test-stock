@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class Sectionnable extends Pivot
 {
     protected $table= 'sectionnables';
+    
 
     public function product()
     {
         return $this->belongsTo('App\Product', 'sectionnable_id');
+    }
+    public function article()
+    {
+        return $this->belongsTo('App\Article', 'sectionnable_id');
     }
     public function section()
     {

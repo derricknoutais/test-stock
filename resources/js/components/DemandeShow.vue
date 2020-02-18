@@ -3,14 +3,19 @@ export default {
     props : ['demande_prop'],
     data(){
         return {
-            demande: null
+            demande: null,
+            cardNumber: null, 
+            options: {
+              creditCard: true,
+              delimiter: '-',
+            }
         }
     },
     computed: {
         totalDemande(){
             var total = 0;
             this.demande.sectionnables.forEach(sectionnable => {
-                total += (sectionnable.quantite * sectionnable.pivot.offre)
+                total += (sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre)
             });
             return total;
         }
@@ -23,7 +28,7 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
-        }
+        },
     },
     created(){
         this.demande = this.demande_prop

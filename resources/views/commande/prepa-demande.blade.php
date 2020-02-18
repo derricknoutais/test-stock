@@ -40,6 +40,19 @@
                                 <td>@{{ produit.pivot.quantite }}</td>
                                 <td></td>
                             </tr>
+                            <tr v-for="produit in section.articles">
+                                <td>
+                                    <input type="checkbox" v-model="selected_products"  :value="produit">
+                                </td>
+                                <td scope="row">
+                                    <a :href=" 'http://azimuts.ga/fiche-renseignement/' + produit.fiche_renseignement_id " target="_blank">
+                                    0af7n3os-{{ rand(1000,9999) }}-ff13-kj{{ rand(100,999) }}-@{{ produit.fiche_renseignement_id   }}
+                                    </a>
+                                </td>
+                                <td>@{{ produit.nom }}</td>
+                                <td>@{{ produit.pivot.quantite }}</td>
+                                <td></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

@@ -28,6 +28,9 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.11.2",
         "tailwindcss": "^1.1.2",
-        "vue-multiselect": "^2.1.6"
+        "vue-cleave": "^1.2.2",
+        "vue-currency-filter": "^4.0.3",
+        "vue-multiselect": "^2.1.6",
+        "vuetable-2": "^2.0.0-beta.4"
     }
 }

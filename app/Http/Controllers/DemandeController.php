@@ -52,7 +52,7 @@ class DemandeController extends Controller
      */
     public function show(Demande $demande)
     {
-        $demande->loadMissing(['sectionnables', 'sectionnables.product', 'sectionnables.section' ]);
+        $demande->loadMissing(['sectionnables', 'sectionnables.product' , 'sectionnables.article']);
         // return $demande->loadMissing(['sectionnables', 'sectionnables.product']);
         return view('demande.show', compact('demande'));
     }

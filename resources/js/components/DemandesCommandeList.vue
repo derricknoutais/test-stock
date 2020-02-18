@@ -14,7 +14,7 @@ export default {
         totalDemande(demande){
             var total = 0
             demande.sectionnables.forEach(sectionnable => {
-                total += (sectionnable.quantite * sectionnable.pivot.offre)
+                total += (sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre)
             });
             return total
         },

@@ -3,11 +3,13 @@ export default {
     props: ['commande_prop', 'products_prop', 'templates_prop' ],
     data(){
         return {
+
             show_products: false,
             selected_product: false,
             selected_template: false,
             selected_article: false,
-            new_section: false,
+            new_section: 'Huiles Moteur',
+            isUpdating: false,
             commande: null,
             isLoading : {
                 stock: false,
@@ -18,7 +20,7 @@ export default {
             products : null,
             templates: null,
             articles: false,
-
+            section_being_updated: false,
             editing: false,
             
             article: false,
@@ -250,6 +252,56 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
+        },
+        openEditModal(section){
+            this.isUpdating = true
+            this.section_being_updated = section
+            $('#section').modal('show')
+            this.new_section = section.nom
+
+        },
+        updateSection(section){
+            
+            
+            axios.put('/section/' + this.section_being_updated.id, {nom:this.new_section}).then(response => {
+                console.log(response.data);
+                this.section_being_updated.nom = this.new_section
+                this.isUpdating = false
+                this.section_being_updated = false
+                this.new_section = false
+                this.$forceUpdate()
+                $('#section').modal('hide')
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        removeSection(section){
+            axios.delete('/section/' + section.id).then(response => {
+                
+                var index = this.commande.sections.indexOf(section)
+                this.commande.sections.splice(index, 1)
+                this.$forceUpdate()
+                
+                console.log(response.data);
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        removeProduct(section, produit, type){
+            
+            axios.delete('/sectionnable/' + produit.pivot.id).then(response => {
+                
+                if(type === 'Product'){
+                    var index = section.products.indexOf(produit)
+                    section.products.splice(index, 1)
+                } else {
+                    var index = section.articles.indexOf(produit)
+                    section.articles.splice(index, 1)
+                }
+                this.$forceUpdate()
+            }).catch(error => {
+                console.log(error);
+            });
         }
 
     },
@@ -277,10 +329,71 @@ export default {
                 if(this.commande.products){
                     total += this.commande.products.length;
                 }
+                if(this.commande.sections ){
+                    this.commande.sections.forEach( section => {
+                        if( section.articles.length > 0 || section.products.length > 0 ){
+                            total += section.articles.length + section.products.length
+                        }
+                    })
+                }
 
             }
             return total;
         }, 
+        numberOfNewProducts(){
+            var total = 0;
+            if(this.commande.sections ){
+                this.commande.sections.forEach( section => {
+                    if( section.articles.length > 0  ){
+                        total += section.articles.length 
+                    }
+                })
+            }
+            return total
+        },
+        numberOfVendProducts(){
+            var total = 0;
+            if(this.commande.sections ){
+                this.commande.sections.forEach( section => {
+                    if( section.products.length > 0  ){
+                        total += section.products.length 
+                    }
+                })
+            }
+            return total
+        },
+        prixMoyenDemande(){
+            var total = 0;
+            if(this.commande.demandes.length > 1){
+                total = this.commande.demandes.reduce( (a,b) => {
+                    if(a.sectionnables.length > 0){
+                        a.total = a.sectionnables.reduce( (x,y) => {
+                            return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                        })
+                    }
+                    
+                    if(b.sectionnables.length > 0){
+                        b.total = b.sectionnables.reduce( (x,y) => {
+                            return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                        })
+                    }
+                    
+                    return ( a.total + b.total )
+                })
+                
+            } else if(this.commande.demandes.length === 1){
+                total = this.commande.demandes[0].sectionnables.reduce( (x,y) => {
+                    return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                })
+            } else {
+                return '*********'
+            }
+            var prix_moyen = 0
+            return prix_moyen = total / (this.commande.demandes.length)
+        },
+        totalBonsCommandes(){
+
+        },
         list_type(){
             if(this.sectionnable_type === 'Product'){
                 this.label = 'name'
@@ -295,12 +408,6 @@ export default {
                 return this.products
             }
         }
-    },
-    mounted(){
-        // if(this.numberOfProducts)
-            // this.majStock()
-        // this.addReorderpoint()
-        
     },
     created(){
         if (this.commande_prop) {

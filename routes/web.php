@@ -18,6 +18,13 @@ Route::resource('/template', 'TemplateController');
 
 Route::resource('/commande', 'CommandeController');
 
+Route::resource('/section', 'SectionController');
+Route::delete('/sectionnable/{product}', 'SectionController@destroyProduct');
+Route::delete('/sectionnable/{article}', 'SectionController@destroyArticle');
+
+Route::resource('/demande', 'DemandeController');
+
+
 Route::get('/commande/{commande}/prepa-demande', function(Commande $commande){
     $commande->loadMissing(['sections', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
     return view('commande.prepa-demande', compact('commande'));
@@ -29,44 +36,63 @@ Route::get('/commande/{commande}/demandes', function(Commande $commande){
 });
 
 Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
-    $commande->loadMissing('demandes', 'demandes.sectionnables');
-    
+
+    // $commande->loadMissing('demandes', 'demandes.sectionnables', 'bonsCommandes');
+
+
     // Pour Chaque Demande d'Offre de Cette Commande... 
-    for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
+    for ( $i = 0; $i < 1; $i++ ) {
+        
+        $bc_noms = [];
         
         // Pour Chaque Section de Chaque Demande
         foreach($commande->demandes[$i]->sectionnables as $sectionnable){
+            
+            
 
+            $commande->load('demandes', 'bonsCommandes');
+            $commande->load('demandes.sectionnables');
             //  Si le produit n'a pas encore été checké
             if(! $sectionnable->pivot->checked){
 
                 $produitRetenu = $sectionnable;
-
                 $moinsCher = $sectionnable->pivot->offre;
-
                 $nom = $commande->demandes[$i]->nom;
+                $id = $commande->demandes[$i]->id;
 
                 for ($j=0; $j < sizeof($commande->demandes); $j++) { 
+
                     if($j != $i){
+
                         foreach($commande->demandes[$j]->sectionnables as $sectionnable_comparatif){
-                            if($sectionnable->sectionnable_id == $sectionnable_comparatif->sectionnable_id ){
-                                if($moinsCher > $sectionnable_comparatif->pivot->offre){
-                                    $produitRetenu = $sectionnable_comparatif;
-                                    $moinsCher = $sectionnable_comparatif->pivot->offre;
-                                    $nom = $commande->demandes[$j]->nom;
-                                }
-                                $sectionnable_comparatif->pivot->checked = 1;
-                                DB::table('demande_sectionnable')
-                                    ->where('id', $sectionnable_comparatif->pivot->id)
-                                    ->update([
-                                        'checked' => 1
+
+                                if($sectionnable->sectionnable_id == $sectionnable_comparatif->sectionnable_id ){
+
+                                    if($moinsCher > $sectionnable_comparatif->pivot->offre){
+
+                                        $produitRetenu = $sectionnable_comparatif;
+                                        $moinsCher = $sectionnable_comparatif->pivot->offre;
+                                        $nom = $commande->demandes[$j]->nom;
+                                        $id = $commande->demandes[$j]->id;
+                                    }
+                                    $sectionnable_comparatif->pivot->checked = 1;
+                                    DB::table('demande_sectionnable')
+                                        ->where('id', $sectionnable_comparatif->pivot->id)
+                                        ->update([
+                                            'checked' => 1
                                     ]);
-                            }
+                                }
+                             
+                            
                         }
+
                     }
                 }
+                
+                if( $bc = BonCommande::where('demande_id' , $id )->first() )
+                // if(array_search($nom, $bc_noms))
+                {
 
-                if( $bc = BonCommande::where('demande_id', $commande->demandes[$i]->id)->first() ){
                     DB::table('bon_commande_sectionnable')->insert([
                         'bon_commande_id' => $bc->id,
                         'sectionnable_id' => $produitRetenu->id,
@@ -81,12 +107,15 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                         'nom' => $nom,
                         'demande_id' => $produitRetenu->pivot->demande_id
                     ]);
+
                     DB::table('bon_commande_sectionnable')->insert([
                         'bon_commande_id' => $bc->id,
-                        'sectionnable_id' => $produitRetenu->pivot->id,
+                        'sectionnable_id' => $produitRetenu->id,
                         'quantite' => $produitRetenu->quantite,
                         'prix_achat' => $produitRetenu->pivot->offre
                     ]);
+                    
+                    array_push($bc_noms, $nom);
                 }
                 DB::table('demande_sectionnable')
                 ->where('id', $sectionnable->pivot->id)
@@ -104,14 +133,16 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
     }
 });
 
-Route::get('/commande/{commande}/bon-commandes', function(Commande $commande){
-    return $commande->bonsCommandes;
+Route::get('/commande/{commande}/bons-commandes', function(Commande $commande){
+    $commande->loadMissing(['bonsCommandes', 'bonsCommandes.sectionnables' ,'bonsCommandes.sectionnables.product']);
+    return view('commande.bon-commandes', compact('commande'));
+});
+Route::get('/commande/{commande}/bons-commandes/{bc}', function (Commande $commande, BonCommande $bc) {
+    $commande->loadMissing(['bonsCommandes', 'bonsCommandes.sectionnables', 'bonsCommandes.sectionnables.product']);
+    $bc->loadMissing('sectionnables', 'sectionnables.product', 'sectionnables.article' );
+    return view('commande.bon_commande_show', compact('commande', 'bc'));
 });
 
-
-Route::resource('/section', 'SectionController');
-
-Route::resource('/demande', 'DemandeController');
 Route::post('/demande-sectionnable', function(Request $request){
     // return $request->all();
     foreach ($request['demandes'] as $demande ) {
@@ -119,7 +150,8 @@ Route::post('/demande-sectionnable', function(Request $request){
             DB::table('demande_sectionnable')->insert([
                 'demande_id' => $demande['id'],
                 'sectionnable_id' => $product['pivot']['id'],
-                'offre' => 0
+                'offre' => 0,
+                'quantite_offerte' => 0
             ]); 
         }
     }
@@ -127,8 +159,12 @@ Route::post('/demande-sectionnable', function(Request $request){
 
 Route::put('demande/{demande}/update-product', function (Demande $demande, Request $request) {
 
+    if($request['pivot']['quantite_offerte'] < $request['quantite']){
+
+    }
     DB::table('demande_sectionnable')->where('id', $request['pivot']['id'])->update([
-        'offre' => $request['pivot']['offre']
+        'offre' => $request['pivot']['offre'],
+        'quantite_offerte' => $request['pivot']['quantite_offerte']
     ]);
 
 });
