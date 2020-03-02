@@ -8,7 +8,8 @@ export default {
             options: {
               creditCard: true,
               delimiter: '-',
-            }
+            },
+            sectionnable_being_deleted: null
         }
     },
     computed: {
@@ -29,6 +30,28 @@ export default {
                 console.log(error);
             });
         },
+        openDeleteModal(sectionnable){
+            this.sectionnable_being_deleted = sectionnable
+            $('#delete-modal').modal('show')
+        },
+        removeSectionnable(){
+            axios.delete('/demande-sectionnable/' + this.sectionnable_being_deleted.pivot.id).then(response => {
+                console.log(response.data);
+                var index = this.demande.sectionnables.indexOf(this.sectionnable_being_deleted)
+                this.demande.sectionnables.splice(index, 1)
+                this.sectionnable_being_deleted = null
+                $('#delete-modal').modal('hide')
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        normaliserQuantités(){
+            this.demande.sectionnables.forEach( sectionnable => {
+                this.enregisterOffre(sectionnable)
+                sectionnable.pivot.quantite_offerte = sectionnable.quantite
+            })
+            this.$forceUpdate()
+        }
     },
     created(){
         this.demande = this.demande_prop

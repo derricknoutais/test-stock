@@ -12,6 +12,7 @@
                 <button class="tw-btn tw-btn-white tw-mb-4" data-toggle="modal" data-target="#modelId">Créer commande</button>
                 <!-- Modal -->
             </section>
+            {{-- TABLEAU DES COMMANDES --}}
             <section class="container mx-auto mt-5">
                 <table class="table tw-text-lg">
                     <thead>
@@ -28,7 +29,7 @@
                                     <a :href="'/commande/' + commande.id">@{{ commande.name }}</a>
                                 </td>
                                 <td>@{{ nombreProduits( commande ) }}</td>
-                                <td>@{{ total( commande ) }}</td>
+                                <td>@{{ total( commande ) | currency }}</td>
                             </tr>
 
 

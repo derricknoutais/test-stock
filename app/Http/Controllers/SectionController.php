@@ -53,12 +53,13 @@ class SectionController extends Controller
     public function addProduct(Request $request){
         // return $request['type'];
         if($request['type'] !== 'App\Template'){
-            DB::table('sectionnables')->insert([
+            $sectionnable = Sectionnable::create([
                 'section_id' => $request['section'],
                 'sectionnable_id' => $request['product']['id'],
                 'sectionnable_type' => $request['type'],
                 'quantite' => $request['product']['quantite']
             ]);
+            return $sectionnable;
         } else {
             $template = Template::where('id', $request['product'])->with('products')->first();
             $products = $template->products;

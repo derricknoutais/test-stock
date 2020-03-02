@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class Sectionnable extends Pivot
 {
     protected $table= 'sectionnables';
+    protected  $primaryKey = 'id'; 
+    public $incrementing = true;
     
+    protected $guarded = [];
 
     public function product()
     {

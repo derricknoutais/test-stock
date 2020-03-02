@@ -35,7 +35,7 @@
                 
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
                         <h4 class="tw-text-xl"> <i class="fas fa-boxes    "></i> @{{ commande.demandes.length }} Fournisseurs</h4>
-                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ prixMoyenDemande | currency }} / Demande</h4> 
+                        {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ prixMoyenDemande | currency }} / Demande</h4>  --}}
                         
                     </div>
                 </div>
@@ -47,9 +47,9 @@
                     </div>
                 
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
-                        <h4 class="tw-text-xl"> <i class="fas fa-money"></i>XAF @{{ totalBonsCommandes }} </h4>
-                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i>Produit par Section</h4> 
-                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> 9 Produit par Section</h4> 
+                        {{-- <h4 class="tw-text-xl"> <i class="fas fa-money"></i>XAF @{{ totalBonsCommandes }} </h4> --}}
+                        {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i>Produit par Section</h4> 
+                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> 9 Produit par Section</h4>  --}}
                  
                     </div>
                 </div>
@@ -129,14 +129,33 @@
         <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-mt-5">
 
             {{-- Sections --}}
-            <button class="tw-btn tw-bg-red-500 tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
+            <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
 
             {{-- Modal --}}
+            <div class="modal fade" id="sectionDelete" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="removeSection()">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Supprimer Section</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Êtes-vous sûr de supprimer la section "@{{ this.section_being_deleted.nom }}"</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="tw-btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            <button type="button" class="tw-btn btn-primary" @click="removeSection()">Oui, Supprimer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="modal fade" id="section" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="addSection()">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Nouvelle Section</h5>
+                            <h5 class="modal-title">Supprimer Section</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -148,10 +167,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="tw-btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="tw-btn btn-secondary" data-dismiss="modal">Fermer</button>
 
                             <button type="button" class="tw-btn btn-primary" @click="updateSection()" v-if="isUpdating">Mettre à Jour</button>
-                            <button type="button" class="tw-btn btn-primary" @click="addSection()" v-else>Save</button>
+                            <button type="button" class="tw-btn btn-primary" @click="addSection()" v-else>Enregistrer</button>
                         </div>
                     </div>
                 </div>
@@ -168,7 +187,7 @@
                         </h5>
                         <div>
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
-                            <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeSection(section)"></i>
+                            <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(section)"></i>
                         </div>
                         
                     </div>

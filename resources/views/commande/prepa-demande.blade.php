@@ -2,7 +2,7 @@
 
 
 @section('content')
-<prepa-demande :commande_prop="{{$commande}}" inline-template>
+<prepa-demande :commande_prop="{{$commande}}" :fournisseurs_prop="{{$fournisseurs}}" inline-template>
     <div class="tw-flex tw-flex-col">
         <div class="tw-flex">
             <div class="tw-mx-auto tw-container tw-w-3/4">
@@ -14,6 +14,7 @@
 
                 <div v-for="section in commande.sections">
                     <h4 class="tw-text-2xl tw-mt-24 tw-font-thin tw-tracking-wide">@{{ section.nom }}</h4>
+                    
                     <table class="table">
                         <thead>
                             <tr>
@@ -77,7 +78,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="demande-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+            {{-- Modal --}}
+            <div class="modal fade" id="demande-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="saveDemande">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -87,12 +89,13 @@
                         <div class="modal-body">
                             <div class="form-group">
                               <label for="">Nom de la Demande</label>
-                              <input type="text" class="form-control" v-model="nouvelle_demande">
+                              <multiselect v-model="selected_fournisseur" :options="fournisseurs" label="nom" :searchable="true" :close-on-select="true" :show-labels="true"
+                              placeholder="Pick a value"></multiselect>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" @click="saveDemande">Save</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            <button type="button" class="btn btn-primary" @click="saveDemande">Enregistrer</button>
                         </div>
                     </div>
                 </div>

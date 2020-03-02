@@ -12,4 +12,8 @@ class BonCommande extends Model
     {
         return $this->belongsToMany('App\Sectionnable', 'bon_commande_sectionnable', 'bon_commande_id', 'sectionnable_id')->withPivot('prix_achat', 'quantite');
     }
+    public function commande()
+    {
+        return $this->belongsTo('App\Commande');
+    }
 }

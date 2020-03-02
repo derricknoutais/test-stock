@@ -1,20 +1,25 @@
 <script>
 export default {
-    props: ['commande_prop'],
+    props: ['commande_prop', 'fournisseurs_prop'],
     data(){
         return {
+            fournisseurs: null,
             nouvelle_demande: null,
             commande: null,
             selected_products: [],
+            selected_fournisseur: null,
             selected_demandes: []
         }
     },
     methods:{
         saveDemande(){
-            axios.post('/demande', { demande: this.nouvelle_demande , commande: this.commande.id, fournisseur: null}).then(response => {
+            axios.post('/demande', { demande: this.nouvelle_demande , commande: this.commande.id, fournisseur: this.selected_fournisseur}).then(response => {
                 console.log(response.data);
                 this.commande.demandes.push({
-                    nom: this.nouvelle_demande
+                    nom: this.selected_fournisseur.nom,
+                    fournisseur_id: this.selected_fournisseur.id,
+                    id: response.data.id,
+                    sectionnables: []
                 })
                 $('#demande-modal').modal('hide')
                 
@@ -57,17 +62,20 @@ export default {
         addProductsToDemandes(){
             axios.post('/demande-sectionnable', { products: this.selected_products, demandes: this.selected_demandes}).then(response => {
                 console.log(response.data);
-                location.reload()
+                // location.reload()
                 this.commande.demandes.forEach( demande => {
                     this.selected_demandes.forEach( dem => {
                         if( dem.id === demande.id ){
-                            demande.sectionnables.push({
-                                demande_id: 1,
-                                sectionnable_id : 1
-                            })
+                            this.selected_products.forEach( prod => {
+                                demande.sectionnables.push({
+                                    demande_id: dem.id,
+                                    sectionnable_id : prod.id
+                                });
+                            });
                         }
                     })
                 })
+                $('#ajouter-demande-modal').modal('hide')
                 this.$forceUpdate()
             }).catch( error => {
                 console.log(error);
@@ -78,7 +86,8 @@ export default {
         this.commande = this.commande_prop  
         this.commande.sections.forEach( section => {
             section.checkAll = false
-        })
+        });
+        this.fournisseurs = this.fournisseurs_prop
     }
 }
 </script>

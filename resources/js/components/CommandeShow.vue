@@ -10,6 +10,7 @@ export default {
             selected_article: false,
             new_section: 'Huiles Moteur',
             isUpdating: false,
+            isDeleting: false,
             commande: null,
             isLoading : {
                 stock: false,
@@ -21,6 +22,7 @@ export default {
             templates: null,
             articles: false,
             section_being_updated: false,
+            section_being_deleted: false,
             editing: false,
             
             article: false,
@@ -52,6 +54,11 @@ export default {
             });
         },
         addSection(){
+            if(this.isUpdating === true){
+                this.updateSection(this.section_being_updated)
+                this.isUpdating = false
+                return 0;
+            }
             if(this.new_section){
                 axios.post('/section', {commande: this.commande_prop.id, section: this.new_section} ).then(response => {
                     this.commande.sections.push({
@@ -75,10 +82,11 @@ export default {
                 })  
                 if(this.sectionnable_type === 'Article'){
                     found.articles.push({
+                        nom : this.selected_article.nom,
                         pivot: {
+                            id: response.data.id,
                             quantite : this.selected_article.quantite
                         },
-                        nom : this.selected_article.nom
                     });
 
                     
@@ -92,6 +100,7 @@ export default {
                     found.products.push({
                         name:this.selected_article.name,
                         pivot: {
+                            id: response.data.id,
                             quantite : this.selected_article.quantite
                         },
                     })
@@ -260,6 +269,11 @@ export default {
             this.new_section = section.nom
 
         },
+        openDeleteModal(section){
+            this.isDeleting = true
+            this.section_being_deleted = section
+            $('#sectionDelete').modal('show')
+        },
         updateSection(section){
             
             
@@ -276,10 +290,11 @@ export default {
             });
         },
         removeSection(section){
-            axios.delete('/section/' + section.id).then(response => {
+            axios.delete('/section/' + this.section_being_deleted.id).then(response => {
                 
                 var index = this.commande.sections.indexOf(section)
                 this.commande.sections.splice(index, 1)
+                $('#sectionDelete').modal('hide')
                 this.$forceUpdate()
                 
                 console.log(response.data);
@@ -360,30 +375,31 @@ export default {
                     }
                 })
             }
-            return total
+            return total  
         },
         prixMoyenDemande(){
             var total = 0;
             if(this.commande.demandes.length > 1){
                 total = this.commande.demandes.reduce( (a,b) => {
-                    if(a.sectionnables.length > 0){
+
+                    if(a.sectionnables && a.sectionnables.length > 0){
                         a.total = a.sectionnables.reduce( (x,y) => {
-                            return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                            // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
                         })
                     }
                     
-                    if(b.sectionnables.length > 0){
+                    if(b.sectionnables && b.sectionnables.length > 0){
                         b.total = b.sectionnables.reduce( (x,y) => {
-                            return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                            // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.o ffre)
                         })
                     }
                     
                     return ( a.total + b.total )
                 })
                 
-            } else if(this.commande.demandes.length === 1){
+            } else if(this.commande.demandes.length === 1 && this.commande.demandes[0].sectionnables.length > 0){
                 total = this.commande.demandes[0].sectionnables.reduce( (x,y) => {
-                    return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                    // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
                 })
             } else {
                 return '*********'

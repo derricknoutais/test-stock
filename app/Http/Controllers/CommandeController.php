@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 class CommandeController extends Controller
 {
     public function index(){
-        $commandes = Commande::with('sections', 'sections.products', 'sections.articles', 'bonsCommandes', 'bonsCommandes.sectionnables')->get();
+        $commandes = Commande::with('sections', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables')->get();
 
 
         return view('commande.index', compact('commandes'));

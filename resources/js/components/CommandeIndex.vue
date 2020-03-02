@@ -23,11 +23,9 @@ export default {
         },
         nombreProduits(commande){
             var total = 0;
-            if(commande.bons_commandes){
-                commande.bons_commandes.forEach( bon => {
-                    if(bon.sectionnables){
-                        total += bon.sectionnables.length
-                    }
+            if(commande.sections.length > 0){
+                commande.sections.forEach( section => {
+                    total += (section.articles.length + section.products.length)
                 });
             }
             return total;

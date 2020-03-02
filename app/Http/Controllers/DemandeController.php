@@ -37,9 +37,11 @@ class DemandeController extends Controller
     {
         
         $demande = Demande::create([
-            'nom' => $request['demande'],
+
+            'nom' => $request['fournisseur']['nom'],
             'commande_id' => $request['commande'],
-            'fournisseur_id' => $request['fournisseur']
+            'fournisseur_id' => $request['fournisseur']['id']
+        
         ]);
         return $demande;
     }
