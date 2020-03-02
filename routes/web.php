@@ -107,6 +107,9 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                     if( ( $qte_recevable - $toCompare[$x]->pivot->quantite_offerte )  > 0 ){
                         $toCompare[$x]->quantite_prise = $toCompare[$x]->pivot->quantite_offerte;
                         $x++;
+                    } else if( ( $qte_recevable - $toCompare[$x]->pivot->quantite_offerte )  < 0){
+                        $toCompare[$x]->quantite_prise = $qte_recevable ;
+                        break;
                     } else {
                         $toCompare[$x]->quantite_prise = $qte_recevable ;
                     }
