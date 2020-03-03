@@ -89,7 +89,7 @@ export default {
                     return sect.id ===  this.new_section
                 })  
                 if(this.sectionnable_type === 'Article'){
-                    found.articles.push({
+                    found.articles.unshift({
                         nom : this.selected_article.nom,
                         pivot: {
                             id: response.data.id,
@@ -100,12 +100,12 @@ export default {
                     
                 } else if(this.sectionnable_type === 'Template'){
                     response.data.forEach(element => {
-                        found.products.push({
+                        found.products.unshift({
                             name: element.name
                         })
                     });
                 } else {
-                    found.products.push({
+                    found.products.unshift({
                         name:this.selected_article.name,
                         pivot: {
                             id: response.data.id,

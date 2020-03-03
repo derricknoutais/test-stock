@@ -2143,7 +2143,7 @@ __webpack_require__.r(__webpack_exports__);
         });
 
         if (_this4.sectionnable_type === 'Article') {
-          found.articles.push({
+          found.articles.unshift({
             nom: _this4.selected_article.nom,
             pivot: {
               id: response.data.id,
@@ -2152,12 +2152,12 @@ __webpack_require__.r(__webpack_exports__);
           });
         } else if (_this4.sectionnable_type === 'Template') {
           response.data.forEach(function (element) {
-            found.products.push({
+            found.products.unshift({
               name: element.name
             });
           });
         } else {
-          found.products.push({
+          found.products.unshift({
             name: _this4.selected_article.name,
             pivot: {
               id: response.data.id,
