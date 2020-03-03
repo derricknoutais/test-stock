@@ -211,10 +211,10 @@
                                     </label>
                                 </div>
                                 <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
-                                    <multiselect v-model="selected_article" :options="list_type" :searchable="true" :close-on-select="true" :show-labels="false"
-                                    placeholder="Pick a value" :label="label"></multiselect>
+                                    <multiselect v-model="selected_article" :options="list_type" :searchable="true"  :show-labels="false"
+                                    placeholder="Pick a value" :label="label" id="select"></multiselect>
 
-                                    <input type="text" v-model.number="selected_article.quantite" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité">
+                                    <input type="text" v-model.number="selected_article.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
 
                                     <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
                                 </div>

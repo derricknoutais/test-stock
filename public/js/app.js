@@ -2064,6 +2064,11 @@ __webpack_require__.r(__webpack_exports__);
       label: ''
     };
   },
+  watch: {
+    'selected_article': function selected_article() {
+      document.getElementById('quantiteInput').focus();
+    }
+  },
   methods: {
     addProduct: function addProduct() {
       var _this = this;
@@ -2162,6 +2167,7 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         _this4.new_section = false;
+        document.getElementById('select').focus();
       })["catch"](function (error) {
         console.log(error);
       });

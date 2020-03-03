@@ -31,6 +31,14 @@ export default {
             label: '',
         }
     },
+    watch: {
+        'selected_article' : function(){
+
+                document.getElementById('quantiteInput').focus() 
+
+            
+        }
+    },
     methods:{
         addProduct(){
             console.log(this.selected_product)
@@ -107,7 +115,9 @@ export default {
 
                 }
                 
-                this.new_section = false       
+                this.new_section = false   
+                document.getElementById('select').focus()  
+
             }).catch(error => {
                 console.log(error);
             });
