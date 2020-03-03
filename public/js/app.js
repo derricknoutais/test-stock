@@ -2168,6 +2168,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this4.new_section = false;
         document.getElementById('select').focus();
+        document.getElementById('quantiteInput').value = 0;
       })["catch"](function (error) {
         console.log(error);
       });

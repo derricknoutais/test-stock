@@ -117,6 +117,7 @@ export default {
                 
                 this.new_section = false   
                 document.getElementById('select').focus()  
+                document.getElementById('quantiteInput').value = 0
 
             }).catch(error => {
                 console.log(error);
