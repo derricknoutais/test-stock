@@ -20,11 +20,10 @@ class CreateArticleSectionTable extends Migration
             $table->string('sectionnable_id');
             $table->string('sectionnable_type');
             $table->unsignedBigInteger('quantite');
+            $table->boolean('conflit')->default(0);
 
 
             $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade')->onUpdate('cascade');
-
-
             $table->timestamps();
         });
     }

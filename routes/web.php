@@ -40,9 +40,18 @@ Route::get('/commande/{commande}/demandes', function(Commande $commande){
     return view('commande.demandes', compact('commande'));
 });
 
+Route::get('/remettre-a-zero', function(){
+    DB::table('demande_sectionnable')->whereIn('demande_id', [4,5,6,7,8])->update([
+        'checked' => 0
+    ]);
+    $bcs = DB::table('bon_commandes')->whereIn('demande_id', [4,5,6,7,8])->pluck('id');
+    DB::table('bon_commande_sectionnable')->whereIn('bon_commande_id', $bcs)->delete();
+    DB::table('bon_commandes')->whereIn('demande_id', [4,5,6,7,8])->delete();
+});
+
 Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
 
-    
+    $all = array();
     // Pour Chaque Demande d'Offre de Cette Commande... 
     for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
         
@@ -86,6 +95,11 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                             ->update([
                                 'checked' => -1
                             ]);
+                        
+                        DB::table('sectionnables')->where([ 'section_id' => $a->section_id, 'sectionnable_id' => $a->sectionnable_id ])->update([
+                            'conflit' => 1
+                        ]);
+
                     } else {
                         $a->pivot->checked = 1;
                         $b->pivot->checked = 1;
@@ -97,21 +111,36 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                     }
                     return $a['pivot']['offre'] <=> $b['pivot']['offre'];
                 });
-
+                foreach ($toCompare as $comp) {
+                    if($comp->pivot->offre == 0){
+                        DB::table('demande_sectionnable')
+                        ->where('id', $comp->pivot->id)
+                        ->update([
+                            'checked' => -1
+                        ]);
+                        $comp->pivot->checked = -1;
+                        DB::table('sectionnables')->where([ 'section_id' => $comp->section_id, 'sectionnable_id' => $comp->sectionnable_id ])->update([
+                            'conflit' => 1
+                        ]);
+                    }
+                    
+                }
                 // return $toCompare;
                 $qte_recevable = $toCompare[0]->quantite;
                 $x = 0;
-
                 while ( $qte_recevable > 0 ) {
 
                     if( ( $qte_recevable - $toCompare[$x]->pivot->quantite_offerte )  > 0 ){
                         $toCompare[$x]->quantite_prise = $toCompare[$x]->pivot->quantite_offerte;
-                        $x++;
-                    } else if( ( $qte_recevable - $toCompare[$x]->pivot->quantite_offerte )  < 0){
+                        if( ($x + 1) < sizeof($toCompare) ){
+                            $x++;
+                        } else {
+                            break;
+                        }
+                    } 
+                    else {
                         $toCompare[$x]->quantite_prise = $qte_recevable ;
                         break;
-                    } else {
-                        $toCompare[$x]->quantite_prise = $qte_recevable ;
                     }
 
                     if($x > 0){
@@ -119,13 +148,13 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                     } else {
                         $qte_recevable = $qte_recevable - $toCompare[$x]->quantite_prise;
                     }
+                    
 
                     if( $x >= sizeof($toCompare)  ) {
                         break;
                     }
                     
                 }
-                // return $toCompare;
                 // return $x;
                 for ($y=0; $y <= $x ; $y++) { 
                     if( $toCompare[$y]->pivot->checked !== -1 ){
@@ -140,9 +169,10 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                         } 
                         else
                         {
+                            $demande = Demande::find($toCompare[$y]->pivot->demande_id);
                             $bc = BonCommande::create([
                                 'commande_id' => $commande->id,
-                                'nom' => 'Commande ' . $y ,
+                                'nom' => 'Bon Commande ' . $demande->nom ,
                                 'demande_id' => $toCompare[$y]->pivot->demande_id
                             ]);
                             DB::table('bon_commande_sectionnable')->insert([
@@ -168,6 +198,69 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
         
         
     }
+});
+
+Route::get('/commande/{commande}/conflits', function(Commande $commande){
+    $commande->load('demandes', 'bonsCommandes', 'demandes.sectionnables', 'sections', 'sections.articles', 'sections.products');
+
+    $conflits = array();
+    foreach ($commande->sections as $section ) {
+        foreach ($section->articles as $article ) {
+            if($article->pivot->conflit === 1 ){
+                array_push($conflits, $article);
+            }
+        }
+        foreach ($section->products as $product ) {
+            if($product->pivot->conflit === 1 ){
+                array_push($conflits, $product);
+            }
+        }
+    }
+    foreach( $conflits as $conflit ){
+        $conflit->elements_conflictuels = DB::table('demande_sectionnable')->where( 'sectionnable_id', $conflit->pivot->id )->get();
+    }
+    $commande->conflits = $conflits;
+    return view('commande.conflits', compact('commande', 'conflits'));
+});
+
+Route::post('/commande/{commande}/résoudre-conflit', function(Commande $commande, Request $request){
+    // return $request->all();
+
+        if( $bc = BonCommande::where('demande_id' , $request['selected']['demande_id'] )->first() )
+        {
+            DB::table('bon_commande_sectionnable')->insert([
+                'bon_commande_id' => $bc->id,
+                'sectionnable_id' => $request['selected']['id'],
+                'quantite' => $request['selected']['quantite_offerte'],
+                'prix_achat' => $request['selected']['pivot']['offre']
+            ]);
+        } 
+        else
+        {
+            $bc = BonCommande::create([
+                'commande_id' => $commande->id,
+                'nom' => 'Bon Commande ' . $request['selected']['demande']['nom'] ,
+                'demande_id' => $request['selected']['demande_id']
+            ]);
+            DB::table('bon_commande_sectionnable')->insert([
+                'bon_commande_id' => $bc->id,
+                'sectionnable_id' => $request['selected']['id'],
+                'quantite' => $request['selected']['quantite_offerte'],
+                'prix_achat' => $request['selected']['offre']
+            ]);
+        }
+        foreach( $request['elements_conflictuels'] as $element){
+            DB::table('demande_sectionnable')
+            ->where('id', $element['id'])
+            ->update([
+                'checked' => 1
+            ]);
+        }
+        DB::table('sectionnables')
+        ->where('id', $request['pivot']['id'])
+        ->update([
+            'conflit' => 0
+        ]);
 });
 
 Route::get('/commande/{commande}/bons-commandes', function(Commande $commande){

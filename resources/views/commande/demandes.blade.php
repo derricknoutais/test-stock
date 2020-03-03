@@ -34,7 +34,7 @@
 
             <div class="tw-flex tw-my-10 tw-py-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0">
                 <a href="/commande/{{$commande->id}}" class="tw-btn tw-btn-dark tw-leading-none">Précédent</a>
-                <a href="/commande/{{$commande->id}}/bons-commandes" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5">Suivant</a>
+                <a href="/commande/{{$commande->id}}/conflits" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5">Suivant</a>
             </div>
         </div>
     </demandes-commande-list>
