@@ -22,7 +22,7 @@
 
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
                         <h4 class="tw-text-xl"> <i class="fas fa-boxes    "></i> @{{ numberOfProducts }} Produits</h4>
-                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ numberOfNewProducts }} Nouveaux Produits | <i class="fab fa-vuejs    "></i>  @{{ numberOfVendProducts }} Produits Vend </h4> 
+                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ numberOfNewProducts }} Nouveaux Produits | <i class="fab fa-vuejs    "></i>  @{{ numberOfVendProducts }} Produits Vend </h4>
                     </div>
                 </div>
                 <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-1/4 tw-mx-5">
@@ -32,31 +32,31 @@
                         <h3 class="tw-text-xl tw-mt-3">Demandes ( @{{ commande.demandes.length }} )</h3>
 
                     </div>
-                
+
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
                         <h4 class="tw-text-xl"> <i class="fas fa-boxes    "></i> @{{ commande.demandes.length }} Fournisseurs</h4>
                         {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ prixMoyenDemande | currency }} / Demande</h4>  --}}
-                        
+
                     </div>
                 </div>
-                
+
                 <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-1/4 tw-mx-5">
                     <div class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
                         <i class="fas fa-handshake  fa-2x"></i>
                         <h3 class="tw-text-xl tw-mt-3">Bons Commande ( @{{ commande.bons_commandes.length }} )</h3>
                     </div>
-                
+
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
                         {{-- <h4 class="tw-text-xl"> <i class="fas fa-money"></i>XAF @{{ totalBonsCommandes }} </h4> --}}
-                        {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i>Produit par Section</h4> 
+                        {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i>Produit par Section</h4>
                         <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> 9 Produit par Section</h4>  --}}
-                 
+
                     </div>
                 </div>
-                
+
 
             </div>
-            
+
             {{-- <div class="tw-flex tw-w-screen tw-justify-around tw-items-center tw-mt-6">
 
                 <button class="tw-btn tw-btn-white " data-toggle="collapse" data-target="#addTemplate">
@@ -85,7 +85,7 @@
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.stock"></i>
                     <span>Save Commande</span>
                 </button>
-                
+
 
             </div> --}}
 
@@ -98,7 +98,7 @@
 
                     <button class="tw-btn tw-btn-white tw-leading-none" @click="addTemplate()">Ajouter Templates</button>
                 </div>
-                
+
                 <div class="tw-w-1/2 tw-flex tw-justify-center collapse" id="addProduct">
                     <div class="tw-w-1/2 tw-mr-4">
                         <multiselect v-model="selected_product" :options="{{ $products }}" :searchable="true" :close-on-select="true" :show-labels="false"
@@ -109,20 +109,6 @@
                 </div>
             </div>
 
-            
-{{-- 
-            <div class="tw-flex tw-justify-around tw-w-screen" v-if="commande">
-                <p class="tw-text-lg my-4" v-if="commande.templates">
-                    @{{ commande.templates.length }} 
-                    @{{ commande.templates.length <= 1 ? 'Template' : 'Templates' }}
-                </p>
-                <p class="tw-text-lg my-4 tw-ml-5">
-                    @{{ numberOfProducts }} 
-                    @{{ numberOfProducts <= 1 ? 'Produit' : 'Produits' }}
-                </p>
-            </div>
-            
-            <button class="tw-btn" data-toggle="modal" data-target="#modelId">Créer Template</button> --}}
             <!-- Modal -->
         </header>
 
@@ -183,18 +169,17 @@
                     <div class="card-header tw-flex tw-justify-between tw-items-center" >
                         <h5 class="mb-0 tw-text-xl" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">
                             <a data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">@{{section.nom}}</a>
-                            
+
                         </h5>
                         <div>
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
                             <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(section)"></i>
                         </div>
-                        
+
                     </div>
 
                     <div :id="'section' + section.id" class="collapse in" role="tabpanel" aria-labelledby="section1HeaderId">
                         <div class="card-body tw-flex-col tw-items-center tw-justify-center">
-
                             <div class="tw-flex-col tw-justify-center tw-items-center">
                                 <div class="form-check tw-flex tw-justify-around">
                                     <label class="form-check-label">
@@ -210,16 +195,30 @@
                                         Produits Vend
                                     </label>
                                 </div>
+                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-between tw-items-center" v-if="vente">
+                                    <p class="tw-text-lg">Avril-Juin</p>
+                                    <p class="tw-text-lg tw-text-red-500">Juillet-Septembre</p>
+                                    <p class="tw-text-lg">Octobre-Décembre</p>
+                                    <p class="tw-text-lg">Janvier-Mars</p>
+                                    <p class="tw-text-lg">Total</p>
+                                </div>
+                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-between tw-items-center" v-if="vente">
+                                    <p class="tw-text-lg">@{{ vente.Trim1}}</p>
+                                    <p class="tw-text-lg tw-text-red-500">@{{ vente.Trim2}}</p>
+                                    <p class="tw-text-lg">@{{ vente.Trim3}}</p>
+                                    <p class="tw-text-lg">@{{ vente.Trim4}}</p>
+                                    <p class="tw-text-lg">@{{ vente.quantite_vendue}}</p>
+                                </div>
                                 <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
                                     <multiselect v-model="selected_article" :options="list_type" :searchable="true"  :show-labels="false"
-                                    placeholder="Pick a value" :label="label" id="select"></multiselect>
-
+                                    placeholder="Pick a value" :label="label" id="select" ></multiselect>
                                     <input type="text" v-model.number="selected_article.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
 
                                     <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
                                 </div>
-                                
-                                
+
+
+
                             </div>
 
                             <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full" v-if="section.articles.length > 0">
@@ -275,19 +274,19 @@
                                     </tbody>
                                 </table>
                             </div>
-                            
-                        </div>  
+
+                        </div>
                     </div>
 
                 </div>
             </div>
-                
+
             <div class="tw-flex tw-mt-5 tw-justify-center tw-items-center">
-        
+
                 <a class="tw-btn tw-btn-dark tw-leading-none" href="/commande">Précédent</a>
                 <a :href=" '/commande/' + commande.id + '/prepa-demande'" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" v-if="commande.sections.length > 0">Suivant</a>
             </div>
-            
+
 
             {{-- Reorder Point --}}
 
@@ -322,8 +321,8 @@
                             <td>
                                 <i class="fas fa-times tw-text-red-500 tw-mr-2 tw-cursor-pointer" @click="removeProduct(index)"></i>
                             </td>
-                            
-                        </tr>    
+
+                        </tr>
                     </tbody>
                 </table>
             </article>

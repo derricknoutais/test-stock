@@ -2058,6 +2058,7 @@ __webpack_require__.r(__webpack_exports__);
       section_being_updated: false,
       section_being_deleted: false,
       editing: false,
+      vente: false,
       article: false,
       sectionnable_type: false,
       list: false,
@@ -2066,12 +2067,20 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     'selected_article': function selected_article() {
+      var _this = this;
+
       document.getElementById('quantiteInput').focus();
+      axios.get('/quantite-vendue/' + this.selected_article.id).then(function (response) {
+        _this.vente = response.data;
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   methods: {
     addProduct: function addProduct() {
-      var _this = this;
+      var _this2 = this;
 
       console.log(this.selected_product);
       axios.post('/product-commande', {
@@ -2079,30 +2088,30 @@ __webpack_require__.r(__webpack_exports__);
         product_id: this.selected_product.id
       }).then(function (response) {
         if (response.data === 'OK') {
-          _this.commande.products.push(_this.selected_product);
+          _this2.commande.products.push(_this2.selected_product);
         }
       })["catch"](function (error) {
         console.log(error); // alert('Un problème est survenu lors du chargement des stocks. Veuillez relancer la MàJ des Stocks')
       });
     },
     addTemplate: function addTemplate() {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.post('/template-commande', {
         commande_id: this.commande.id,
         template_id: this.selected_template.id
       }).then(function (response) {
         if (response.data === 'OK') {
-          _this2.commande.templates.push(_this2.selected_template);
+          _this3.commande.templates.push(_this3.selected_template);
 
-          _this2.$forceUpdate();
+          _this3.$forceUpdate();
         }
       })["catch"](function (error) {
         console.log(error);
       });
     },
     addSection: function addSection() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.isUpdating === true) {
         this.updateSection(this.section_being_updated);
@@ -2115,9 +2124,9 @@ __webpack_require__.r(__webpack_exports__);
           commande: this.commande_prop.id,
           section: this.new_section
         }).then(function (response) {
-          _this3.commande.sections.push({
+          _this4.commande.sections.push({
             id: response.data.id,
-            nom: _this3.new_section
+            nom: _this4.new_section
           });
 
           $('#section').modal('hide');
@@ -2128,7 +2137,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     addProductToSection: function addProductToSection(section) {
-      var _this4 = this;
+      var _this5 = this;
 
       this.new_section = section;
       axios.post('/product-section', {
@@ -2138,19 +2147,19 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         console.log(response.data);
 
-        var found = _this4.commande.sections.find(function (sect, section) {
-          return sect.id === _this4.new_section;
+        var found = _this5.commande.sections.find(function (sect, section) {
+          return sect.id === _this5.new_section;
         });
 
-        if (_this4.sectionnable_type === 'Article') {
+        if (_this5.sectionnable_type === 'Article') {
           found.articles.unshift({
-            nom: _this4.selected_article.nom,
+            nom: _this5.selected_article.nom,
             pivot: {
               id: response.data.id,
-              quantite: _this4.selected_article.quantite
+              quantite: _this5.selected_article.quantite
             }
           });
-        } else if (_this4.sectionnable_type === 'Template') {
+        } else if (_this5.sectionnable_type === 'Template') {
           response.data.forEach(function (element) {
             found.products.unshift({
               name: element.name
@@ -2158,15 +2167,15 @@ __webpack_require__.r(__webpack_exports__);
           });
         } else {
           found.products.unshift({
-            name: _this4.selected_article.name,
+            name: _this5.selected_article.name,
             pivot: {
               id: response.data.id,
-              quantite: _this4.selected_article.quantite
+              quantite: _this5.selected_article.quantite
             }
           });
         }
 
-        _this4.new_section = false;
+        _this5.new_section = false;
         document.getElementById('select').focus();
         document.getElementById('quantiteInput').value = 0;
       })["catch"](function (error) {
@@ -2174,19 +2183,19 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     majStock: function majStock() {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this.numberOfProducts > 0) {
-        // Turn Stock isLoading Flag On 
+        // Turn Stock isLoading Flag On
         this.isLoading.stock = true; // Grab stock from vend
 
         axios.get('/api/stock').then(function (response) {
-          if (_this5.commande.products) {
+          if (_this6.commande.products) {
             // If I get response Iterate over Products
-            _this5.commande.products.forEach(function (product) {
+            _this6.commande.products.forEach(function (product) {
               // Foreach Product Iterate over Stock
               response.data.forEach(function (stock) {
-                // If Product Matches Stock ... 
+                // If Product Matches Stock ...
                 if (product.product_id === stock.product_id) {
                   // Add Stock to Product
                   product.stock = stock.inventory_level;
@@ -2195,14 +2204,14 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
 
-          if (_this5.commande.templates) {
+          if (_this6.commande.templates) {
             // Iterate over Templates
-            _this5.commande.templates.forEach(function (template) {
+            _this6.commande.templates.forEach(function (template) {
               // Foreach Template Iterate over products
               template.products.forEach(function (product) {
                 // Foreach Product Iterate over Stock
                 response.data.forEach(function (stock) {
-                  // If Product Matches Stock ... 
+                  // If Product Matches Stock ...
                   if (product.product_id === stock.product_id) {
                     // Add Stock to Product
                     product.stock = stock.inventory_level;
@@ -2212,12 +2221,12 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
 
-          if (_this5.commande.reorderpoint[0]) {
+          if (_this6.commande.reorderpoint[0]) {
             // For Reorder Point Iterate over products
-            _this5.commande.reorderpoint[0].products.forEach(function (product) {
+            _this6.commande.reorderpoint[0].products.forEach(function (product) {
               // Foreach Product Iterate over Stock
               response.data.forEach(function (stock) {
-                // If Product Matches Stock ... 
+                // If Product Matches Stock ...
                 if (product.product_id === stock.product_id) {
                   // Add Stock to Product
                   product.stock = stock.inventory_level;
@@ -2226,9 +2235,9 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
 
-          _this5.$forceUpdate();
+          _this6.$forceUpdate();
 
-          _this5.isLoading.stock = false;
+          _this6.isLoading.stock = false;
         })["catch"](function (error) {
           console.log(error);
         });
@@ -2245,7 +2254,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    // Toggle Editing 
+    // Toggle Editing
     toggleEdit: function toggleEdit() {
       this.editing = !this.editing;
     },
@@ -2267,11 +2276,11 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     mapArrays: function mapArrays() {
-      var _this6 = this;
+      var _this7 = this;
 
       if (this.commande && this.commande.templates[0] && this.commande.templates[0].products) {
         this.commande.templates[0].products.map(function (template_product) {
-          var found = _this6.commande.products.find(function (product) {
+          var found = _this7.commande.products.find(function (product) {
             return product.id === template_product.id;
           });
 
@@ -2280,7 +2289,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     deleteProductSection: function deleteProductSection(section, article, type) {
-      var _this7 = this;
+      var _this8 = this;
 
       axios.get('/section-product/delete/' + article.id + '/' + section.id).then(function (response) {
         console.log(response.data);
@@ -2288,7 +2297,7 @@ __webpack_require__.r(__webpack_exports__);
         if (response.data === 0) {
           alert('Article Pas Supprimé. Veuillez Reesayé');
         } else {
-          var section_trouvée = _this7.commande.sections.find(function (sect) {
+          var section_trouvée = _this8.commande.sections.find(function (sect) {
             return sect.id === section.id;
           });
 
@@ -2299,7 +2308,7 @@ __webpack_require__.r(__webpack_exports__);
             var index = section_trouvée.articles.indexOf(article_trouvée);
             section_trouvée.articles.splice(index, 1);
 
-            _this7.$forceUpdate();
+            _this8.$forceUpdate();
           } else if (type === 'Product') {
             var article_trouvée = section_trouvée.products.find(function (prod) {
               return prod.id === article.id;
@@ -2307,7 +2316,7 @@ __webpack_require__.r(__webpack_exports__);
             var index = section_trouvée.products.indexOf(article_trouvée);
             section_trouvée.products.splice(index, 1);
 
-            _this7.$forceUpdate();
+            _this8.$forceUpdate();
           } // alert('Article Suprrimé')
 
         }
@@ -2338,18 +2347,18 @@ __webpack_require__.r(__webpack_exports__);
       $('#sectionDelete').modal('show');
     },
     updateSection: function updateSection(section) {
-      var _this8 = this;
+      var _this9 = this;
 
       axios.put('/section/' + this.section_being_updated.id, {
         nom: this.new_section
       }).then(function (response) {
         console.log(response.data);
-        _this8.section_being_updated.nom = _this8.new_section;
-        _this8.isUpdating = false;
-        _this8.section_being_updated = false;
-        _this8.new_section = false;
+        _this9.section_being_updated.nom = _this9.new_section;
+        _this9.isUpdating = false;
+        _this9.section_being_updated = false;
+        _this9.new_section = false;
 
-        _this8.$forceUpdate();
+        _this9.$forceUpdate();
 
         $('#section').modal('hide');
       })["catch"](function (error) {
@@ -2357,16 +2366,16 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     removeSection: function removeSection(section) {
-      var _this9 = this;
+      var _this10 = this;
 
       axios["delete"]('/section/' + this.section_being_deleted.id).then(function (response) {
-        var index = _this9.commande.sections.indexOf(section);
+        var index = _this10.commande.sections.indexOf(section);
 
-        _this9.commande.sections.splice(index, 1);
+        _this10.commande.sections.splice(index, 1);
 
         $('#sectionDelete').modal('hide');
 
-        _this9.$forceUpdate();
+        _this10.$forceUpdate();
 
         console.log(response.data);
       })["catch"](function (error) {
@@ -2374,7 +2383,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     removeProduct: function removeProduct(section, produit, type) {
-      var _this10 = this;
+      var _this11 = this;
 
       axios["delete"]('/sectionnable/' + produit.pivot.id).then(function (response) {
         if (type === 'Product') {
@@ -2385,7 +2394,7 @@ __webpack_require__.r(__webpack_exports__);
           section.articles.splice(index, 1);
         }
 
-        _this10.$forceUpdate();
+        _this11.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2497,7 +2506,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    var _this11 = this;
+    var _this12 = this;
+
+    this.sectionnable_type = 'Product';
 
     if (this.commande_prop) {
       this.commande = this.commande_prop;
@@ -2512,9 +2523,9 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     axios.get('http://azimuts.ga/article/api/non-commandé').then(function (response) {
-      _this11.articles = response.data;
+      _this12.articles = response.data;
 
-      _this11.articles.map(function (article) {
+      _this12.articles.map(function (article) {
         if (article.fiche_renseignement) {
           if (article.fiche_renseignement.marque) {
             article.marque = article.fiche_renseignement.marque.nom;

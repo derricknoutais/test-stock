@@ -2,6 +2,7 @@
 
 // use DB;
 use App\Product;
+use App\Sales;
 use App\Commande;
 use App\BonCommande;
 use App\Demande;
@@ -12,6 +13,8 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('accueil');
 });
+
+
 
 Route::resource('/product', 'ProductController');
 
@@ -28,7 +31,7 @@ Route::delete('/sectionnable/{article}', 'SectionController@destroyArticle');
 
 Route::resource('/demande', 'DemandeController');
 
- 
+
 Route::get('/commande/{commande}/prepa-demande', function(Commande $commande){
     $commande->loadMissing(['sections', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
     $fournisseurs = Fournisseur::all();
@@ -52,12 +55,12 @@ Route::get('/remettre-a-zero', function(){
 Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
 
     $all = array();
-    // Pour Chaque Demande d'Offre de Cette Commande... 
+    // Pour Chaque Demande d'Offre de Cette Commande...
     for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
-        
+
         // Pour Chaque Section de Chaque Demande
         foreach($commande->demandes[$i]->sectionnables as $sectionnable){
-            
+
             $commande->load('demandes', 'bonsCommandes');
             $commande->load('demandes.sectionnables');
 
@@ -69,9 +72,9 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
 
                 // Ajoute le 1er produit dans notre liste à comparer
                 array_push($toCompare, $sectionnable);
-                
+
                 // Pour toutes les autres demandes
-                for ($j=0; $j < sizeof($commande->demandes); $j++) 
+                for ($j=0; $j < sizeof($commande->demandes); $j++)
                 {
                     // Tant que ce n'est pas la meme demande dans laquelle est le produit
                     if($j != $i){
@@ -95,7 +98,7 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                             ->update([
                                 'checked' => -1
                             ]);
-                        
+
                         DB::table('sectionnables')->where([ 'section_id' => $a->section_id, 'sectionnable_id' => $a->sectionnable_id ])->update([
                             'conflit' => 1
                         ]);
@@ -123,7 +126,7 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                             'conflit' => 1
                         ]);
                     }
-                    
+
                 }
                 // return $toCompare;
                 $qte_recevable = $toCompare[0]->quantite;
@@ -137,7 +140,7 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                         } else {
                             break;
                         }
-                    } 
+                    }
                     else {
                         $toCompare[$x]->quantite_prise = $qte_recevable ;
                         break;
@@ -148,15 +151,15 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                     } else {
                         $qte_recevable = $qte_recevable - $toCompare[$x]->quantite_prise;
                     }
-                    
+
 
                     if( $x >= sizeof($toCompare)  ) {
                         break;
                     }
-                    
+
                 }
                 // return $x;
-                for ($y=0; $y <= $x ; $y++) { 
+                for ($y=0; $y <= $x ; $y++) {
                     if( $toCompare[$y]->pivot->checked !== -1 ){
                         if( $bc = BonCommande::where('demande_id' , $toCompare[$y]->pivot->demande_id )->first() )
                         {
@@ -166,7 +169,7 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                                 'quantite' => $toCompare[$y]->quantite_prise,
                                 'prix_achat' => $toCompare[$y]->pivot->offre
                             ]);
-                        } 
+                        }
                         else
                         {
                             $demande = Demande::find($toCompare[$y]->pivot->demande_id);
@@ -192,11 +195,11 @@ Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
                 }
 
             }
-            
+
 
         }
-        
-        
+
+
     }
 });
 
@@ -234,7 +237,7 @@ Route::post('/commande/{commande}/résoudre-conflit', function(Commande $command
                 'quantite' => $request['selected']['quantite_offerte'],
                 'prix_achat' => $request['selected']['pivot']['offre']
             ]);
-        } 
+        }
         else
         {
             $bc = BonCommande::create([
@@ -283,7 +286,7 @@ Route::post('/demande-sectionnable', function(Request $request){
                 'sectionnable_id' => $product['pivot']['id'],
                 'offre' => 0,
                 'quantite_offerte' => 0
-            ]); 
+            ]);
         }
     }
 });
@@ -393,12 +396,90 @@ Route::get('/api/produits', function () {
             }
         }
     }
-    
+
 
     // return $totalProducts;
 });
 
+Route::get('/quantite-vendue/{product}', function($product){
 
+    return Sales::where('product_id', $product)->first();
+});
+
+Route::get('/api/sales', function () {
+
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
+
+    $pages = array();
+    for ($j = 41; $j <= 80; $j++) {
+        $response = $client->request('GET', 'https://stapog.vendhq.com/api/register_sales?since=2019-04-01T00:00:01&status=CLOSED&status=ONACCOUNT&status=LAYBY&status=ONACCOUNT_CLOSED&status=LAYBY_CLOSED&status=LAYBY&status=AWAITING_DISPATCH&status=AWAITING_PICKUP&status=DISPATCHED_CLOSED&status=PICKED_UP_CLOSED&page=' . $j, ['headers' => $headers]);
+        $data = json_decode((string) $response->getBody(), true);
+        array_push($pages, $data['register_sales']);
+    }
+    // return $pages;
+    $start_trim1 = new DateTime('2019-04-01');
+    $end_trim1 = new DateTime('2019-06-31');
+    $start_trim2 = new DateTime('2019-07-01');
+    $end_trim2 = new DateTime('2019-09-31');
+    $start_trim3 = new DateTime('2019-10-01');
+    $end_trim3 = new DateTime('2019-12-31');
+    $start_trim4 = new DateTime('2020-01-01');
+    $end_trim4 = new DateTime('2020-03-31');
+    $start_trim5 = new DateTime('2020-04-01');
+    foreach($pages as $page){
+        for($i =0 ; $i < sizeof($page); $i++){
+            $sale_date = new DateTime($page[$i]['sale_date']);
+            if($sale_date >= $start_trim1 && $page[$i]['status'] !== 'SAVED'){
+                foreach($page[$i]['register_sale_products'] as $sale_product){
+
+
+                    if($sale = Sales::where('product_id', $sale_product['product_id'])->first()){
+
+                        $sale->increment('quantite_vendue', $sale_product['quantity']);
+
+                        if( $sale_date >= $start_trim1 && $sale_date <= $end_trim1 ){
+                            $sale->increment('Trim1',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim2 && $sale_date <= $end_trim2 ){
+                            $sale->increment('Trim2',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim3 && $sale_date <= $end_trim3 ){
+                            $sale->increment('Trim3',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim4 && $sale_date <= $end_trim4 ){
+                            $sale->increment('Trim4',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim5 ){
+                            $sale->increment('Trim5',  $sale_product['quantity']);
+                        }
+
+
+                    } else {
+
+                        $sale = Sales::create([
+                            'product_id' => $sale_product['product_id'],
+                            'quantite_vendue' => $sale_product['quantity']
+                        ]);
+
+                        if( $sale_date >= $start_trim1 && $sale_date <= $end_trim1 ){
+                            $sale->increment('Trim1',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim2 && $sale_date <= $end_trim2 ){
+                            $sale->increment('Trim2',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim3 && $sale_date <= $end_trim3 ){
+                            $sale->increment('Trim3',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim4 && $sale_date <= $end_trim4 ){
+                            $sale->increment('Trim4',  $sale_product['quantity']);
+                        } else if( $sale_date >= $start_trim5 ){
+                            $sale->increment('Trim5',  $sale_product['quantity']);
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+});
 
 
 
@@ -483,7 +564,7 @@ Route::get('/api/stock', function () {
                     'supply_price' => $product['supply_price']
                 ]);
             }
-        }   
+        }
 
 
     // return $totalProducts;
@@ -527,7 +608,7 @@ Route::get('/api/products', function () {
                     'supply_price' => $product['supply_price']
                 ]  );
             }
-            
+
         }
     }
     // return sizeof($push);
@@ -560,7 +641,7 @@ Route::post('api/inventory', function (Request $request) {
 });
 
 Route::get('/inventory-count', function () {
-    
+
     $templates = App\Template::with('products')->get();
     return view('inventory.index', compact('templates'));
 });

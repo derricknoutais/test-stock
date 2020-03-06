@@ -24,19 +24,23 @@ export default {
             section_being_updated: false,
             section_being_deleted: false,
             editing: false,
-            
+            vente: false,
             article: false,
-            sectionnable_type: false, 
+            sectionnable_type: false,
             list: false,
             label: '',
         }
     },
     watch: {
         'selected_article' : function(){
+            document.getElementById('quantiteInput').focus()
+            axios.get('/quantite-vendue/' + this.selected_article.id).then(response => {
+                this.vente = response.data
+                console.log(response.data);
 
-                document.getElementById('quantiteInput').focus() 
-
-            
+            }).catch(error => {
+                console.log(error);
+            });
         }
     },
     methods:{
@@ -82,12 +86,12 @@ export default {
         },
         addProductToSection(section){
             this.new_section = section
-            
+
             axios.post('/product-section',{ section: section, product: this.selected_article, type: 'App\\' + this.sectionnable_type} ).then(response => {
                 console.log(response.data)
                 var found = this.commande.sections.find( (sect, section) => {
                     return sect.id ===  this.new_section
-                })  
+                })
                 if(this.sectionnable_type === 'Article'){
                     found.articles.unshift({
                         nom : this.selected_article.nom,
@@ -97,7 +101,7 @@ export default {
                         },
                     });
 
-                    
+
                 } else if(this.sectionnable_type === 'Template'){
                     response.data.forEach(element => {
                         found.products.unshift({
@@ -114,9 +118,9 @@ export default {
                     })
 
                 }
-                
-                this.new_section = false   
-                document.getElementById('select').focus()  
+
+                this.new_section = false
+                document.getElementById('select').focus()
                 document.getElementById('quantiteInput').value = 0
 
             }).catch(error => {
@@ -124,9 +128,9 @@ export default {
             });
         },
         majStock(){
-            
+
             if(this.numberOfProducts > 0){
-                // Turn Stock isLoading Flag On 
+                // Turn Stock isLoading Flag On
                 this.isLoading.stock = true;
                 // Grab stock from vend
                 axios.get('/api/stock').then( response => {
@@ -135,16 +139,16 @@ export default {
                         this.commande.products.forEach( product => {
                             // Foreach Product Iterate over Stock
                             response.data.forEach( stock => {
-                                // If Product Matches Stock ... 
+                                // If Product Matches Stock ...
                                 if(product.product_id === stock.product_id)
                                 {
                                     // Add Stock to Product
                                     product.stock = stock.inventory_level
                                 }
                             });
-                        });  
+                        });
                     }
-                    
+
                     if(this.commande.templates){
                         // Iterate over Templates
                         this.commande.templates.forEach( template => {
@@ -152,14 +156,14 @@ export default {
                             template.products.forEach( product => {
                                 // Foreach Product Iterate over Stock
                                 response.data.forEach( stock => {
-                                    // If Product Matches Stock ... 
+                                    // If Product Matches Stock ...
                                     if(product.product_id === stock.product_id)
                                     {
                                         // Add Stock to Product
                                         product.stock = stock.inventory_level
                                     }
                                 });
-                            }); 
+                            });
                         });
                     }
 
@@ -168,7 +172,7 @@ export default {
                         this.commande.reorderpoint[0].products.forEach( product => {
                             // Foreach Product Iterate over Stock
                             response.data.forEach( stock => {
-                                // If Product Matches Stock ... 
+                                // If Product Matches Stock ...
                                 if(product.product_id === stock.product_id)
                                 {
                                     // Add Stock to Product
@@ -186,7 +190,7 @@ export default {
             } else {
                 alert('Aucun Produit dans la commande. Ajoutez des produits')
             }
-            
+
         },
         addReorderpoint(){
             axios.post('/reorderpoint-commande', {commande_id : this.commande.id}).then(response => {
@@ -195,9 +199,9 @@ export default {
                 console.log(error);
             });
         },
-        // Toggle Editing 
+        // Toggle Editing
         toggleEdit(){
-            this.editing = ! this.editing 
+            this.editing = ! this.editing
         },
         // Enregistre les quantités souhaitées
         save(){
@@ -208,10 +212,10 @@ export default {
             //                 found.pivot.quantity = template_product.quantity
             //             }
             //         })
-                    
+
             //     })
             // })
-            
+
 
             axios.post('/commande-quantité', this.commande ).then(response => {
                 console.log(response.data);
@@ -230,7 +234,7 @@ export default {
             }
         },
         deleteProductSection(section, article, type){
-        
+
             axios.get('/section-product/delete/' + article.id + '/' + section.id ).then(response => {
                 console.log(response.data);
                 if(response.data === 0){
@@ -256,8 +260,8 @@ export default {
                         section_trouvée.products.splice(index, 1)
                         this.$forceUpdate()
                     }
-                    
-                    
+
+
                     // alert('Article Suprrimé')
                 }
             }).catch(error => {
@@ -268,7 +272,7 @@ export default {
             console.log(article)
             axios.put('/article-update',  {section : section, article: article}).then(response => {
                 console.log(response.data);
-                
+
             }).catch(error => {
                 console.log(error);
             });
@@ -286,8 +290,8 @@ export default {
             $('#sectionDelete').modal('show')
         },
         updateSection(section){
-            
-            
+
+
             axios.put('/section/' + this.section_being_updated.id, {nom:this.new_section}).then(response => {
                 console.log(response.data);
                 this.section_being_updated.nom = this.new_section
@@ -302,21 +306,21 @@ export default {
         },
         removeSection(section){
             axios.delete('/section/' + this.section_being_deleted.id).then(response => {
-                
+
                 var index = this.commande.sections.indexOf(section)
                 this.commande.sections.splice(index, 1)
                 $('#sectionDelete').modal('hide')
                 this.$forceUpdate()
-                
+
                 console.log(response.data);
             }).catch(error => {
                 console.log(error);
             });
         },
         removeProduct(section, produit, type){
-            
+
             axios.delete('/sectionnable/' + produit.pivot.id).then(response => {
-                
+
                 if(type === 'Product'){
                     var index = section.products.indexOf(produit)
                     section.products.splice(index, 1)
@@ -365,13 +369,13 @@ export default {
 
             }
             return total;
-        }, 
+        },
         numberOfNewProducts(){
             var total = 0;
             if(this.commande.sections ){
                 this.commande.sections.forEach( section => {
                     if( section.articles.length > 0  ){
-                        total += section.articles.length 
+                        total += section.articles.length
                     }
                 })
             }
@@ -382,11 +386,11 @@ export default {
             if(this.commande.sections ){
                 this.commande.sections.forEach( section => {
                     if( section.products.length > 0  ){
-                        total += section.products.length 
+                        total += section.products.length
                     }
                 })
             }
-            return total  
+            return total
         },
         prixMoyenDemande(){
             var total = 0;
@@ -398,16 +402,16 @@ export default {
                             // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
                         })
                     }
-                    
+
                     if(b.sectionnables && b.sectionnables.length > 0){
                         b.total = b.sectionnables.reduce( (x,y) => {
                             // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.o ffre)
                         })
                     }
-                    
+
                     return ( a.total + b.total )
                 })
-                
+
             } else if(this.commande.demandes.length === 1 && this.commande.demandes[0].sectionnables.length > 0){
                 total = this.commande.demandes[0].sectionnables.reduce( (x,y) => {
                     // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
@@ -437,6 +441,7 @@ export default {
         }
     },
     created(){
+        this.sectionnable_type = 'Product'
         if (this.commande_prop) {
             this.commande = this.commande_prop
         }
@@ -474,11 +479,11 @@ export default {
             console.log(error);
         });
 
-        
-        
+
+
         this.mapArrays()
 
-        
+
     }
 }
 </script>
