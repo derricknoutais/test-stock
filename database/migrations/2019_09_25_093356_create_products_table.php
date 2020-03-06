@@ -20,7 +20,6 @@ class CreateProductsTable extends Migration
             $table->string('sku')->nullable();
             $table->double('price')->nullable();
             $table->double('supply_price')->nullable();
-            $table->timestamps();
         });
     }
 

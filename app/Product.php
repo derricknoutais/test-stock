@@ -9,7 +9,8 @@ class Product extends Model
 {
     protected $guarded = [];
     protected $casts = ['id' => 'string'];
-    
+    public $timestamps = false;
+
     public function commandes()
     {
         return $this->morphToMany('App\Commande', 'commandable');

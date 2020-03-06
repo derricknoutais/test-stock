@@ -375,7 +375,7 @@ Route::get('/api/produits', function () {
 
     $pages = array();
 
-    for ($j = 1; $j <= 1; $j++) {
+    for ($j = 1; $j <= 18; $j++) {
 
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/products?page_size=200&page=' . $j, ['headers' => $headers]);
         $data = json_decode((string) $response->getBody(), true);
@@ -385,14 +385,21 @@ Route::get('/api/produits', function () {
     foreach ($pages as $products) {
         foreach ($products as $product) {
             if (!Product::where('id', $product['id'])->first()) {
-                Product::create([
+
+                $prod = Product::create([
                     'id' => $product['id'],
                     'handle' => $product['handle'],
                     'name' => $product['name'],
                     'sku' => $product['sku'],
                     'price' => $product['price'],
-                    'supply_price' => $product['supply_price']
+                    'supply_price' => $product['supply_price'],
                 ]);
+
+                if( isset($product['inventory']) && isset($product['inventory'][0]['count'])){
+                    Product::find($product['id'])->update([
+                        'quantity' => ( (int) $product['inventory'][0]['count'] )
+                    ]) ;
+                }
             }
         }
     }
@@ -475,6 +482,31 @@ Route::get('/api/sales', function () {
                     }
                 }
             }
+
+        }
+    }
+
+});
+
+Route::get('/api/sales', function () {
+
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
+
+    $pages = array();
+    for ($j = 41; $j <= 80; $j++) {
+        $response = $client->request('GET', 'https://stapog.vendhq.com/api/register_sales?since=2019-04-01T00:00:01&status=CLOSED&status=ONACCOUNT&status=LAYBY&status=ONACCOUNT_CLOSED&status=LAYBY_CLOSED&status=LAYBY&status=AWAITING_DISPATCH&status=AWAITING_PICKUP&status=DISPATCHED_CLOSED&status=PICKED_UP_CLOSED&page=' . $j, ['headers' => $headers]);
+        $data = json_decode((string) $response->getBody(), true);
+        array_push($pages, $data['register_sales']);
+    }
+    // return $pages;
+
+    foreach($pages as $page){
+        for($i =0 ; $i < sizeof($page); $i++){
+
 
         }
     }
