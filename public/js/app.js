@@ -2059,6 +2059,7 @@ __webpack_require__.r(__webpack_exports__);
       section_being_deleted: false,
       editing: false,
       vente: false,
+      consignment: false,
       article: false,
       sectionnable_type: false,
       list: false,
@@ -2072,6 +2073,12 @@ __webpack_require__.r(__webpack_exports__);
       document.getElementById('quantiteInput').focus();
       axios.get('/quantite-vendue/' + this.selected_article.id).then(function (response) {
         _this.vente = response.data;
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      axios.get('/consignment/' + this.selected_article.id).then(function (response) {
+        _this.consignment = response.data;
         console.log(response.data);
       })["catch"](function (error) {
         console.log(error);

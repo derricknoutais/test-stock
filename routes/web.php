@@ -2,6 +2,7 @@
 
 // use DB;
 use App\Product;
+use App\Consignment;
 use App\Sales;
 use App\Commande;
 use App\BonCommande;
@@ -413,6 +414,11 @@ Route::get('/quantite-vendue/{product}', function($product){
     return Sales::where('product_id', $product)->first();
 });
 
+Route::get('/consignment/{product}', function($product){
+
+    return $cons = DB::table('consignment_product')->where('product_id', $product)->sum('count');
+});
+
 Route::get('/api/sales', function () {
 
     $client = new Client();
@@ -488,7 +494,7 @@ Route::get('/api/sales', function () {
 
 });
 
-Route::get('/api/sales', function () {
+Route::get('/api/stocktake', function () {
 
     $client = new Client();
     $headers = [
@@ -497,21 +503,61 @@ Route::get('/api/sales', function () {
     ];
 
     $pages = array();
-    for ($j = 41; $j <= 80; $j++) {
-        $response = $client->request('GET', 'https://stapog.vendhq.com/api/register_sales?since=2019-04-01T00:00:01&status=CLOSED&status=ONACCOUNT&status=LAYBY&status=ONACCOUNT_CLOSED&status=LAYBY_CLOSED&status=LAYBY&status=AWAITING_DISPATCH&status=AWAITING_PICKUP&status=DISPATCHED_CLOSED&status=PICKED_UP_CLOSED&page=' . $j, ['headers' => $headers]);
-        $data = json_decode((string) $response->getBody(), true);
-        array_push($pages, $data['register_sales']);
+
+    for ($j = 1; $j <= 1; $j++) {
+        $response = $client->request('GET', 'https://stapog.vendhq.com/api/consignment?since=2020-01-01T00:00:01&page_size=200&page=' . $j, ['headers' => $headers]);
+        // $response = $client->request('GET', 'https://stapog.vendhq.com/api/consignment_product?product_id=0af7b240-ab71-11e7-eddc-5e6cb15d832a', ['headers' => $headers]);
+         $data = json_decode((string) $response->getBody(), true);
     }
-    // return $pages;
 
-    foreach($pages as $page){
-        for($i =0 ; $i < sizeof($page); $i++){
-
-
+    foreach($data['consignments'] as $cons){
+        if( $cons['type'] == 'SUPPLIER' ){
+            Consignment::create([
+                'id' => $cons['id'],
+                'name' => $cons['name'],
+                'due_at' => $cons['due_at'],
+                'status' => $cons['status'],
+                'type' => $cons['type']
+            ]);
         }
     }
-
+    return 'Ok';
 });
+
+Route::get('/api/stocktake/products', function () {
+
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
+
+    $pages = array();
+    $stocktakes = Consignment::where('status', '<>', 'RECEIVED')->get();
+
+    for ($j = 0; $j < sizeof($stocktakes); $j++) {
+        $response = $client->request('GET', 'https://stapog.vendhq.com/api/consignment_product?consignment_id=' . $stocktakes[$j]['id'], ['headers' => $headers]);
+        // $response = $client->request('GET', 'https://stapog.vendhq.com/api/consignment_product?product_id=0af7b240-ab71-11e7-eddc-5e6cb15d832a', ['headers' => $headers]);
+        $data = json_decode((string) $response->getBody(), true);
+        array_push($pages, $data['consignment_products']);
+    }
+
+    foreach($pages as $page){
+        foreach($page as $cons){
+
+            DB::table('consignment_product')->insert([
+                'consignment_id' => $cons['consignment_id'],
+                'product_id' => $cons['product_id'],
+                'count' => (int) $cons['count'],
+                'cost' => (double) $cons['cost']
+            ]);
+        }
+
+    }
+    return 'Ok';
+});
+
+
 
 
 

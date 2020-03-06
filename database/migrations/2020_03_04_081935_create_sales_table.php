@@ -17,6 +17,11 @@ class CreateSalesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('quantite_vendue');
+            $table->unsignedBigInteger('Trim1');
+            $table->unsignedBigInteger('Trim2');
+            $table->unsignedBigInteger('Trim3');
+            $table->unsignedBigInteger('Trim4');
+            $table->unsignedBigInteger('Trim5');
             $table->timestamps();
         });
     }

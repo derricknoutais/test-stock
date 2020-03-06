@@ -25,6 +25,7 @@ export default {
             section_being_deleted: false,
             editing: false,
             vente: false,
+            consignment: false,
             article: false,
             sectionnable_type: false,
             list: false,
@@ -36,6 +37,13 @@ export default {
             document.getElementById('quantiteInput').focus()
             axios.get('/quantite-vendue/' + this.selected_article.id).then(response => {
                 this.vente = response.data
+                console.log(response.data);
+
+            }).catch(error => {
+                console.log(error);
+            });
+            axios.get('/consignment/' + this.selected_article.id).then(response => {
+                this.consignment = response.data
                 console.log(response.data);
 
             }).catch(error => {

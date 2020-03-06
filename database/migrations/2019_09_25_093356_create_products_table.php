@@ -19,6 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('name')->nullable();
             $table->string('sku')->nullable();
             $table->double('price')->nullable();
+            $table->double('quantity')->default(0);
             $table->double('supply_price')->nullable();
         });
     }
