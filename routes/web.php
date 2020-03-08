@@ -394,7 +394,34 @@ Route::get('/subzero/{product}', function ($product) {
 
 
 // VEND API
+Route::get('/vend/update-quantities', function(){
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
 
+    $pages = array();
+
+    for ($j = 1; $j <= 18; $j++) {
+
+        $response = $client->request('GET', 'https://stapog.vendhq.com/api/products?page_size=200&page=' . $j, ['headers' => $headers]);
+        $data = json_decode((string) $response->getBody(), true);
+        array_push($pages, $data['products']);
+
+    }
+    foreach ($pages as $products) {
+        foreach ($products as $product) {
+            if ( Product::where('id', $product['id'])->first()) {
+                if( isset($product['inventory']) && isset($product['inventory'][0]['count'])){
+                    Product::find($product['id'])->update([
+                        'quantity' => ( (int) $product['inventory'][0]['count'] )
+                    ]) ;
+                }
+            }
+        }
+    }
+});
 Route::get('/api/produits', function () {
 
     $client = new Client();

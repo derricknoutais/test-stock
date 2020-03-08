@@ -347,6 +347,14 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
+        },
+        majStock(){
+            axios.get('/vend/update-quantities').then(response => {
+                console.log(response.data);
+
+            }).catch(error => {
+                console.log(error);
+            });
         }
 
     },

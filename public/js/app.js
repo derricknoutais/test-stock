@@ -2035,6 +2035,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['commande_prop', 'products_prop', 'templates_prop'],
   data: function data() {
@@ -2092,7 +2094,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     }
   },
-  methods: {
+  methods: _defineProperty({
     addProduct: function addProduct() {
       var _this2 = this;
 
@@ -2413,7 +2415,13 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     }
-  },
+  }, "majStock", function majStock() {
+    axios.get('/vend/update-quantities').then(function (response) {
+      console.log(response.data);
+    })["catch"](function (error) {
+      console.log(error);
+    });
+  }),
   computed: {
     numberOfProducts: function numberOfProducts() {
       var total = 0;

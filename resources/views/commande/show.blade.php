@@ -116,6 +116,7 @@
 
             {{-- Sections --}}
             <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
+            <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" @click="majStock" >Mettre à Jour Vend Stock</button>
 
             {{-- Modal --}}
             <div class="modal fade" id="sectionDelete" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="removeSection()">
