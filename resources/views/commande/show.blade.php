@@ -169,7 +169,6 @@
                     <div class="card-header tw-flex tw-justify-between tw-items-center" >
                         <h5 class="mb-0 tw-text-xl" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">
                             <a data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">@{{section.nom}}</a>
-
                         </h5>
                         <div>
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
@@ -180,6 +179,7 @@
 
                     <div :id="'section' + section.id" class="collapse in" role="tabpanel" aria-labelledby="section1HeaderId">
                         <div class="card-body tw-flex-col tw-items-center tw-justify-center">
+
                             <div class="tw-flex-col tw-justify-center tw-items-center">
                                 <div class="form-check tw-flex tw-justify-around">
                                     <label class="form-check-label">
@@ -195,23 +195,23 @@
                                         Produits Vend
                                     </label>
                                 </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-between tw-items-center" v-if="vente">
+                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
                                     <p class="tw-text-lg">Avril-Juin</p>
                                     <p class="tw-text-lg tw-text-red-500">Juillet-Septembre</p>
                                     <p class="tw-text-lg">Octobre-Décembre</p>
                                     <p class="tw-text-lg">Janvier-Mars</p>
                                     <p class="tw-text-lg">Total</p>
                                 </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-between tw-items-center" v-if="vente">
-                                    <p class="tw-text-lg">@{{ vente.Trim1}}</p>
-                                    <p class="tw-text-lg tw-text-red-500">@{{ vente.Trim2}}</p>
-                                    <p class="tw-text-lg">@{{ vente.Trim3}}</p>
-                                    <p class="tw-text-lg">@{{ vente.Trim4}}</p>
-                                    <p class="tw-text-lg">@{{ vente.quantite_vendue}}</p>
+                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
+                                    <p class="tw-text-lg">@{{ vente.Trim1 ? vente.Trim1 : 0 }}</p>
+                                    <p class="tw-text-lg tw-text-red-500">@{{ vente.Trim2 ? vente.Trim2 : 0}}</p>
+                                    <p class="tw-text-lg">@{{ vente.Trim3 ? vente.Trim3 : 0}}</p>
+                                    <p class="tw-text-lg">@{{ vente.Trim4 ? vente.Trim4 : 0}}</p>
+                                    <p class="tw-text-lg">@{{ vente.quantite_vendue ? vente.quantite_vendue : 0}}</p>
                                 </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-around tw-items-center" v-if="selected_article">
-                                    <p class="tw-text-lg">Stock Actuel:  @{{ selected_article.quantity}}</p>
-                                    <p class="tw-text-lg">En Commande:  @{{ consignment }}</p>
+                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-around tw-items-center" v-if="selected_article">
+                                    <p class="tw-text-lg">Stock Actuel:  @{{ selected_article.quantity ? selected_article.quantity : 0 }}</p>
+                                    <p class="tw-text-lg">En Commande:  @{{ consignment ? consignment : 0 }}</p>
                                     <p class="tw-text-lg">Subzeros:  @{{ sub ? sub : '0'  }}</p>
                                 </div>
                                 <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
@@ -287,7 +287,6 @@
             </div>
 
             <div class="tw-flex tw-mt-5 tw-justify-center tw-items-center">
-
                 <a class="tw-btn tw-btn-dark tw-leading-none" href="/commande">Précédent</a>
                 <a :href=" '/commande/' + commande.id + '/prepa-demande'" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" v-if="commande.sections.length > 0">Suivant</a>
             </div>
