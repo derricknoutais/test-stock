@@ -209,9 +209,10 @@
                                     <p class="tw-text-lg">@{{ vente.Trim4}}</p>
                                     <p class="tw-text-lg">@{{ vente.quantite_vendue}}</p>
                                 </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
+                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-around tw-items-center" v-if="selected_article">
                                     <p class="tw-text-lg">Stock Actuel:  @{{ selected_article.quantity}}</p>
                                     <p class="tw-text-lg">En Commande:  @{{ consignment }}</p>
+                                    <p class="tw-text-lg">Subzeros:  @{{ sub ? sub : '0'  }}</p>
                                 </div>
                                 <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
                                     <multiselect v-model="selected_article" :options="list_type" :searchable="true"  :show-labels="false"

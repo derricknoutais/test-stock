@@ -26,6 +26,7 @@ export default {
             editing: false,
             vente: false,
             consignment: false,
+            sub: false,
             article: false,
             sectionnable_type: false,
             list: false,
@@ -46,6 +47,12 @@ export default {
                 this.consignment = response.data
                 console.log(response.data);
 
+            }).catch(error => {
+                console.log(error);
+            });
+            axios.get('/subzero/' + this.selected_article.id).then(response => {
+                this.sub = response.data
+                console.log('Sub: ' + response.data)
             }).catch(error => {
                 console.log(error);
             });

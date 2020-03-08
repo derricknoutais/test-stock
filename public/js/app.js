@@ -2060,6 +2060,7 @@ __webpack_require__.r(__webpack_exports__);
       editing: false,
       vente: false,
       consignment: false,
+      sub: false,
       article: false,
       sectionnable_type: false,
       list: false,
@@ -2080,6 +2081,12 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/consignment/' + this.selected_article.id).then(function (response) {
         _this.consignment = response.data;
         console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      axios.get('/subzero/' + this.selected_article.id).then(function (response) {
+        _this.sub = response.data;
+        console.log('Sub: ' + response.data);
       })["catch"](function (error) {
         console.log(error);
       });

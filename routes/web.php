@@ -366,6 +366,35 @@ Route::put('article-update', function( Request $request){
 });
 
 
+
+
+Route::get('/quantite-vendue/{product}', function($product){
+
+    return Sales::where('product_id', $product)->first();
+});
+
+
+
+Route::get('/consignment/{product}', function($product){
+
+    return $cons = DB::table('consignment_product')->where('product_id', $product)->sum('count');
+});
+
+
+Route::get('/subzero/{product}', function ($product) {
+
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
+    $response = $client->request('GET', 'http://subzero.azimuts.ga/api/sub/' . $product);
+    return $data = json_decode((string) $response->getBody(), true);
+});
+
+
+// VEND API
+
 Route::get('/api/produits', function () {
 
     $client = new Client();
@@ -407,16 +436,6 @@ Route::get('/api/produits', function () {
 
 
     // return $totalProducts;
-});
-
-Route::get('/quantite-vendue/{product}', function($product){
-
-    return Sales::where('product_id', $product)->first();
-});
-
-Route::get('/consignment/{product}', function($product){
-
-    return $cons = DB::table('consignment_product')->where('product_id', $product)->sum('count');
 });
 
 Route::get('/api/sales', function () {
