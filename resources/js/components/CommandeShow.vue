@@ -15,6 +15,7 @@ export default {
             isLoading : {
                 stock: false,
                 reorder_point: false,
+                majStock: false
             },
             reorderPoint : null,
 
@@ -31,6 +32,7 @@ export default {
             sectionnable_type: false,
             list: false,
             label: '',
+            found: false
         }
     },
     watch: {
@@ -100,47 +102,69 @@ export default {
             }
         },
         addProductToSection(section){
-            this.new_section = section
-
-            axios.post('/product-section',{ section: section, product: this.selected_article, type: 'App\\' + this.sectionnable_type} ).then(response => {
-                console.log(response.data)
-                var found = this.commande.sections.find( (sect, section) => {
-                    return sect.id ===  this.new_section
-                })
-                if(this.sectionnable_type === 'Article'){
-                    found.articles.unshift({
-                        nom : this.selected_article.nom,
-                        pivot: {
-                            id: response.data.id,
-                            quantite : this.selected_article.quantite
-                        },
-                    });
-
-
-                } else if(this.sectionnable_type === 'Template'){
-                    response.data.forEach(element => {
-                        found.products.unshift({
-                            name: element.name
-                        })
-                    });
-                } else {
-                    found.products.unshift({
-                        name:this.selected_article.name,
-                        pivot: {
-                            id: response.data.id,
-                            quantite : this.selected_article.quantite
-                        },
+            this.commande.sections.forEach( section => {
+                if(this.sectionnable_type === 'Product' && this.found === false){
+                    this.found = section.products.find( product  => {
+                        return this.selected_article.id === product.id
                     })
-
+                    if (this.found) {
+                       this.found.section = section
+                    }
                 }
-
-                this.new_section = false
-                document.getElementById('select').focus()
-                document.getElementById('quantiteInput').value = 0
-
-            }).catch(error => {
-                console.log(error);
             });
+            if(this.found){
+                this.$swal({
+                    icon: 'error',
+                    title: 'Attention Duplicata',
+                    text: 'Ce produit existe déjà dans la section ' + this.found.section.name
+                });
+
+            }
+            console.log('After: ' + this.found)
+            this.new_section = section
+            if(! this.found){
+                axios.post('/product-section',{ section: section, product: this.selected_article, type: 'App\\' + this.sectionnable_type} ).then(response => {
+                    // console.log(response.data)
+                    var found = this.commande.sections.find( (sect, section) => {
+                        return sect.id ===  this.new_section
+                    })
+                    if(this.sectionnable_type === 'Article'){
+                        found.articles.unshift({
+                            nom : this.selected_article.nom,
+                            pivot: {
+                                id: response.data.id,
+                                quantite : this.selected_article.quantite
+                            },
+                        });
+
+
+                    } else if(this.sectionnable_type === 'Template'){
+                        response.data.forEach(element => {
+                            found.products.unshift({
+                                name: element.name
+                            })
+                        });
+                    } else {
+                        found.products.unshift({
+                            id: this.selected_article.id,
+                            name: this.selected_article.name,
+                            pivot: {
+                                id: response.data.id,
+                                quantite : this.selected_article.quantite
+                            },
+                        })
+
+                    }
+
+                    this.new_section = false
+                    document.getElementById('select').focus()
+                    document.getElementById('quantiteInput').value = 0
+
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+            this.found = false
         },
         majStock(){
 
@@ -349,14 +373,14 @@ export default {
             });
         },
         majStock(){
+            this.isLoading.majStock = true;
             axios.get('/vend/update-quantities').then(response => {
                 console.log(response.data);
-
+                this.isLoading.majStock = false
             }).catch(error => {
                 console.log(error);
             });
         }
-
     },
     computed : {
         numberOfProducts(){

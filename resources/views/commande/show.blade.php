@@ -89,7 +89,7 @@
 
             </div> --}}
 
-            <div class="tw-flex tw-w-screen tw-justify-center tw-items-center tw--ml-2 tw-mt-6" >
+            <div class="tw-flex tw-w-screen tw-justify-center tw-items-center tw-ml-2 tw-mt-6" >
                 <div class="tw-w-1/2 tw-flex tw-justify-center collapse" id="addTemplate">
                     <div class="tw-w-1/2 tw-mr-4">
                         <multiselect v-model="selected_template" :options="{{ $templates }}" :searchable="true" :close-on-select="true" :show-labels="false"
@@ -116,7 +116,9 @@
 
             {{-- Sections --}}
             <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
-            <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" @click="majStock" >Mettre à Jour Vend Stock</button>
+            <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" @click="majStock" >Mettre à Jour Vend Stock
+                <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
+            </button>
 
             {{-- Modal --}}
             <div class="modal fade" id="sectionDelete" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="removeSection()">

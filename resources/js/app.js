@@ -3,15 +3,18 @@ require('./bootstrap');
 window.Vue = require('vue');
 import Multiselect from 'vue-multiselect'
 import VueCurrencyFilter from 'vue-currency-filter'
-Vue.use(VueCurrencyFilter,
-    {
-        symbol: 'XAF',
-        thousandsSeparator: '.',
-        fractionCount: 0,
-        fractionSeparator: ',',
-        symbolPosition: 'front',
-        symbolSpacing: true
-    })
+import VueSweetalert2 from "vue-sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
+
+Vue.use(VueCurrencyFilter,{
+    symbol: 'XAF',
+    thousandsSeparator: '.',
+    fractionCount: 0,
+    fractionSeparator: ',',
+    symbolPosition: 'front',
+    symbolSpacing: true
+})
+Vue.use(VueSweetalert2);
 
 const files = require.context('./', true, /\.vue$/i)
 files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))

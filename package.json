@@ -31,6 +31,7 @@
         "vue-cleave": "^1.2.2",
         "vue-currency-filter": "^4.0.3",
         "vue-multiselect": "^2.1.6",
+        "vue-sweetalert2": "^3.0.3",
         "vuetable-2": "^2.0.0-beta.4"
     }
 }
