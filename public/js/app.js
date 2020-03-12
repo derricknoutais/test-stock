@@ -2154,29 +2154,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     addProductToSection: function addProductToSection(section) {
       var _this5 = this;
 
+      var products = [];
       this.commande.sections.forEach(function (sect) {
-        if (_this5.sectionnable_type === 'Product' && _this5.found === false) {
-          _this5.found = sect.products.find(function (product) {
-            return _this5.selected_article.id === product.id;
-          });
-
-          if (_this5.found) {
-            _this5.found.section = sect;
-          }
-
-          return;
-        }
-
-        if (_this5.found) {
-          return 0;
-        }
+        sect.products.forEach(function (prod) {
+          prod.section = sect;
+          products.push(prod);
+        });
+      });
+      this.found = products.find(function (prod) {
+        return _this5.selected_article.id === prod.id;
       });
 
       if (this.found) {
         this.$swal({
           icon: 'error',
           title: 'Attention Duplicata',
-          text: 'Ce produit existe déjà dans la section ' + this.found.section.nom
+          text: 'Ce produit existe déjà dans une section ' + this.found.section.nom
         });
       }
 

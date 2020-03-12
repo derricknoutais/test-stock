@@ -102,28 +102,21 @@ export default {
             }
         },
         addProductToSection(section){
+            var products = []
             this.commande.sections.forEach( sect => {
-                if(this.sectionnable_type === 'Product' && this.found === false){
-                    this.found = sect.products.find( product  => {
-                        return this.selected_article.id === product.id
-                    })
-                    if(this.found){
-
-                        this.found.section = sect
-                    }
-                    return
-                }
-
-                if (this.found) {
-                    return 0
-                }
-
+                sect.products.forEach(prod => {
+                    prod.section = sect
+                    products.push(prod)
+                })
+            });
+            this.found = products.find( prod => {
+                return this.selected_article.id === prod.id
             });
             if(this.found){
                 this.$swal({
                     icon: 'error',
                     title: 'Attention Duplicata',
-                    text: 'Ce produit existe déjà dans la section ' + this.found.section.nom
+                    text: 'Ce produit existe déjà dans une section ' + this.found.section.nom
                 });
             }
             this.new_section = section
