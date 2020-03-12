@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class Sectionnable extends Pivot
 {
     protected $table= 'sectionnables';
-    protected  $primaryKey = 'id'; 
+    protected  $primaryKey = 'id';
     public $incrementing = true;
-    
+
     protected $guarded = [];
 
     public function product()
@@ -23,5 +23,9 @@ class Sectionnable extends Pivot
     public function section()
     {
         return $this->belongsTo('App\Section', 'section_id');
+    }
+    public function demandes()
+    {
+        return $this->belongsToMany('App\Demande', 'demande_sectionnable', 'sectionnable_id', 'demande_id');
     }
 }

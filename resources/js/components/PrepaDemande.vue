@@ -22,7 +22,7 @@ export default {
                     sectionnables: []
                 })
                 $('#demande-modal').modal('hide')
-                
+
             }).catch(error => {
                 console.log(error);
             });
@@ -57,7 +57,7 @@ export default {
                 });
                 section.checkAll = false
             }
-                
+
         },
         addProductsToDemandes(){
             axios.post('/demande-sectionnable', { products: this.selected_products, demandes: this.selected_demandes}).then(response => {
@@ -83,10 +83,20 @@ export default {
         }
     },
     created(){
-        this.commande = this.commande_prop  
+        this.commande = this.commande_prop
         this.commande.sections.forEach( section => {
             section.checkAll = false
         });
+        this.commande.sections.forEach( section => {
+            section.products.map( prod => {
+                var found = section.sectionnables.find( sectionnable => {
+                    if(sectionnable.sectionnable_type === "App\\Product" && sectionnable.sectionnable_id === prod.id){
+                        return sectionnable;
+                    }
+                })
+                prod.demandes = found.demandes
+            })
+        })
         this.fournisseurs = this.fournisseurs_prop
     }
 }

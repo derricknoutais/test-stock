@@ -34,9 +34,12 @@ Route::resource('/demande', 'DemandeController');
 
 
 Route::get('/commande/{commande}/prepa-demande', function(Commande $commande){
-    $commande->loadMissing(['sections', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
+
+    $commande->loadMissing(['sections', 'sections.sectionnables', 'sections.sectionnables.demandes', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
     $fournisseurs = Fournisseur::all();
+
     return view('commande.prepa-demande', compact('commande', 'fournisseurs'));
+
 });
 
 Route::get('/commande/{commande}/demandes', function(Commande $commande){

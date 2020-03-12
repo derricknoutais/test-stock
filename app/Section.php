@@ -16,7 +16,8 @@ class Section extends Model
     {
         return $this->morphedByMany('App\Product', 'sectionnable')->withPivot('id', 'quantite','conflit');
     }
-    public function sectionnables(){
-        return $this->articles()->union($this->products()->toBase());
+    public function sectionnables()
+    {
+        return $this->hasMany('App\Sectionnable');
     }
 }

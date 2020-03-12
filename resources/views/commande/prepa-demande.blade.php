@@ -14,7 +14,7 @@
 
                 <div v-for="section in commande.sections">
                     <h4 class="tw-text-2xl tw-mt-24 tw-font-thin tw-tracking-wide">@{{ section.nom }}</h4>
-                    
+
                     <table class="table">
                         <thead>
                             <tr>
@@ -66,9 +66,9 @@
                     <ul class="tw-mt-10 tw-fixed ">
                         <a :href="'/demande/' + demande.id" v-for="demande in commande.demandes">
                             <li class="list-group-item d-flex justify-content-between align-items-center" >
-                            
+
                                 @{{ demande.nom }}
-                            
+
                             <span class="badge badge-secondary badge-pill tw-ml-8" v-if="demande.sectionnables">
                                 @{{ demande.sectionnables.length }}
                             </span>
@@ -111,7 +111,7 @@
         <div class="modal fade" id="ajouter-demande-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">  
+                    <div class="modal-header">
                         <h5 class="modal-title">AJOUTER A DEMANDE</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -121,7 +121,7 @@
                         <div class="tw-px-5 tw-flex tw-items-center tw-h-6" v-for="demande in commande.demandes">
                             <input type="checkbox" :value="demande" v-model="selected_demandes" class="tw-mx-5">
                             <label for="">@{{ demande.nom }}</label>
-                          
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -132,8 +132,8 @@
             </div>
         </div>
     </div>
-    
+
 </prepa-demande>
 
-    
+
 @endsection

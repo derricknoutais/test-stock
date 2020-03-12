@@ -40,21 +40,21 @@ export default {
             document.getElementById('quantiteInput').focus()
             axios.get('/quantite-vendue/' + this.selected_article.id).then(response => {
                 this.vente = response.data
-                console.log(response.data);
+                // console.log(response.data);
 
             }).catch(error => {
                 console.log(error);
             });
             axios.get('/consignment/' + this.selected_article.id).then(response => {
                 this.consignment = response.data
-                console.log(response.data);
+                // console.log(response.data);
 
             }).catch(error => {
                 console.log(error);
             });
             axios.get('/subzero/' + this.selected_article.id).then(response => {
                 this.sub = response.data
-                console.log('Sub: ' + response.data)
+                // console.log('Sub: ' + response.data)
             }).catch(error => {
                 console.log(error);
             });
@@ -102,25 +102,30 @@ export default {
             }
         },
         addProductToSection(section){
-            this.commande.sections.forEach( section => {
+            this.commande.sections.forEach( sect => {
                 if(this.sectionnable_type === 'Product' && this.found === false){
-                    this.found = section.products.find( product  => {
+                    this.found = sect.products.find( product  => {
                         return this.selected_article.id === product.id
                     })
-                    if (this.found) {
-                       this.found.section = section
+                    if(this.found){
+
+                        this.found.section = sect
                     }
+                    return
                 }
+
+                if (this.found) {
+                    return 0
+                }
+
             });
             if(this.found){
                 this.$swal({
                     icon: 'error',
                     title: 'Attention Duplicata',
-                    text: 'Ce produit existe déjà dans la section ' + this.found.section.name
+                    text: 'Ce produit existe déjà dans la section ' + this.found.section.nom
                 });
-
             }
-            console.log('After: ' + this.found)
             this.new_section = section
             if(! this.found){
                 axios.post('/product-section',{ section: section, product: this.selected_article, type: 'App\\' + this.sectionnable_type} ).then(response => {
@@ -159,11 +164,13 @@ export default {
                     this.new_section = false
                     document.getElementById('select').focus()
                     document.getElementById('quantiteInput').value = 0
-
+                    // this.found = false
+                    // this.selected_article = null
                 }).catch(error => {
                     console.log(error);
                 });
             }
+
             this.found = false
         },
         majStock(){

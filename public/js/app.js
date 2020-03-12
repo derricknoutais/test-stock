@@ -2077,20 +2077,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       document.getElementById('quantiteInput').focus();
       axios.get('/quantite-vendue/' + this.selected_article.id).then(function (response) {
-        _this.vente = response.data;
-        console.log(response.data);
+        _this.vente = response.data; // console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
       axios.get('/consignment/' + this.selected_article.id).then(function (response) {
-        _this.consignment = response.data;
-        console.log(response.data);
+        _this.consignment = response.data; // console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
       axios.get('/subzero/' + this.selected_article.id).then(function (response) {
-        _this.sub = response.data;
-        console.log('Sub: ' + response.data);
+        _this.sub = response.data; // console.log('Sub: ' + response.data)
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2157,15 +2154,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     addProductToSection: function addProductToSection(section) {
       var _this5 = this;
 
-      this.commande.sections.forEach(function (section) {
+      this.commande.sections.forEach(function (sect) {
         if (_this5.sectionnable_type === 'Product' && _this5.found === false) {
-          _this5.found = section.products.find(function (product) {
+          _this5.found = sect.products.find(function (product) {
             return _this5.selected_article.id === product.id;
           });
 
           if (_this5.found) {
-            _this5.found.section = section;
+            _this5.found.section = sect;
           }
+
+          return;
+        }
+
+        if (_this5.found) {
+          return 0;
         }
       });
 
@@ -2173,11 +2176,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.$swal({
           icon: 'error',
           title: 'Attention Duplicata',
-          text: 'Ce produit existe déjà dans la section ' + this.found.section.name
+          text: 'Ce produit existe déjà dans la section ' + this.found.section.nom
         });
       }
 
-      console.log('After: ' + this.found);
       this.new_section = section;
 
       if (!this.found) {
@@ -2218,7 +2220,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
           _this5.new_section = false;
           document.getElementById('select').focus();
-          document.getElementById('quantiteInput').value = 0;
+          document.getElementById('quantiteInput').value = 0; // this.found = false
+          // this.selected_article = null
         })["catch"](function (error) {
           console.log(error);
         });
@@ -3047,6 +3050,16 @@ __webpack_require__.r(__webpack_exports__);
     this.commande = this.commande_prop;
     this.commande.sections.forEach(function (section) {
       section.checkAll = false;
+    });
+    this.commande.sections.forEach(function (section) {
+      section.products.map(function (prod) {
+        var found = section.sectionnables.find(function (sectionnable) {
+          if (sectionnable.sectionnable_type === "App\\Product" && sectionnable.sectionnable_id === prod.id) {
+            return sectionnable;
+          }
+        });
+        prod.demandes = found.demandes;
+      });
     });
     this.fournisseurs = this.fournisseurs_prop;
   }
