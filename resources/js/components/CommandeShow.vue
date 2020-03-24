@@ -135,7 +135,7 @@ export default {
                             },
                         });
 
-                        axios.get('http://sta.test/article/api/changer-etat/' + this.selected_article.id + '/commandé').then(response => {
+                        axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_article.id + '/commandé').then(response => {
                             console.log(response.data);
 
                         }).catch(error => {
@@ -371,7 +371,7 @@ export default {
                     var index = section.products.indexOf(produit)
                     section.products.splice(index, 1)
                 } else {
-                    axios.get('http://sta.test/article/api/changer-etat/' + produit.pivot.id + '/non-commandé').then(response => {
+                    axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(response => {
                         console.log(response.data);
                         var index = section.articles.indexOf(produit)
                         section.articles.splice(index, 1)

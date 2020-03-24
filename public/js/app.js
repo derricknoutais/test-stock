@@ -2194,7 +2194,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 quantite: _this5.selected_article.quantite
               }
             });
-            axios.get('http://sta.test/article/api/changer-etat/' + _this5.selected_article.id + '/commandé').then(function (response) {
+            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this5.selected_article.id + '/commandé').then(function (response) {
               console.log(response.data);
             })["catch"](function (error) {
               console.log(error);
@@ -2435,7 +2435,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           var index = section.products.indexOf(produit);
           section.products.splice(index, 1);
         } else {
-          axios.get('http://sta.test/article/api/changer-etat/' + produit.pivot.id + '/non-commandé').then(function (response) {
+          axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(function (response) {
             console.log(response.data);
             var index = section.articles.indexOf(produit);
             section.articles.splice(index, 1);
