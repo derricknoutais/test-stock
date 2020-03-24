@@ -22,7 +22,7 @@ class CreateArticleSectionTable extends Migration
             $table->unsignedBigInteger('quantite');
             $table->boolean('conflit')->default(0);
 
-
+            $table->unique(['sectionnable_id', 'section_id']);
             $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

@@ -22,12 +22,13 @@ class CommandeController extends Controller
     }
 
     public function show(Commande $commande){
-        
+
+        // return $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables');
         $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables');
 
         $products = Product::all();
         $templates = Template::with('products')->get();
-        
+
         return view('commande.show', compact('commande', 'products','templates' ));
     }
 
@@ -35,7 +36,7 @@ class CommandeController extends Controller
             $commande = Commande::create([
                 'name' => $request->name
             ]);
-            
+
         if($commande)
             return redirect()->back();
     }
@@ -68,6 +69,7 @@ class CommandeController extends Controller
         ]);
         return 'OK';
     }
+
     public function consignment(){
         $client = new Client();
         $headers = [
@@ -93,12 +95,10 @@ class CommandeController extends Controller
         }
 
         // return $data['consignments'];
-    
+
     }
 
     public function addReorderPoint( Request $request){
-
-
         $client = new Client();
         $headers = [
             "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
@@ -110,20 +110,20 @@ class CommandeController extends Controller
         // return sizeof($data['data']);
 
         //Crée le reorder-point
-        $reorderpoint = Reorderpoint::create([ 
+        $reorderpoint = Reorderpoint::create([
             'commande_id' => $request->commande_id
         ]);
 
         $productsToPush = array();
         $weird = array();
-        
+
         // Fetch les consignments (commandes, les inventaires)
 
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/consignment?page_size=200&since=2019-07-26T00:00:01', ['headers' => $headers]);
         $data2 = json_decode((string) $response->getBody(), true);
         $consignments = array();
         $productsOfConsignments = array();
-        
+
         // Envoie les produits commandés dans l'array consignments
         foreach ($data2['consignments'] as $consignment) {
             if($consignment['type'] == 'SUPPLIER' && $consignment['status'] == 'OPEN'){
@@ -131,7 +131,7 @@ class CommandeController extends Controller
             }
         }
 
-        // Fetch les produits contenus dans chaque commande 
+        // Fetch les produits contenus dans chaque commande
         foreach ($consignments as $consignment) {
             $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/consignments/' . $consignment['id'] . '/products?page_size=200', ['headers' => $headers]);
             $cons_prod = json_decode((string) $response->getBody(), true);
@@ -143,7 +143,7 @@ class CommandeController extends Controller
         // Prends les produits dans la base de données
         $produx = Product::pluck('id')->toArray();
 
-        // Filtre de tous les produits ceux qui sont en dessous ou égal du reorder-point 
+        // Filtre de tous les produits ceux qui sont en dessous ou égal du reorder-point
         $productsToPush = array_filter($data['data'], function($stock){
             if(isset($stock['inventory_level']) && isset($stock['reorder_point'])){
                 return $stock['inventory_level'] <= $stock['reorder_point'];
@@ -162,9 +162,9 @@ class CommandeController extends Controller
             return ($a > $b) ? 1 : -1;
         });
         // return sizeof($lowStock);
-        // Low Stock Et les Produits des Commandes 
+        // Low Stock Et les Produits des Commandes
 
-       
+
         $final = array();
         $lowStock2 = array();
         foreach($lowStock as $key => $value){
@@ -183,7 +183,7 @@ class CommandeController extends Controller
                     break;
                 }
             }
-            if(! $found && $stock != '06bf537b-c771-11e7-ff13-0d97b30d0d02' && $stock != '06bf537b-c771-11e7-ff13-0d97801203a8' 
+            if(! $found && $stock != '06bf537b-c771-11e7-ff13-0d97b30d0d02' && $stock != '06bf537b-c771-11e7-ff13-0d97801203a8'
                 && $stock != '06bf537b-c771-11e7-ff13-09b53ed39106' && $stock != '06bf537b-c771-11e6-ff13-fb60295d812c'){
                 array_push($pushMe , [
                     'commande_id' => $request->commande_id,
@@ -215,7 +215,7 @@ class CommandeController extends Controller
                 ]);
             }
         }
-        
+
         foreach ($request->templates as $template) {
             foreach($template['products'] as $product){
                 if(isset($product['quantity'])){

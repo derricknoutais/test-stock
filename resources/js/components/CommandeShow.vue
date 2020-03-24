@@ -135,6 +135,13 @@ export default {
                             },
                         });
 
+                        axios.get('http://sta.test/article/api/changer-etat/' + this.selected_article.id + '/commandé').then(response => {
+                            console.log(response.data);
+
+                        }).catch(error => {
+                            console.log(error);
+                        });
+
 
                     } else if(this.sectionnable_type === 'Template'){
                         response.data.forEach(element => {
@@ -364,8 +371,14 @@ export default {
                     var index = section.products.indexOf(produit)
                     section.products.splice(index, 1)
                 } else {
-                    var index = section.articles.indexOf(produit)
-                    section.articles.splice(index, 1)
+                    axios.get('http://sta.test/article/api/changer-etat/' + produit.pivot.id + '/non-commandé').then(response => {
+                        console.log(response.data);
+                        var index = section.articles.indexOf(produit)
+                        section.articles.splice(index, 1)
+                    }).catch(error => {
+                        console.log(error);
+                    });
+
                 }
                 this.$forceUpdate()
             }).catch(error => {

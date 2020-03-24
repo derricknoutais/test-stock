@@ -20,4 +20,8 @@ class Section extends Model
     {
         return $this->hasMany('App\Sectionnable');
     }
+    public function commande()
+    {
+        return $this->belongsTo('App\Commande');
+    }
 }

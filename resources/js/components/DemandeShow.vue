@@ -4,7 +4,7 @@ export default {
     data(){
         return {
             demande: null,
-            cardNumber: null, 
+            cardNumber: null,
             options: {
               creditCard: true,
               delimiter: '-',
@@ -23,12 +23,19 @@ export default {
     },
     methods:{
         enregisterOffre(sectionnable){
-            axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(response => {
-                console.log(response.data);
-                
-            }).catch(error => {
-                console.log(error);
-            });
+            if(sectionnable.pivot.offre <= 0){
+                sectionnable.hasError = true
+                this.$forceUpdate()
+            } else {
+                sectionnable.hasError = false
+                this.$forceUpdate()
+                axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(response => {
+                    console.log(response.data);
+
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
         },
         openDeleteModal(sectionnable){
             this.sectionnable_being_deleted = sectionnable

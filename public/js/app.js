@@ -2194,6 +2194,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 quantite: _this5.selected_article.quantite
               }
             });
+            axios.get('http://sta.test/article/api/changer-etat/' + _this5.selected_article.id + '/commandé').then(function (response) {
+              console.log(response.data);
+            })["catch"](function (error) {
+              console.log(error);
+            });
           } else if (_this5.sectionnable_type === 'Template') {
             response.data.forEach(function (element) {
               found.products.unshift({
@@ -2430,8 +2435,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           var index = section.products.indexOf(produit);
           section.products.splice(index, 1);
         } else {
-          var index = section.articles.indexOf(produit);
-          section.articles.splice(index, 1);
+          axios.get('http://sta.test/article/api/changer-etat/' + produit.pivot.id + '/non-commandé').then(function (response) {
+            console.log(response.data);
+            var index = section.articles.indexOf(produit);
+            section.articles.splice(index, 1);
+          })["catch"](function (error) {
+            console.log(error);
+          });
         }
 
         _this11.$forceUpdate();
@@ -2635,11 +2645,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     enregisterOffre: function enregisterOffre(sectionnable) {
-      axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(function (response) {
-        console.log(response.data);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      if (sectionnable.pivot.offre <= 0) {
+        sectionnable.hasError = true;
+        this.$forceUpdate();
+      } else {
+        sectionnable.hasError = false;
+        this.$forceUpdate();
+        axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(function (response) {
+          console.log(response.data);
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
     },
     openDeleteModal: function openDeleteModal(sectionnable) {
       this.sectionnable_being_deleted = sectionnable;
@@ -2951,12 +2968,86 @@ __webpack_require__.r(__webpack_exports__);
       commande: null,
       selected_products: [],
       selected_fournisseur: null,
-      selected_demandes: []
+      selected_demandes: [],
+      filtered: {
+        sections: []
+      }
     };
   },
+  computed: {},
   methods: {
-    saveDemande: function saveDemande() {
+    niveauDAchevement: function niveauDAchevement(section, result) {
+      if (section.products) var total = section.products.length;
+      var complété = 0;
+      section.products.forEach(function (product) {
+        if (product.demandes.length > 0) {
+          complété++;
+        }
+      });
+      var niveau = complété + '/' + total;
+      var pourcentage = Math.ceil(complété / total * 100);
+
+      if (result === 'niveau') {
+        return niveau;
+      } else if (result === 'pourcentage') {
+        return pourcentage;
+      }
+    },
+    toggleSection: function toggleSection(section) {
+      section.show = !section.show;
+      this.$forceUpdate();
+    },
+    filter_demandé: function filter_demand() {
       var _this = this;
+
+      this.filtered.sections = []; // Pour chaque section
+
+      this.commande.sections.forEach(function (sect) {
+        var section = sect; // On backup les produits de la section
+
+        var products_to_search = sect.products; // On reset les produits dans la section filtered
+
+        var result = [];
+        sect.products.forEach(function (product) {
+          if (product.demandes.length > 0) {
+            result.push(product);
+          }
+        });
+        console.log(result);
+        section.products = result; // On pousse la section dans filtered
+
+        _this.filtered.sections.push(section);
+      });
+      this.$forceUpdate();
+    },
+    filter_non_demandé: function filter_non_demand() {
+      var _this2 = this;
+
+      this.filtered.sections = []; // Pour chaque section
+
+      this.commande.sections.forEach(function (sect) {
+        var section = sect; // On backup les produits de la section
+
+        var products_to_search = sect.products; // On reset les produits dans la section filtered
+
+        var result = [];
+        sect.products.forEach(function (product) {
+          if (product.demandes.length === 0) {
+            result.push(product);
+          }
+        });
+        console.log(result);
+        section.products = result; // On pousse la section dans filtered
+
+        _this2.filtered.sections.push(section);
+      });
+      this.$forceUpdate();
+    },
+    réinitialiser: function rInitialiser() {
+      location.reload();
+    },
+    saveDemande: function saveDemande() {
+      var _this3 = this;
 
       axios.post('/demande', {
         demande: this.nouvelle_demande,
@@ -2965,9 +3056,9 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         console.log(response.data);
 
-        _this.commande.demandes.push({
-          nom: _this.selected_fournisseur.nom,
-          fournisseur_id: _this.selected_fournisseur.id,
+        _this3.commande.demandes.push({
+          nom: _this3.selected_fournisseur.nom,
+          fournisseur_id: _this3.selected_fournisseur.id,
           id: response.data.id,
           sectionnables: []
         });
@@ -2978,31 +3069,31 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     checkAll: function checkAll(section) {
-      var _this2 = this;
+      var _this4 = this;
 
       console.log('hello');
 
       if (section.checkAll === false) {
         // alert('select them')
         section.products.forEach(function (product) {
-          if (!_this2.selected_products.includes(product)) _this2.selected_products.push(product);
+          if (!_this4.selected_products.includes(product)) _this4.selected_products.push(product);
         });
         section.articles.forEach(function (article) {
-          if (!_this2.selected_products.includes(article)) _this2.selected_products.push(article);
+          if (!_this4.selected_products.includes(article)) _this4.selected_products.push(article);
         });
       } else {
         // alert('unselect')
         section.products.forEach(function (product) {
-          _this2.selected_products.forEach(function (prod, index) {
+          _this4.selected_products.forEach(function (prod, index) {
             if (prod === product) {
-              _this2.selected_products.splice(index, 1);
+              _this4.selected_products.splice(index, 1);
             }
           });
         });
         section.articles.forEach(function (article) {
-          _this2.selected_products.forEach(function (prod, index) {
+          _this4.selected_products.forEach(function (prod, index) {
             if (prod === article) {
-              _this2.selected_products.splice(index, 1);
+              _this4.selected_products.splice(index, 1);
             }
           });
         });
@@ -3010,32 +3101,61 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     addProductsToDemandes: function addProductsToDemandes() {
-      var _this3 = this;
+      var _this5 = this;
 
-      axios.post('/demande-sectionnable', {
-        products: this.selected_products,
-        demandes: this.selected_demandes
-      }).then(function (response) {
-        console.log(response.data); // location.reload()
-
-        _this3.commande.demandes.forEach(function (demande) {
-          _this3.selected_demandes.forEach(function (dem) {
-            if (dem.id === demande.id) {
-              _this3.selected_products.forEach(function (prod) {
-                demande.sectionnables.push({
-                  demande_id: dem.id,
-                  sectionnable_id: prod.id
-                });
+      this.commande.demandes.forEach(function (demande) {
+        _this5.selected_demandes.forEach(function (sel_dem) {
+          if (sel_dem.id === demande.id) {
+            _this5.selected_products.forEach(function (sel_prod) {
+              var found = false;
+              demande.sectionnables.forEach(function (sectionnable) {
+                if (sel_prod.id === sectionnable.sectionnable_id) {
+                  found = true;
+                }
               });
-            }
-          });
+
+              if (!found) {
+                axios.post('/demande-sectionnable', {
+                  products: _this5.selected_products,
+                  demandes: _this5.selected_demandes
+                }).then(function (response) {
+                  // console.log(response.data);
+                  // location.reload()
+                  // Insère Chaque produit selectionné dans la demande qui correspond
+                  _this5.commande.demandes.forEach(function (demande) {
+                    _this5.selected_demandes.forEach(function (dem) {
+                      if (dem.id === demande.id) {
+                        _this5.selected_products.forEach(function (prod) {
+                          var found = false;
+                          demande.sectionnables.forEach(function (sectionnable) {
+                            if (prod.id === sectionnable.sectionnable_id) {
+                              found = true;
+                            }
+                          });
+                          console.log(prod.name + found);
+
+                          if (!found) {
+                            demande.sectionnables.push({
+                              demande_id: dem.id,
+                              sectionnable_id: prod.id
+                            });
+                          } else {}
+                        });
+                      }
+                    });
+                  });
+
+                  $('#ajouter-demande-modal').modal('hide');
+
+                  _this5.$forceUpdate();
+                })["catch"](function (error) {
+                  location.reload();
+                  alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement');
+                });
+              }
+            });
+          }
         });
-
-        $('#ajouter-demande-modal').modal('hide');
-
-        _this3.$forceUpdate();
-      })["catch"](function (error) {
-        console.log(error);
       });
     }
   },
@@ -3043,9 +3163,11 @@ __webpack_require__.r(__webpack_exports__);
     this.commande = this.commande_prop;
     this.commande.sections.forEach(function (section) {
       section.checkAll = false;
+      section.show = false;
     });
     this.commande.sections.forEach(function (section) {
       section.products.map(function (prod) {
+        prod.show = false;
         var found = section.sectionnables.find(function (sectionnable) {
           if (sectionnable.sectionnable_type === "App\\Product" && sectionnable.sectionnable_id === prod.id) {
             return sectionnable;

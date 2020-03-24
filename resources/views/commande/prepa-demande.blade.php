@@ -4,15 +4,71 @@
 @section('content')
 <prepa-demande :commande_prop="{{$commande}}" :fournisseurs_prop="{{$fournisseurs}}" inline-template>
     <div class="tw-flex tw-flex-col">
+
         <div class="tw-flex">
             <div class="tw-mx-auto tw-container tw-w-3/4">
-                <h1 class="tw-text-4xl tw-mt-10 tw-tracking-widest tw-font-hairline tw-font- tw-text-center">Prepa - Demandes -
-                    {{ $commande->name }}</h1>
+                <h1 class="tw-text-4xl tw-mt-10 tw-tracking-widest tw-font-hairline tw-font- tw-text-center">Prepa - Demandes - {{ $commande->name }}</h1>
                 <div class="tw-flex tw-mt-5 tw-py-1 tw-justify-center tw-items-center tw-sticky tw-top-0" v-if="selected_products.length > 0">
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" data-toggle="modal" data-target="#ajouter-demande-modal">Ajouter à <span>@{{ selected_products.length }}</span> éléments à Demande ... <i class="fas fa-mail-bulk tw-ml-2"></i></button>
                 </div>
+                <div class="tw-mt-5">
+                    <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="filter_demandé()" >Déja Demandé</button>
+                    <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="filter_non_demandé()" >Pas encore Demandé</button>
+                    <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="réinitialiser()" >Réinitialiser</button>
+                </div>
+                <div v-for="section in commande.sections" v-show="filtered.sections.length <= 0">
 
-                <div v-for="section in commande.sections">
+                    <div class="tw-flex tw-items-center tw-mt-24" @click="toggleSection(section)">
+                        <i class="fas fa-chevron-down tw-cursor-pointer" @click="toggleSection(section)" v-if="section.show"></i>
+                        <i class="fas fa-chevron-right tw-cursor-pointer" @click="toggleSection(section)" v-else></i>
+                        <h4 class="tw-text-2xl tw-ml-4 tw-font-thin tw-tracking-wide">@{{ section.nom }} [ <span class="tw-text-blue-500">@{{ niveauDAchevement(section, 'niveau') }}</span> <span class="tw-text-red-500">@{{ niveauDAchevement(section, 'pourcentage') }}%</span> ]</h4>
+                    </div>
+
+                    <table class="table" v-show="section.show">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" @click="checkAll(section)" v-model="section.checkAll">
+                                </th>
+                                <th>Identifiant</th>
+                                <th>Nom </th>
+                                <th>Quantité</th>
+                                <th># Demande</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="produit in section.products" :class=" produit.demandes.length > 0 ? 'tw-text-red-500' : '' ">
+                                <td class="tw-flex tw-items-center">
+                                    {{-- <i class="fas fa-chevron-down tw-cursor-pointer" @click="toggleSection(section)" v-if="produit.show"></i>
+                                    <i class="fas fa-chevron-right tw-cursor-pointer" @click="toggleSection(section)" v-else></i> --}}
+                                    <input type="checkbox" v-model="selected_products"  :value="produit">
+                                </td>
+                                <td scope="row">
+                                    <a :href=" 'https://stapog.vendhq.com/product/' + produit.id " target="_blank">
+                                        @{{ produit.id }}
+                                    </a>
+                                </td>
+                                <td>@{{ produit.name }}</td>
+                                <td>@{{ produit.pivot.quantite }}</td>
+                                <td>@{{produit.demandes.length}}</td>
+                            </tr>
+                            <tr v-for="produit in section.articles">
+                                <td>
+                                    <input type="checkbox" v-model="selected_products"  :value="produit">
+                                </td>
+                                <td scope="row">
+                                    <a :href=" 'http://azimuts.ga/fiche-renseignement/' + produit.fiche_renseignement_id " target="_blank">
+                                    0af7n3os-{{ rand(1000,9999) }}-ff13-kj{{ rand(100,999) }}-@{{ produit.fiche_renseignement_id   }}
+                                    </a>
+                                </td>
+                                <td>@{{ produit.nom }}</td>
+                                <td>@{{ produit.pivot.quantite }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-for="section in filtered.sections" v-show="filtered.sections.length > 0">
                     <h4 class="tw-text-2xl tw-mt-24 tw-font-thin tw-tracking-wide">@{{ section.nom }}</h4>
 
                     <table class="table">

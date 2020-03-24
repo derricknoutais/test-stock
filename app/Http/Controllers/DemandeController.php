@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Demande;
 use Illuminate\Http\Request;
+use App\Exports\DemandeExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DemandeController extends Controller
 {
@@ -35,13 +37,13 @@ class DemandeController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $demande = Demande::create([
 
             'nom' => $request['fournisseur']['nom'],
             'commande_id' => $request['commande'],
             'fournisseur_id' => $request['fournisseur']['id']
-        
+
         ]);
         return $demande;
     }
@@ -91,5 +93,10 @@ class DemandeController extends Controller
     public function destroy(Demande $demande)
     {
         //
+    }
+
+    public function export(Demande $demande)
+    {
+        return Excel::download(new DemandeExport($demande->id), 'Demande ' . $demande->nom . '.xlsx');
     }
 }

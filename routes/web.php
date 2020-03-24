@@ -452,7 +452,7 @@ Route::get('/api/produits', function () {
                     'name' => $product['name'],
                     'sku' => $product['sku'],
                     'price' => $product['price'],
-                    'supply_price' => $product['supply_price'],
+                    'supply_price' => $product['supply_price']
                 ]);
 
                 if( isset($product['inventory']) && isset($product['inventory'][0]['count'])){
@@ -477,7 +477,7 @@ Route::get('/api/sales', function () {
     ];
 
     $pages = array();
-    for ($j = 41; $j <= 80; $j++) {
+    for ($j = 1; $j <= 40; $j++) {
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/register_sales?since=2019-04-01T00:00:01&status=CLOSED&status=ONACCOUNT&status=LAYBY&status=ONACCOUNT_CLOSED&status=LAYBY_CLOSED&status=LAYBY&status=AWAITING_DISPATCH&status=AWAITING_PICKUP&status=DISPATCHED_CLOSED&status=PICKED_UP_CLOSED&page=' . $j, ['headers' => $headers]);
         $data = json_decode((string) $response->getBody(), true);
         array_push($pages, $data['register_sales']);
@@ -607,7 +607,7 @@ Route::get('/api/stocktake/products', function () {
 });
 
 
-
+Route::get('demande/export/{demande}', 'DemandeController@export');
 
 
 

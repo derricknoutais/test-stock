@@ -12,7 +12,7 @@ class Demande extends Model
     {
         return $this->belongsTo('App\Commande');
     }
-    
+
     public function sectionnables()
     {
         return $this->belongsToMany('App\Sectionnable', 'demande_sectionnable', 'demande_id', 'sectionnable_id')->withPivot('offre', 'id', 'checked', 'quantite_offerte');

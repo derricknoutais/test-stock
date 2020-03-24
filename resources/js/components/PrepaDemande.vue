@@ -8,10 +8,93 @@ export default {
             commande: null,
             selected_products: [],
             selected_fournisseur: null,
-            selected_demandes: []
+            selected_demandes: [],
+            filtered: {
+                sections: []
+            }
         }
     },
+    computed : {
+
+    },
     methods:{
+        niveauDAchevement(section, result){
+            if(section.products)
+                var total = section.products.length
+
+            var complété = 0;
+            section.products.forEach( product => {
+                if(product.demandes.length > 0){
+                    complété ++
+                }
+            })
+            var niveau = complété + '/' + total
+            var pourcentage = Math.ceil((complété / total) * 100)
+            if(result === 'niveau'){
+                return niveau
+            } else if( result === 'pourcentage'){
+                return pourcentage
+            }
+        },
+        toggleSection(section){
+            section.show = !section.show
+            this.$forceUpdate()
+        },
+        filter_demandé(){
+            this.filtered.sections = []
+            // Pour chaque section
+            this.commande.sections.forEach( sect => {
+
+                var section = sect
+
+                // On backup les produits de la section
+                var products_to_search = sect.products
+                // On reset les produits dans la section filtered
+                var result = []
+
+                sect.products.forEach( product => {
+                    if(product.demandes.length > 0){
+                        result.push(product)
+                    }
+                });
+                console.log(result)
+                section.products = result
+                // On pousse la section dans filtered
+                this.filtered.sections.push(section)
+
+
+            });
+            this.$forceUpdate()
+        },
+        filter_non_demandé(){
+            this.filtered.sections = []
+            // Pour chaque section
+            this.commande.sections.forEach( sect => {
+
+                var section = sect
+
+                // On backup les produits de la section
+                var products_to_search = sect.products
+                // On reset les produits dans la section filtered
+                var result = []
+
+                sect.products.forEach( product => {
+                    if(product.demandes.length === 0){
+                        result.push(product)
+                    }
+                });
+                console.log(result)
+                section.products = result
+                // On pousse la section dans filtered
+                this.filtered.sections.push(section)
+
+
+            });
+            this.$forceUpdate()
+        },
+        réinitialiser(){
+            location.reload()
+        },
         saveDemande(){
             axios.post('/demande', { demande: this.nouvelle_demande , commande: this.commande.id, fournisseur: this.selected_fournisseur}).then(response => {
                 console.log(response.data);
@@ -60,35 +143,72 @@ export default {
 
         },
         addProductsToDemandes(){
-            axios.post('/demande-sectionnable', { products: this.selected_products, demandes: this.selected_demandes}).then(response => {
-                console.log(response.data);
-                // location.reload()
-                this.commande.demandes.forEach( demande => {
-                    this.selected_demandes.forEach( dem => {
-                        if( dem.id === demande.id ){
-                            this.selected_products.forEach( prod => {
-                                demande.sectionnables.push({
-                                    demande_id: dem.id,
-                                    sectionnable_id : prod.id
+            this.commande.demandes.forEach(demande => {
+                this.selected_demandes.forEach( sel_dem => {
+                    if(sel_dem.id === demande.id){
+                        this.selected_products.forEach( sel_prod => {
+                            var found = false
+                            demande.sectionnables.forEach( sectionnable => {
+                                if(sel_prod.id === sectionnable.sectionnable_id){
+                                    found = true;
+                                }
+                            })
+                            if(! found){
+                                axios.post('/demande-sectionnable', { products: this.selected_products, demandes: this.selected_demandes}).then(response => {
+                                    // console.log(response.data);
+                                    // location.reload()
+                                    // Insère Chaque produit selectionné dans la demande qui correspond
+                                    this.commande.demandes.forEach( demande => {
+                                        this.selected_demandes.forEach( dem => {
+
+                                            if( dem.id === demande.id ){
+
+                                                this.selected_products.forEach( prod => {
+                                                    var found = false
+                                                    demande.sectionnables.forEach( sectionnable => {
+                                                        if(prod.id === sectionnable.sectionnable_id){
+                                                            found = true
+                                                        }
+                                                    });
+                                                    console.log( prod.name + found )
+                                                    if( ! found){
+                                                        demande.sectionnables.push({
+                                                            demande_id: dem.id,
+                                                            sectionnable_id : prod.id
+                                                        });
+                                                    } else {
+
+                                                    }
+
+
+                                                });
+
+                                            }
+                                        })
+                                    })
+                                    $('#ajouter-demande-modal').modal('hide')
+                                    this.$forceUpdate()
+                                }).catch( error => {
+                                    location.reload();
+                                    alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement')
                                 });
-                            });
-                        }
-                    })
-                })
-                $('#ajouter-demande-modal').modal('hide')
-                this.$forceUpdate()
-            }).catch( error => {
-                console.log(error);
-            });
+                            }
+                        })
+                    }
+                });
+            })
+
         }
     },
     created(){
         this.commande = this.commande_prop
         this.commande.sections.forEach( section => {
             section.checkAll = false
+            section.show = false
         });
         this.commande.sections.forEach( section => {
             section.products.map( prod => {
+                prod.show = false
                 var found = section.sectionnables.find( sectionnable => {
                     if(sectionnable.sectionnable_type === "App\\Product" && sectionnable.sectionnable_id === prod.id){
                         return sectionnable;

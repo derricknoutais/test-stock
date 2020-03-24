@@ -7,8 +7,11 @@
     <div class="tw-container tw-mx-auto">
 
         <h1 class="tw-text-5xl tw-text-center tw-mt-20 tw-uppercase">Demande @{{ demande.nom }}</h1>
+        <div class="tw-mt-10">
+            <a :href="'/demande/export/' + demande.id" class="tw-btn tw-btn-dark" >Télécharger .xlsx</a>
+        </div>
 
-        <table class="table tw-mt-5">
+        <table class="table tw-mt-10">
             <thead>
                 <tr>
                     <th></th>
@@ -23,7 +26,7 @@
             <tbody>
                 <tr v-for="sectionnable in demande.sectionnables" v-if="sectionnable.product">
                     <td >
-                        
+
                     </td>
                     <td scope="row">@{{ sectionnable.product.name }}</td>
                     <td>@{{ sectionnable.quantite }} </td>
@@ -31,13 +34,15 @@
                         <i class="fas fa-arrow-down  tw-text-red-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte < sectionnable.quantite"></i>
                         <i class="fas fa-arrow-up  tw-text-yellow-600 tw-px-5" v-if="sectionnable.pivot.quantite_offerte > sectionnable.quantite"></i>
                         <i class="fas fa-thumbs-up  tw-text-green-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte === sectionnable.quantite"></i>
-                        <input type="text" class="form-control" v-model.number="sectionnable.pivot.quantite_offerte" @input="enregisterOffre(sectionnable)">
+                        <input type="number" class="form-control" min="0" step="1" v-model.number="sectionnable.pivot.quantite_offerte" @input="enregisterOffre(sectionnable)">
                     </td>
                     <td>
-                        <input type="text" class="form-control" v-model.number="sectionnable.pivot.offre" @input="enregisterOffre(sectionnable)">
+                        <input type="number" class="form-control" :class="{'tw-border-red-500': sectionnable.hasError, 'focus:tw-border-red-500' : sectionnable.hasError }" min="0" step="1" v-model.number="sectionnable.pivot.offre" @input="enregisterOffre(sectionnable)" onkeyup="">
                     </td>
-                    <td>
-                        @{{ sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre | currency }}
+                    <td >
+                        <span v-if="sectionnable.hasError" class="tw-text-red-500"> Erreur! Vérifiez vos entrées!!!</span>
+                        <span v-else>@{{ sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre | currency }}</span>
+
                     </td>
                     <td>
                         <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(sectionnable)"></i>
@@ -56,7 +61,7 @@
                         <input type="text" class="form-control" v-model.number="sectionnable.pivot.quantite_offerte" @input="enregisterOffre(sectionnable)">
                     </td>
                     <td>
-                        
+
                         <input type="text" class="form-control" v-model.number="sectionnable.pivot.offre" @input="enregisterOffre(sectionnable)">
                     </td>
                     <td>
