@@ -359,7 +359,15 @@ Route::put('product-template', function ( Request $request) {
     }
     return $request->all();
 });
-
+Route::post('product-fournisseur', function(Request $request){
+        $found = DB::table('product_fournisseur')->where( ['product_id' => $request['product']['id'] ])->delete();
+        foreach($request['product']['fournisseurs'] as $fournisseur){
+            DB::table('product_fournisseur')->insert([
+                'fournisseur_id' => $fournisseur['id'],
+                'product_id' => $request['product']['id']
+            ]);
+        }
+});
 
 Route::put('article-update', function( Request $request){
     // return $request->all();

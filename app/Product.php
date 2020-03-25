@@ -19,4 +19,8 @@ class Product extends Model
     {
         return $this->morphToMany('App\Demande', 'demande_sectionnable');
     }
+    public function fournisseurs()
+    {
+        return $this->belongsToMany('App\Fournisseur', 'product_fournisseur');
+    }
 }

@@ -18,5 +18,10 @@ class Fournisseur extends Model
         return $this->hasMany('App\Demande');
     }
 
+    public function products()
+    {
+        return $this->belongsToMany('App\Product', 'product_fournisseur');
+    }
+
 
 }
