@@ -23,7 +23,7 @@
                             <td>@{{ product.name }}</td>
                             <td>@{{ product.sku }}</td>
                             <td>@{{ product.price }}</td>
-                            <td>
+                            <td class="tw-w-64">
                                 <multiselect v-model="product.fournisseurs" label="nom"
                                     track-by="nom" :options="fournisseurs" :multiple="true" :taggable="true" @input="addTag(product)"></multiselect>
                             </td>

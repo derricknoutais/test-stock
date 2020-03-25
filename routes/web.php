@@ -360,12 +360,18 @@ Route::put('product-template', function ( Request $request) {
     return $request->all();
 });
 Route::post('product-fournisseur', function(Request $request){
-        $found = DB::table('product_fournisseur')->where( ['product_id' => $request['product']['id'] ])->delete();
-        foreach($request['product']['fournisseurs'] as $fournisseur){
-            DB::table('product_fournisseur')->insert([
-                'fournisseur_id' => $fournisseur['id'],
-                'product_id' => $request['product']['id']
-            ]);
+
+        $products = Product::where('handle', $request['product']['handle'])->get();
+
+        foreach($products as $product){
+            $found = DB::table('product_fournisseur')->where( ['product_id' => $product->id ])->delete();
+
+            foreach($request['product']['fournisseurs'] as $fournisseur){
+                DB::table('product_fournisseur')->insert([
+                    'fournisseur_id' => $fournisseur['id'],
+                    'product_id' => $product->id
+                ]);
+            }
         }
 });
 
