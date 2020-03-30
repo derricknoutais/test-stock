@@ -116,7 +116,7 @@
             </div>
             <div class="tw-mx-auto tw-container tw-w-1/4">
                 <h1 class="tw-text-3xl tw-uppercase tw-tracking-wide tw-text-center tw-my-5 ">Demandes</h1>
-                <button type="button" name="" id="" class="tw-btn tw-btn-dark btn-block tw-uppercase ">Génerer Toutes Les Demandes </button>
+                <button type="button" name="" id="" class="tw-btn tw-btn-dark btn-block tw-uppercase " @click="dispatchProduits()">Génerer Toutes Les Demandes </button>
                 <button type="button" name="" id="" class="tw-btn tw-btn-dark btn-block tw-uppercase" data-toggle="modal" data-target="#demande-modal">Ajouter Une Demande</button>
                 <div class="tw-w-3/4">
                     <ul class="tw-mt-10 tw-fixed ">

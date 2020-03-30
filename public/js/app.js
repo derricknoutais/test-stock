@@ -3157,6 +3157,13 @@ __webpack_require__.r(__webpack_exports__);
           }
         });
       });
+    },
+    dispatchProduits: function dispatchProduits() {
+      axios.get('/commande/' + this.commande.id + '/dispatch-produits-dans-demandes').then(function (response) {
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   created: function created() {

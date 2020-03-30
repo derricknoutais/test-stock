@@ -8,6 +8,7 @@ export default {
         }
     },
     methods: {
+
         total(commande){
             var total = 0;
             if(commande.bons_commandes){

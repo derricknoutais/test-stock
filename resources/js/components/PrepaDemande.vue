@@ -198,6 +198,14 @@ export default {
                 });
             })
 
+        },
+        dispatchProduits(){
+            axios.get('/commande/'+ this.commande.id + '/dispatch-produits-dans-demandes').then(response => {
+                console.log(response.data);
+
+            }).catch(error => {
+                console.log(error);
+            });
         }
     },
     created(){

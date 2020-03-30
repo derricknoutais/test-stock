@@ -280,6 +280,35 @@ Route::get('/commande/{commande}/bons-commandes/{bc}', function (Commande $comma
     return view('commande.bon_commande_show', compact('commande', 'bc'));
 });
 
+Route::get('/commande/{commande}/dispatch-produits-dans-demandes', function(Commande $commande){
+    return $commande->loadMissing('sections', 'sections.sectionnables', 'sections.sectionnables.product', 'sections.sectionnables.product.fournisseurs');
+    foreach($commande->sections as $section){
+        foreach($section->sectionnables as $sectionnable){
+            if($sectionnable->sectionnable_type === 'App\\Product'){
+                foreach($sectionnable->product->fournisseurs as $fournisseur){
+                    if($demande = Demande::where( ['fournisseur_id' => $fournisseur->id, 'commande_id' => $commande->id])->first() ){
+                        DB::table('demande_sectionnable')->insert([
+                            'sectionnable_id' => $sectionnable->id,
+                            'demande_id' => $demande->id,
+                        ]);
+                    } else {
+                        $demande = Demande::create([
+                            'nom' => 'Demande ' . $fournisseur->nom,
+                            'commande_id' => $commande->id,
+                            'fournisseur_id' => $fournisseur->id
+                        ]);
+                        DB::table('demande_sectionnable')->insert([
+                            'sectionnable_id' => $sectionnable->id,
+                            'demande_id' => $demande->id,
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+    return 'OK';
+});
+
 
 Route::post('/demande-sectionnable', function(Request $request){
     // return $request->all();
@@ -361,18 +390,25 @@ Route::put('product-template', function ( Request $request) {
 });
 Route::post('product-fournisseur', function(Request $request){
 
-        $products = Product::where('handle', $request['product']['handle'])->get();
+    $products = Product::where('id', $request['product']['id'])->find();
+    $found = DB::table('product_fournisseur')->where( ['product_id' => $product->id ])->delete();
+    foreach($request['product']['fournisseurs'] as $fournisseur){
+        DB::table('product_fournisseur')->insert([
+            'fournisseur_id' => $fournisseur['id'],
+            'product_id' => $product->id
+        ]);
+    }
 
-        foreach($products as $product){
-            $found = DB::table('product_fournisseur')->where( ['product_id' => $product->id ])->delete();
+        // foreach($products as $product){
+        //     $found = DB::table('product_fournisseur')->where( ['product_id' => $product->id ])->delete();
 
-            foreach($request['product']['fournisseurs'] as $fournisseur){
-                DB::table('product_fournisseur')->insert([
-                    'fournisseur_id' => $fournisseur['id'],
-                    'product_id' => $product->id
-                ]);
-            }
-        }
+        //     foreach($request['product']['fournisseurs'] as $fournisseur){
+        //         DB::table('product_fournisseur')->insert([
+        //             'fournisseur_id' => $fournisseur['id'],
+        //             'product_id' => $product->id
+        //         ]);
+        //     }
+        // }
 });
 
 Route::put('article-update', function( Request $request){

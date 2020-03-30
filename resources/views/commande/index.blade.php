@@ -19,6 +19,7 @@
                         <tr>
                             <th>Nom</th>
                             <th># Produits</th>
+                            {{-- <th>Estimation Commande</th> --}}
                             <th>Total Commande</th>
                         </tr>
                     </thead>
@@ -29,6 +30,7 @@
                                     <a :href="'/commande/' + commande.id">@{{ commande.name }}</a>
                                 </td>
                                 <td>@{{ nombreProduits( commande ) }}</td>
+                                {{-- <td>@{{estimation(commande)}}</td> --}}
                                 <td>@{{ total( commande ) | currency }}</td>
                             </tr>
 
@@ -67,5 +69,5 @@
         </div>
 
     </commande-index>
-    
+
 @endsection
