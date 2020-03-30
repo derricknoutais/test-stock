@@ -390,7 +390,7 @@ Route::put('product-template', function ( Request $request) {
 });
 Route::post('product-fournisseur', function(Request $request){
 
-    $products = Product::where('id', $request['product']['id'])->find();
+    $product = Product::where('id', $request['product']['id'])->find();
     $found = DB::table('product_fournisseur')->where( ['product_id' => $product->id ])->delete();
     foreach($request['product']['fournisseurs'] as $fournisseur){
         DB::table('product_fournisseur')->insert([
