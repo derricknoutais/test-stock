@@ -513,7 +513,7 @@ export default {
             this.templates = this.templates_prop
         }
 
-        axios.get('http://azimuts.ga/article/api/non-commandé').then(response => {
+        axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
             this.articles = response.data
             this.articles.map( article => {
                 if(article.fiche_renseignement){

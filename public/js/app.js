@@ -2582,7 +2582,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.templates = this.templates_prop;
     }
 
-    axios.get('http://azimuts.ga/article/api/non-commandé').then(function (response) {
+    axios.get('https://azimuts.ga/article/api/non-commandé').then(function (response) {
       _this13.articles = response.data;
 
       _this13.articles.map(function (article) {
