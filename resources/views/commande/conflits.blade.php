@@ -2,7 +2,7 @@
 
 
 @section('content')
-<commande-conflits inline-template :commande_prop="{{ $commande }}"> 
+<commande-conflits inline-template :commande_prop="{{ $commande }}">
         <div class="container">
             <h1 class="tw-text-3xl tw-text-center tw-mt-10">Liste des Conflits</h1>
             <div id="accordianId" role="tablist" aria-multiselectable="true" class="tw-mt-10">
@@ -10,7 +10,7 @@
                     <div class="card-header" role="tab" id="section1HeaderId">
                         <h5 class="mb-0">
                             <a data-toggle="collapse" data-parent="#accordianId" href="#section1ContentId" aria-expanded="true" aria-controls="section1ContentId" v-if="conflit.name">
-                                @{{ conflit.name }}
+                                @{{ conflit.name }} --- @{{ conflit.pivot.quantite }}
                             </a>
                             <a data-toggle="collapse" data-parent="#accordianId" href="#section1ContentId" aria-expanded="true" aria-controls="section1ContentId" v-else>
                                 @{{ conflit.nom }}
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
 
             <div class="tw-flex tw-my-10 tw-py-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0">
@@ -42,5 +42,5 @@
             </div>
         </div>
     </commande-conflits>
-    
+
 @endsection

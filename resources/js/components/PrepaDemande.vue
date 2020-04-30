@@ -3,6 +3,9 @@ export default {
     props: ['commande_prop', 'fournisseurs_prop'],
     data(){
         return {
+            isLoading : {
+                toutesDemandes: false
+            },
             fournisseurs: null,
             nouvelle_demande: null,
             commande: null,
@@ -200,13 +203,16 @@ export default {
 
         },
         dispatchProduits(){
+            this.isLoading.toutesDemandes = true
             axios.get('/commande/'+ this.commande.id + '/dispatch-produits-dans-demandes').then(response => {
-                console.log(response.data);
+                this.isLoading.toutesDemandes = false
+                window.location.reload()
 
             }).catch(error => {
                 console.log(error);
             });
         }
+
     },
     created(){
         this.commande = this.commande_prop

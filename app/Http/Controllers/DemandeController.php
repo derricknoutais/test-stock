@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Demande;
 use Illuminate\Http\Request;
 use App\Exports\DemandeExport;
+use App\Imports\DemandeImport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DemandeController extends Controller
@@ -98,5 +99,12 @@ class DemandeController extends Controller
     public function export(Demande $demande)
     {
         return Excel::download(new DemandeExport($demande->id), 'Demande ' . $demande->nom . '.xlsx');
+    }
+
+    public function import(Request $request){
+        // return $request->file('files');
+        foreach($request->file('files') as $file){
+            Excel::import(new DemandeImport, $file);
+        }
     }
 }

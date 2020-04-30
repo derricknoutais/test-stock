@@ -17,12 +17,14 @@
             </tr>
             <tr></tr>
             <tr>
+                <td>Identifiant</td>
                 <td>Produit</td>
                 <td>Quantite</td>
                 <td>Offre</td>
             </tr>
             @foreach ($demande->sectionnables as $sectionnable)
                 <tr>
+                    <td>{{ $sectionnable->pivot->id }}</td>
                     <td>{{ $sectionnable->product->name }}</td>
                     <td>{{ $sectionnable->quantite}}</td>
                 </tr>

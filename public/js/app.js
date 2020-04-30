@@ -1959,8 +1959,10 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
-    this.commande = this.commande_prop;
+    this.commande = this.commande_prop; // Pour chaque Conflit
+
     this.commande.conflits.forEach(function (conflit) {
+      // Map tous les éléments conflictuels
       conflit.elements_conflictuels.map(function (element) {
         var found = _this.commande.demandes.find(function (demande) {
           return element.demande_id === demande.id;
@@ -2729,6 +2731,35 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    uploadFiles: function uploadFiles() {
+      var _this = this;
+
+      var formData = new FormData();
+
+      for (var i = 0; i < this.$refs.myFiles.files.length; i++) {
+        var file = this.$refs.myFiles.files[i];
+        formData.append('files[' + i + ']', file);
+      }
+
+      console.log(this.$refs.myFiles.files);
+      axios.post('/import', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(function (response) {
+        _this.$swal({
+          icon: 'success',
+          title: 'Yaay!!!',
+          text: 'Votre Fichier a été télechargé avec succès'
+        });
+      })["catch"](function (error) {
+        _this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Une erreur est survenue lors du téleversement de votre fichier. Appellez Ricko'
+        });
+      });
     }
   },
   created: function created() {
@@ -2963,6 +2994,9 @@ __webpack_require__.r(__webpack_exports__);
   props: ['commande_prop', 'fournisseurs_prop'],
   data: function data() {
     return {
+      isLoading: {
+        toutesDemandes: false
+      },
       fournisseurs: null,
       nouvelle_demande: null,
       commande: null,
@@ -3159,8 +3193,12 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     dispatchProduits: function dispatchProduits() {
+      var _this6 = this;
+
+      this.isLoading.toutesDemandes = true;
       axios.get('/commande/' + this.commande.id + '/dispatch-produits-dans-demandes').then(function (response) {
-        console.log(response.data);
+        _this6.isLoading.toutesDemandes = false;
+        window.location.reload();
       })["catch"](function (error) {
         console.log(error);
       });
