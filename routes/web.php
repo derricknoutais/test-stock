@@ -316,7 +316,7 @@ Route::get('/commande/{commande}/dispatch-produits-dans-demandes', function(Comm
                         ]);
                     } else {
                         $demande = Demande::create([
-                            'nom' => 'Demande ' . $fournisseur->nom,
+                            'nom' => $fournisseur->nom,
                             'commande_id' => $commande->id,
                             'fournisseur_id' => $fournisseur->id
                         ]);

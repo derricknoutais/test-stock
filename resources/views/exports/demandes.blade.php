@@ -21,6 +21,7 @@
                 <td>Produit</td>
                 <td>Quantite</td>
                 <td>Offre</td>
+                <td>Quantité Disponible</td>
             </tr>
             @foreach ($demande->sectionnables as $sectionnable)
                 <tr>

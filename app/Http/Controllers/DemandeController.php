@@ -98,7 +98,7 @@ class DemandeController extends Controller
 
     public function export(Demande $demande)
     {
-        return Excel::download(new DemandeExport($demande->id), 'Demande ' . $demande->nom . '.xlsx');
+        return Excel::download(new DemandeExport($demande->id), $demande->nom . '.xlsx');
     }
 
     public function import(Request $request){
