@@ -1,8 +1,9 @@
 <h1>Services Tous Azimuts</h1>
-<p>Vente de Pièces Détachées - Location de Véhicule</p>
-<p>Nº Téléphone: +2411560855 / +24177158215</p>
+<p>Auto Parts - Car Rental</p>
+<p>Phone Number: +2411560855 / +24177158215</p>
+<p>Whatsapp Number: +24107158215</p>
 <p>E-Mail: servicesazimuts@gmail.com</p>
-<p>B.P: 1268 / Adresse: Rue Fréderic Dioni, Case d'Écoute Port-Gentil</p>
+<p>Address: Rue Fréderic Dioni, Case d'Écoute Port-Gentil</p>
 
 <h1>Demande {{$demande->nom}}</h1>
 <table>
@@ -17,11 +18,11 @@
             </tr>
             <tr></tr>
             <tr>
-                <td>Identifiant</td>
-                <td>Produit</td>
-                <td>Quantite</td>
-                <td>Offre</td>
-                <td>Quantité Disponible</td>
+                <td>ID</td>
+                <td>Product</td>
+                <td>Quantity</td>
+                <td>Offer</td>
+                <td>Quantity Available</td>
             </tr>
             @foreach ($demande->sectionnables as $sectionnable)
                 <tr>
