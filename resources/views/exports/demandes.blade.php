@@ -25,12 +25,20 @@
                 <td>Quantity Available</td>
             </tr>
             @foreach ($demande->sectionnables as $sectionnable)
-                <tr>
-                    <td>{{ $sectionnable->pivot->id }}</td>
-                    <td>{{ $sectionnable->product->name }}</td>
-                    <td>{{ $sectionnable->quantite}}</td>
-                </tr>
-            @endforeach
+                @if ($sectionnable->sectionnable_type === 'App\\Product')
+                    <tr>
+                        <td>{{ $sectionnable->pivot->id }}</td>
+                        <td>{{ $sectionnable->product->name }}</td>
+                        <td>{{ $sectionnable->quantite}}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>{{ $sectionnable->pivot->id }}</td>
+                        <td>{{ $sectionnable->article->nom }}</td>
+                        <td>{{ $sectionnable->quantite}}</td>
+                    </tr>
+                @endif
+                @endforeach
             <tr></tr>
     </tbody>
 </table>

@@ -17,7 +17,7 @@ class Commande extends Model
     {
         return $this->morphedByMany('App\Section', 'commandable');
     }
-    
+
     public function templates()
     {
         return $this->morphedByMany('App\Template', 'commandable');
@@ -50,7 +50,7 @@ class Commande extends Model
         //         }
         //     }
         // }
-        
+
         // return $total;
     }
 

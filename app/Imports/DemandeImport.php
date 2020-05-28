@@ -13,13 +13,22 @@ class DemandeImport implements ToCollection
     public function collection(Collection $rows)
     {
         foreach( $rows as $row){
-            // if($row->getIndex() <= 8){
-            //     return null;
-            // }
-            DB::table('demande_sectionnable')->where('id', $row[0])->update([
-                'offre' => $row[3],
-                'quantite_offerte' => $row[4]
-            ]);
+            if($row[0]){
+                if($row[0] !== 'ID'){
+                    if($row[3]){
+                        if($row[3]!== 0){
+                            DB::table('demande_sectionnable')->where('id', $row[0])->update([
+                                'offre' => $row[3],
+                                'quantite_offerte' => $row[4]
+                            ]);
+                        } else {
+                            DB::table('demande_sectionnable')->where('id', $row[0])->delete();
+                        }
+                    } else {
+                        DB::table('demande_sectionnable')->where('id', $row[0])->delete();
+                    }
+                }
+            }
         }
     }
 }

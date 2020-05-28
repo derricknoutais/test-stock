@@ -146,22 +146,35 @@ export default {
 
         },
         addProductsToDemandes(){
+            // Pour chaque demande de cette commande
             this.commande.demandes.forEach(demande => {
+
+                // Pour chaque demande selectionnée
                 this.selected_demandes.forEach( sel_dem => {
+
+                    // Si la demande selectionnée correspond a une demande en cours
                     if(sel_dem.id === demande.id){
+                        // Pour chaque produit selectionnée
                         this.selected_products.forEach( sel_prod => {
+                            // Initialise la variable found = false
                             var found = false
-                            demande.sectionnables.forEach( sectionnable => {
-                                if(sel_prod.id === sectionnable.sectionnable_id){
+                            // Pour chaque sectionnable (Articles & Produits) ...
+                            for (let index = 0; index < demande.sectionnables.length; index++) {
+                                // Si un des sectionnables correspond à un des produits selectionnés
+                                if(sel_prod.id === demande.sectionnables[index].sectionnable_id){
+                                    // Donc ca existe déja dans la base de données
                                     found = true;
+                                    break;
                                 }
-                            })
+                            }
+
                             if(! found){
-                                axios.post('/demande-sectionnable', { products: this.selected_products, demandes: this.selected_demandes}).then(response => {
+                                axios.post('/demande-sectionnable', { products: sel_prod, demandes: sel_dem}).then(response => {
                                     // console.log(response.data);
                                     // location.reload()
                                     // Insère Chaque produit selectionné dans la demande qui correspond
                                     this.commande.demandes.forEach( demande => {
+
                                         this.selected_demandes.forEach( dem => {
 
                                             if( dem.id === demande.id ){

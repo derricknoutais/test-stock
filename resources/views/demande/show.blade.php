@@ -14,7 +14,7 @@
         <table class="table tw-mt-10">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>Id</th>
                     <th>Produit</th>
                     <th>Quantité</th>
                     <th>Quantité Offerte</th>
@@ -26,7 +26,7 @@
             <tbody>
                 <tr v-for="sectionnable in demande.sectionnables" v-if="sectionnable.product">
                     <td >
-
+                        @{{ sectionnable.pivot.id }}
                     </td>
                     <td scope="row">@{{ sectionnable.product.name }}</td>
                     <td>@{{ sectionnable.quantite }} </td>

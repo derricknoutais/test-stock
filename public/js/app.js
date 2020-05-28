@@ -1948,10 +1948,13 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    selectionnerElementConflictuel: function selectionnerElementConflictuel(element) {
-      axios.post('/commande/' + this.commande.id + '/résoudre-conflit', element).then(function (response) {
-        console.log(response.data);
-      })["catch"](function (error) {
+    selectionnerElementConflictuel: function selectionnerElementConflictuel(element, elements_conflictuels) {
+      console.log(element);
+      console.log(elements_conflictuels);
+      axios.post('/commande/' + this.commande.id + '/résoudre-conflit', {
+        element: element,
+        elements_conflictuels: elements_conflictuels
+      }).then(function (response) {})["catch"](function (error) {
         console.log(error);
       });
     }
@@ -3137,21 +3140,30 @@ __webpack_require__.r(__webpack_exports__);
     addProductsToDemandes: function addProductsToDemandes() {
       var _this5 = this;
 
+      // Pour chaque demande de cette commande
       this.commande.demandes.forEach(function (demande) {
+        // Pour chaque demande selectionnée
         _this5.selected_demandes.forEach(function (sel_dem) {
+          // Si la demande selectionnée correspond a une demande en cours
           if (sel_dem.id === demande.id) {
+            // Pour chaque produit selectionnée
             _this5.selected_products.forEach(function (sel_prod) {
-              var found = false;
-              demande.sectionnables.forEach(function (sectionnable) {
-                if (sel_prod.id === sectionnable.sectionnable_id) {
+              // Initialise la variable found = false
+              var found = false; // Pour chaque sectionnable (Articles & Produits) ...
+
+              for (var index = 0; index < demande.sectionnables.length; index++) {
+                // Si un des sectionnables correspond à un des produits selectionnés
+                if (sel_prod.id === demande.sectionnables[index].sectionnable_id) {
+                  // Donc ca existe déja dans la base de données
                   found = true;
+                  break;
                 }
-              });
+              }
 
               if (!found) {
                 axios.post('/demande-sectionnable', {
-                  products: _this5.selected_products,
-                  demandes: _this5.selected_demandes
+                  products: sel_prod,
+                  demandes: sel_dem
                 }).then(function (response) {
                   // console.log(response.data);
                   // location.reload()

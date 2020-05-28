@@ -231,6 +231,7 @@ Route::get('/commande/{commande}/conflits', function(Commande $commande){
 
     $conflits = array();
     foreach ($commande->sections as $section ) {
+
         foreach ($section->articles as $article ) {
             if($article->pivot->conflit === 1 ){
                 array_push($conflits, $article);
@@ -252,38 +253,36 @@ Route::get('/commande/{commande}/conflits', function(Commande $commande){
 Route::post('/commande/{commande}/résoudre-conflit', function(Commande $commande, Request $request){
     // return $request->all();
 
-        if( $bc = BonCommande::where('demande_id' , $request['selected']['demande_id'] )->first() )
+        if( $bc = BonCommande::where('demande_id' , $request['element']['demande_id'] )->first() )
         {
             DB::table('bon_commande_sectionnable')->insert([
                 'bon_commande_id' => $bc->id,
-                'sectionnable_id' => $request['selected']['id'],
-                'quantite' => $request['selected']['quantite_offerte'],
-                'prix_achat' => $request['selected']['pivot']['offre']
+                'sectionnable_id' => $request['element']['sectionnable_id'],
+                'quantite' => $request['element']['quantite_offerte'],
+                'prix_achat' => $request['element']['offre']
             ]);
-        }
-        else
-        {
+        } else {
             $bc = BonCommande::create([
                 'commande_id' => $commande->id,
-                'nom' => 'Bon Commande ' . $request['selected']['demande']['nom'] ,
-                'demande_id' => $request['selected']['demande_id']
+                'nom' => 'Bon Commande ' . $request['element']['demande']['nom'] ,
+                'demande_id' => $request['element']['demande_id']
             ]);
             DB::table('bon_commande_sectionnable')->insert([
                 'bon_commande_id' => $bc->id,
-                'sectionnable_id' => $request['selected']['id'],
-                'quantite' => $request['selected']['quantite_offerte'],
-                'prix_achat' => $request['selected']['offre']
+                'sectionnable_id' => $request['element']['sectionnable_id'],
+                'quantite' => $request['element']['quantite_offerte'],
+                'prix_achat' => $request['element']['offre']
             ]);
         }
-        foreach( $request['elements_conflictuels'] as $element){
-            DB::table('demande_sectionnable')
-            ->where('id', $element['id'])
-            ->update([
-                'checked' => 1
-            ]);
-        }
+
+        DB::table('demande_sectionnable')
+        ->where('id', $request['element']['id'])
+        ->update([
+            'checked' => 1
+        ]);
+
         DB::table('sectionnables')
-        ->where('id', $request['pivot']['id'])
+        ->where('id', $request['element']['sectionnable_id'])
         ->update([
             'conflit' => 0
         ]);
@@ -346,16 +345,16 @@ Route::get('/erase-conflits', function(){
 });
 Route::post('/demande-sectionnable', function(Request $request){
     // return $request->all();
-    foreach ($request['demandes'] as $demande ) {
-        foreach ($request['products'] as $product) {
+    // foreach ($request['demandes'] as $demande ) {
+        // foreach ($request['products'] as $product) {
             DB::table('demande_sectionnable')->insert([
-                'demande_id' => $demande['id'],
-                'sectionnable_id' => $product['pivot']['id'],
+                'demande_id' => $request['demandes']['id'],
+                'sectionnable_id' => $request['products']['pivot']['id'],
                 'offre' => 0,
                 'quantite_offerte' => 0
             ]);
-        }
-    }
+        // }
+    // }
 });
 Route::delete('demande-sectionnable/{id}', function ($id) {
     DB::table('demande_sectionnable')->where('id', $id)->delete();

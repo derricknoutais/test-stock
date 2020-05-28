@@ -9,9 +9,12 @@ export default {
         }
     },
     methods:{
-        selectionnerElementConflictuel(element){
-            axios.post('/commande/' + this.commande.id + '/résoudre-conflit', element).then(response => {
-                console.log(response.data);
+        selectionnerElementConflictuel(element, elements_conflictuels){
+            console.log(element)
+            console.log(elements_conflictuels)
+            axios.post('/commande/' + this.commande.id + '/résoudre-conflit',
+                {element : element, elements_conflictuels : elements_conflictuels}
+            ).then(response => {
 
             }).catch(error => {
                 console.log(error);
