@@ -251,8 +251,13 @@ Route::get('/commande/{commande}/conflits', function(Commande $commande){
 });
 
 Route::post('/commande/{commande}/résoudre-conflit', function(Commande $commande, Request $request){
-    // return $request->all();
 
+        // Fonction Résoudre Conflit
+
+        /*
+            Si le bon de commande du fournisseur pour le produit choisi existe,
+            Nous allons simplement inséré le produit en question à l'intérieur
+        */
         if( $bc = BonCommande::where('demande_id' , $request['element']['demande_id'] )->first() )
         {
             DB::table('bon_commande_sectionnable')->insert([
@@ -261,6 +266,10 @@ Route::post('/commande/{commande}/résoudre-conflit', function(Commande $command
                 'quantite' => $request['element']['quantite_offerte'],
                 'prix_achat' => $request['element']['offre']
             ]);
+        /*
+            Dans le cas contraire
+        */
+
         } else {
             $bc = BonCommande::create([
                 'commande_id' => $commande->id,

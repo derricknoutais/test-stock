@@ -243,6 +243,22 @@ export default {
                 })
                 prod.demandes = found.demandes
             })
+            section.articles.map( prod => {
+                prod.show = false
+                var found = section.sectionnables.find( sectionnable => {
+                    if( sectionnable.sectionnable_type === "App\\Article" )
+                    {
+
+                    }
+                    if( sectionnable.sectionnable_type === "App\\Article" && sectionnable.sectionnable_id == prod.pivot.sectionnable_id)
+                    {
+
+                        return sectionnable;
+                    }
+                })
+                prod.demandes = found.demandes
+            })
+
         })
         this.fournisseurs = this.fournisseurs_prop
     }

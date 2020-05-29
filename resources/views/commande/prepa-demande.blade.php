@@ -52,7 +52,8 @@
                                 <td>@{{ produit.pivot.quantite }}</td>
                                 <td>@{{produit.demandes.length}}</td>
                             </tr>
-                            <tr v-for="produit in section.articles">
+                            {{-- :class=" produit.demandes.length > 0 ? 'tw-text-red-500' : '' " --}}
+                            <tr v-for="produit in section.articles" :class=" produit.demandes.length > 0 ? 'tw-text-red-500' : '' ">
                                 <td>
                                     <input type="checkbox" v-model="selected_products"  :value="produit">
                                 </td>

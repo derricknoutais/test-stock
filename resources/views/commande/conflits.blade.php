@@ -6,6 +6,7 @@
         <div class="container">
             <h1 class="tw-text-3xl tw-text-center tw-mt-10">Liste des Conflits</h1>
             <div id="accordianId" role="tablist" aria-multiselectable="true" class="tw-mt-10">
+                {{-- LISTE DES CONFLITS --}}
                 <div class="card" v-for="conflit in commande.conflits">
                     <div class="card-header" role="tab" id="section1HeaderId">
                         <h5 class="mb-0">
@@ -46,7 +47,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input class="form-check-input" v-model="conflit.selected" name="conflit.id" :value="element" type="checkbox" aria-label="Text for screen reader">
+
+                                    {{-- <input class="form-check-input" v-model="element.selected" name="conflit.id" :value="element" type="checkbox" aria-label="Text for screen reader"> --}}
 
 
 

@@ -3232,6 +3232,17 @@ __webpack_require__.r(__webpack_exports__);
         });
         prod.demandes = found.demandes;
       });
+      section.articles.map(function (prod) {
+        prod.show = false;
+        var found = section.sectionnables.find(function (sectionnable) {
+          if (sectionnable.sectionnable_type === "App\\Article") {}
+
+          if (sectionnable.sectionnable_type === "App\\Article" && sectionnable.sectionnable_id == prod.pivot.sectionnable_id) {
+            return sectionnable;
+          }
+        });
+        prod.demandes = found.demandes;
+      });
     });
     this.fournisseurs = this.fournisseurs_prop;
   }
