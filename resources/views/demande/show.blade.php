@@ -50,7 +50,7 @@
                     </td>
                 </tr>
                 <tr v-for="sectionnable in demande.sectionnables" v-if="sectionnable.article">
-                    <td> </td>
+                    <td>@{{ sectionnable.pivot.id }}</td>
                     <td scope="row">@{{ sectionnable.article.nom }}</td>
                     <td>@{{ sectionnable.quantite }} </td>
                     <td class="tw-flex tw-items-center">
