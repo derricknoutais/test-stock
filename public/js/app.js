@@ -3140,10 +3140,10 @@ __webpack_require__.r(__webpack_exports__);
     addProductsToDemandes: function addProductsToDemandes() {
       var _this5 = this;
 
-      // Pour chaque demande de cette commande
-      this.commande.demandes.forEach(function (demande) {
-        // Pour chaque demande selectionnée
-        _this5.selected_demandes.forEach(function (sel_dem) {
+      // Pour chaque demande selectionnée
+      this.selected_demandes.forEach(function (sel_dem) {
+        // Pour chaque demande de cette commande
+        _this5.commande.demandes.forEach(function (demande) {
           // Si la demande selectionnée correspond a une demande en cours
           if (sel_dem.id === demande.id) {
             // Pour chaque produit selectionnée

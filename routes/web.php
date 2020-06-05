@@ -309,7 +309,16 @@ Route::get('/commande/{commande}/bons-commandes/{bc}', function (Commande $comma
 
 Route::get('/commande/{commande}/dispatch-produits-dans-demandes', function(Commande $commande){
     $commande->loadMissing('sections', 'sections.sectionnables', 'sections.sectionnables.product', 'sections.sectionnables.product.fournisseurs');
+    /***
+        Pour chaque section de la commande
+        Exemple : Toyota C... / Avensis / Joints / Nouveaux Produits sont des sections
+    */
     foreach($commande->sections as $section){
+        /***
+            Chaque Section a des sectionnables. Les sectionnables sont des éléments qui appartiennent à des sections
+            Il existe 2 types de sectionnables : Les Produits Vend & Les Articles Demandées par les clients dans Fiche de Renseignement
+            Donc Pour chaque sectionnable de chaque Section
+        */
         foreach($section->sectionnables as $sectionnable){
             if($sectionnable->sectionnable_type === 'App\\Product'){
                 foreach($sectionnable->product->fournisseurs as $fournisseur){
