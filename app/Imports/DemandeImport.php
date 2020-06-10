@@ -17,10 +17,17 @@ class DemandeImport implements ToCollection
                 if($row[0] !== 'ID'){
                     if($row[3]){
                         if($row[3]!== 0){
-                            DB::table('demande_sectionnable')->where('id', $row[0])->update([
-                                'offre' => $row[3],
-                                'quantite_offerte' => $row[4]
-                            ]);
+                            if($row[4]){
+                                DB::table('demande_sectionnable')->where('id', $row[0])->update([
+                                    'offre' => $row[3],
+                                    'quantite_offerte' => $row[4]
+                                ]);
+                            } else {
+                                DB::table('demande_sectionnable')->where('id', $row[0])->update([
+                                    'offre' => $row[3],
+                                    'quantite_offerte' => $row[2]
+                                ]);
+                            }
                         } else {
                             DB::table('demande_sectionnable')->where('id', $row[0])->delete();
                         }

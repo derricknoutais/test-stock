@@ -1,5 +1,5 @@
 <?php
-
+ini_set('max_execution_time', 180);
 // use DB;
 use App\Product;
 use App\Consignment;
