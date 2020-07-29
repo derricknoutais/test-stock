@@ -5,6 +5,7 @@ import Multiselect from 'vue-multiselect'
 import VueCurrencyFilter from 'vue-currency-filter'
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import AnimatedNumber from "animated-number-vue";
 
 Vue.use(VueCurrencyFilter,{
     symbol: 'XAF',
@@ -21,9 +22,15 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('multiselect', Multiselect)
+Vue.component('AnimatedNumber', AnimatedNumber);
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    methods: {
+      formatToPrice(value) {
+        return `XAF ${value.toFixed(0)}`;
+      }
+    }
 });
 
 

@@ -16,19 +16,20 @@ export default {
             this.selected_product.forEach(product => {
                 if(data.length > 1){
                     data.push({
-                        template_id : this.template.id, 
+                        template_id : this.template.id,
                         product_id : product.id,
-                        quantite: null
+                        quantite: 1
                     })
                 } else {
+
                     data.push({
-                        template_id : this.template.id, 
+                        template_id : this.template.id,
                         product_id : product.id,
                         quantite: this.quantite
-                        
+
                     })
                 }
-                
+
             });
             console.log(data)
             axios.post('/product-template', data ).then(response => {
@@ -40,7 +41,7 @@ export default {
                         }
                         this.template.products.unshift(element)
                     })
-                    
+
                     // this.selected_product = false
                     // this.$refs.searchBar.focus()
                 }
@@ -69,10 +70,10 @@ export default {
             })
             axios.put('/product-template' , data).then(response => {
                 data.forEach( datum => {
-                    
+
                 });
                 console.log(response.data);
-                
+
             }).catch(error => {
                 console.log(error);
             });

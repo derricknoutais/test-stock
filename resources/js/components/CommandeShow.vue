@@ -459,13 +459,19 @@ export default {
 
                     if(a.sectionnables && a.sectionnables.length > 0){
                         a.total = a.sectionnables.reduce( (x,y) => {
-                            // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                            if(x && y && x.sectionnable_type === 'App\Product' && y.sectionnable_type === 'App\Product'){
+
+                                // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                            }
                         })
                     }
 
                     if(b.sectionnables && b.sectionnables.length > 0){
                         b.total = b.sectionnables.reduce( (x,y) => {
-                            // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.o ffre)
+                            if(x && y && x.sectionnable_type === 'App\Product' && y.sectionnable_type === 'App\Product'){
+                                // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
+                            }
+                            // return (x.pivot.quantite_offerte * x.pivot.offre) + (y.pivot.quantite_offerte * y.pivot.offre)
                         })
                     }
 

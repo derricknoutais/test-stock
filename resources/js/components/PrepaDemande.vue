@@ -160,7 +160,7 @@ export default {
                                 // Pour chaque sectionnable (Articles & Produits) ...
                                 for (let index = 0; index < demande.sectionnables.length; index++) {
                                     // Si un des sectionnables correspond à un des produits selectionnés
-                                    if(sel_prod.id === demande.sectionnables[index].sectionnable_id){
+                                    if(sel_prod.id == demande.sectionnables[index].sectionnable_id){
                                         // Donc ca existe déja dans la base de données
                                         found = true;
                                         break;
@@ -207,8 +207,14 @@ export default {
                                         location.reload();
                                         alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement')
                                     });
+                                } else {
+                                    this.$swal({
+                                        text: 'Les produits/articles sélectionnés font déjà partie de ces demandes'
+                                    })
                                 }
                             })
+
+
                         }
                     })
                 });

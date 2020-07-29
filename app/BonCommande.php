@@ -10,7 +10,7 @@ class BonCommande extends Model
 
     public function sectionnables()
     {
-        return $this->belongsToMany('App\Sectionnable', 'bon_commande_sectionnable', 'bon_commande_id', 'sectionnable_id')->withPivot('prix_achat', 'quantite');
+        return $this->belongsToMany('App\Sectionnable', 'bon_commande_sectionnable', 'bon_commande_id', 'sectionnable_id')->withPivot('id', 'prix_achat', 'quantite');
     }
     public function commande()
     {

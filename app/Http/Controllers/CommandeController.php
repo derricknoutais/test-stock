@@ -111,7 +111,7 @@ class CommandeController extends Controller
 
         //Crée le reorder-point
         $reorderpoint = Reorderpoint::create([
-            'commande_id' => $request->commande_id
+            'commande_id' => 2
         ]);
 
         $productsToPush = array();
@@ -186,7 +186,7 @@ class CommandeController extends Controller
             if(! $found && $stock != '06bf537b-c771-11e7-ff13-0d97b30d0d02' && $stock != '06bf537b-c771-11e7-ff13-0d97801203a8'
                 && $stock != '06bf537b-c771-11e7-ff13-09b53ed39106' && $stock != '06bf537b-c771-11e6-ff13-fb60295d812c'){
                 array_push($pushMe , [
-                    'commande_id' => $request->commande_id,
+                    'commande_id' => 2,
                     'product_id' => $stock,
                     'section' => 'Reorder Point',
                 ]);
@@ -194,7 +194,7 @@ class CommandeController extends Controller
         }
         // return sizeof($pushMe);
         $reorderpoint_commandable = DB::table('commandables')->insert([
-            'commande_id' => $request->commande_id,
+            'commande_id' => 2,
             'commandable_id' => $reorderpoint->id,
             'commandable_type' => 'App\Reorderpoint'
         ]);

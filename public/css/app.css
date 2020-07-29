@@ -27590,6 +27590,13 @@ video {
   color: #1a202c;
 }
 
+.tw-input {
+  background-color: #edf2f7;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  padding: 0.25rem;
+}
+
 @media (min-width: 640px){
   .sm\:tw-sr-only{
     position: absolute;

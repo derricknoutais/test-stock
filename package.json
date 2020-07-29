@@ -27,6 +27,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.11.2",
+        "animated-number-vue": "^1.0.0",
         "tailwindcss": "^1.1.2",
         "vue-cleave": "^1.2.2",
         "vue-currency-filter": "^4.0.3",

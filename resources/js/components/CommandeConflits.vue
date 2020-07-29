@@ -22,6 +22,7 @@ export default {
         }
     },
     created(){
+        //
         this.commande = this.commande_prop
         // Pour chaque Conflit
         this.commande.conflits.forEach( conflit => {

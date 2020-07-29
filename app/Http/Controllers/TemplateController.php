@@ -11,12 +11,11 @@ class TemplateController extends Controller
 {
     public function index(){
         $templates = Template::all();
-
         return view('template.index', compact('templates'));
     }
 
     public function show(Template $template){
-        
+
         $template->loadMissing('products');
         $products = Product::all();
         return view('template.show', compact('template', 'products'));
@@ -31,5 +30,30 @@ class TemplateController extends Controller
             return redirect()->back();
     }
 
+    public function inventory() {
+        $templates = App\Template::with('products')->get();
+        return view('inventory.index', compact('templates'));
+    }
+
+    public function createVend (Request $request) {
+
+        $client = new Client();
+        $headers = [
+            "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+            'Accept'        => 'application/json',
+        ];
+
+        $response = $client->request('POST', 'https://stapog.vendhq.com/api/2.0/consignments', [
+            'headers' => $headers,
+            'form_params' => [
+                'outlet_id' => '06bf537b-c77f-11e6-ff13-fb602832ccea',
+                'name' => $request->nom,
+                'type' => 'STOCKTAKE',
+                'status' => 'STOCKTAKE_SCHEDULED',
+                'filters' => $request->prods
+            ]
+        ]);
+        $data = json_decode((string) $response->getBody(), true);
+    }
 
 }

@@ -8,12 +8,14 @@
 
         <header class="tw-flex tw-flex-col tw-items-center tw-bg-gray-800 tw-text-white">
             <p class="tw-text-4xl tw-text-bold tw-mt-6 tw-leading-none">Prépa - {{ $commande->name }}</p>
-            <p class="tw-mt-6 tw-leading-none">
-                Les Templates vous permettent d'enregistrer un groupe de produits que vous pouvez réutiliser dans vos commandes
+            <p class="tw-mt-6 tw-leading-none tw-text-2xl">
+                Bienvenue dans le tableau de bord de votre commande. Ici vous aurez toutes les informations par rapport à la dite commande
             </p>
 
+            {{-- Cartes Sections / Demandes /  Bons Commandes --}}
             <div class="tw-flex tw-w-full tw-justify-around tw-mt-10">
 
+                {{-- Cartes Sections --}}
                 <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-1/4 tw-mx-5">
                     <div class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
                         <i class="fas fa-puzzle-piece  fa-2x"></i>
@@ -25,32 +27,29 @@
                         <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ numberOfNewProducts }} Nouveaux Produits | <i class="fab fa-vuejs    "></i>  @{{ numberOfVendProducts }} Produits Vend </h4>
                     </div>
                 </div>
+                {{-- Cartes Demande --}}
                 <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-1/4 tw-mx-5">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
-
+                    <a :href="'/commande/' + commande.id  + '/demandes'" class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
                         <i class="fas fa-envelope-open-text  fa-2x"></i>
                         <h3 class="tw-text-xl tw-mt-3">Demandes ( @{{ commande.demandes.length }} )</h3>
-
-                    </div>
+                    </a>
 
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
                         <h4 class="tw-text-xl"> <i class="fas fa-boxes    "></i> @{{ commande.demandes.length }} Fournisseurs</h4>
-                        {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ prixMoyenDemande | currency }} / Demande</h4>  --}}
-
+                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> @{{ prixMoyenDemande | currency }} / Demande</h4>
                     </div>
                 </div>
-
+                {{-- Cartes Bon Commande --}}
                 <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-1/4 tw-mx-5">
-                    <div class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
+                    <a :href="'/commande/' + commande.id  + '/bons-commandes'" class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
                         <i class="fas fa-handshake  fa-2x"></i>
                         <h3 class="tw-text-xl tw-mt-3">Bons Commande ( @{{ commande.bons_commandes.length }} )</h3>
-                    </div>
+                    </a>
 
                     <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
                         {{-- <h4 class="tw-text-xl"> <i class="fas fa-money"></i>XAF @{{ totalBonsCommandes }} </h4> --}}
                         {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i>Produit par Section</h4>
                         <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> 9 Produit par Section</h4>  --}}
-
                     </div>
                 </div>
 

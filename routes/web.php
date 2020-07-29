@@ -11,245 +11,77 @@ use App\Fournisseur;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
+
+// Welcome
 Route::get('/', function () {
     return view('accueil');
 });
 
 
-
+// Products
 Route::resource('/product', 'ProductController');
 
+
+
+// Templates
 Route::resource('/template', 'TemplateController');
 
+Route::post('/product-template', 'ProductTemplateController@addProduct');
+Route::post('/product-template/delete', 'ProductTemplateController@removeProduct');
+Route::put('product-template', function ( Request $request) {
+    foreach ($request->all() as $prodTemp) {
+        DB::table('product_template')->where(['template_id' => $prodTemp['template_id'] , 'product_id' => $prodTemp['product_id']])->update([
+            'quantite' => $prodTemp['quantite']
+        ]);
+    }
+    return $request->all();
+});
+
+
+// Commandes
 Route::resource('/commande', 'CommandeController');
+Route::post('/product-commande', 'CommandeController@addProduct');
+Route::post('/template-commande', 'CommandeController@addTemplate');
 
+
+/**
+    ************* SECTION ***************
+    * Chaque commande a plusieurs sections
+*/
 Route::resource('/section', 'SectionController');
+Route::post('/product-section', 'SectionController@addProduct');
 
-Route::resource('/fournisseur', 'FournisseurController');
+// Sectionnables
 
-Route::delete('/sectionnable/{product}', 'SectionController@destroyProduct');
-Route::delete('/sectionnable/{article}', 'SectionController@destroyArticle');
+    // Supprimer des sectionnables
+    Route::delete('/sectionnable/{product}', 'SectionController@destroyProduct');
+    Route::delete('/sectionnable/{article}', 'SectionController@destroyArticle');
 
+    Route::get('/section-product/delete/{article}/{section}', function($article, $section){
+        $var = DB::table('sectionnables')->where(['section_id' => $section, 'sectionnable_id' => $article])->delete();
+        return $var;
+    });
+
+
+
+// Prépa-Demande
+Route::get('/commande/{commande}/prepa-demande', 'DemandeController@showPrepaDemande');
+Route::post('/demande-sectionnable', 'DemandeController@addSectionnable');
+Route::get('/commande/{commande}/dispatch-produits-dans-demandes', 'DemandeController@dispatchSectionnables');
+
+
+
+// Demandes
 Route::resource('/demande', 'DemandeController');
+Route::get('/commande/{commande}/demandes', 'DemandeController@index');
+Route::delete('demande-sectionnable/{id}', 'DemandeController@destroySectionnable');
 Route::post('/import', 'DemandeController@import');
+Route::put('demande/{demande}/update-product', 'DemandeController@updateProduct');
+Route::get('demande/export/{demande}', 'DemandeController@export');
 
 
-
-Route::get('/commande/{commande}/prepa-demande', function(Commande $commande){
-
-    $commande->loadMissing(['sections', 'sections.sectionnables', 'sections.sectionnables.demandes', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
-    $fournisseurs = Fournisseur::all();
-
-    return view('commande.prepa-demande', compact('commande', 'fournisseurs'));
-
-});
-
-Route::get('/commande/{commande}/demandes', function(Commande $commande){
-    $commande->loadMissing('demandes', 'demandes.sectionnables');
-    return view('commande.demandes', compact('commande'));
-});
-
-Route::get('/remettre-a-zero', function(){
-    DB::table('demande_sectionnable')->whereIn('demande_id', [4,5,6,7,8])->update([
-        'checked' => 0
-    ]);
-    $bcs = DB::table('bon_commandes')->whereIn('demande_id', [4,5,6,7,8])->pluck('id');
-    DB::table('bon_commande_sectionnable')->whereIn('bon_commande_id', $bcs)->delete();
-    DB::table('bon_commandes')->whereIn('demande_id', [4,5,6,7,8])->delete();
-});
-
-Route::get('/commande/{commande}/générer-bons', function(Commande $commande){
-
-    $all = array();
-    // Pour Chaque Demande d'Offre de Cette Commande...
-    for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
-
-        // Pour Chaque Section de Chaque Demande
-        foreach($commande->demandes[$i]->sectionnables as $sectionnable){
-
-            $commande->load('demandes', 'bonsCommandes');
-            $commande->load('demandes.sectionnables');
-
-            //  Si le produit n'a pas encore été checké
-            if( $sectionnable->pivot->checked  == 0)
-            {
-                unset($toCompare);
-                $toCompare = array();
-
-                // Ajoute le 1er produit dans notre liste à comparer
-                array_push($toCompare, $sectionnable);
-
-                // Pour toutes les autres demandes
-                for ($j=0; $j < sizeof($commande->demandes); $j++)
-                {
-                    // Tant que ce n'est pas la meme demande dans laquelle est le produit
-                    if($j != $i){
-                        foreach($commande->demandes[$j]->sectionnables as $sectionnable_comparatif){
-                            // Si le produit est identique au premier produit
-                            if($sectionnable->sectionnable_id == $sectionnable_comparatif->sectionnable_id ){
-                                // Ajoute le à notre liste de produits a comparer
-                                array_push($toCompare, $sectionnable_comparatif);
-                            }
-                        }
-                    }
-                }
-
-                // Classe les produits dans notre liste à comparer du moins cher au plus
-                usort($toCompare, function( $a, $b) {
-                    // Pour deux produits au prix identiques
-                    if($a->pivot->offre == $b->pivot->offre){
-
-
-
-                        $a->pivot->checked = -1;
-                        $b->pivot->checked = -1;
-                        DB::table('demande_sectionnable')
-                            ->whereIn('id', [$b->pivot->id, $a->pivot->id])
-                            ->update([
-                                'checked' => -1
-                            ]);
-
-                        DB::table('sectionnables')->where([ 'section_id' => $a->section_id, 'sectionnable_id' => $a->sectionnable_id ])->update([
-                            'conflit' => 1
-                        ]);
-
-                    // Pour deux produits de prix inférieurs
-                    } else {
-                        $a->pivot->checked = 1;
-                        $b->pivot->checked = 1;
-                        DB::table('demande_sectionnable')
-                            ->whereIn('id', [$b->pivot->id, $a->pivot->id])
-                            ->update([
-                                'checked' => 1
-                            ]);
-                    }
-                    return $a['pivot']['offre'] <=> $b['pivot']['offre'];
-                });
-
-                foreach ($toCompare as $comp) {
-                    if($comp->pivot->offre <= 0){
-                        DB::table('demande_sectionnable')
-                        ->where('id', $comp->pivot->id)
-                        ->update([
-                            'checked' => -1
-                        ]);
-                        $comp->pivot->checked = -1;
-                        DB::table('sectionnables')->where([ 'section_id' => $comp->section_id, 'sectionnable_id' => $comp->sectionnable_id ])->update([
-                            'conflit' => 1
-                        ]);
-                    }
-
-                }
-                // return $toCompare;
-                $qte_recevable = $toCompare[0]->quantite;
-                $x = 0;
-                while ( $qte_recevable > 0 ) {
-                    // Si la quantité a recevoir  est supérieure a la quantite offerte par le fournisseur x
-
-                    if( ( $qte_recevable - $toCompare[$x]->pivot->quantite_offerte )  > 0 ){
-
-                        // Prennons tout ce que le fournisseur nous offre
-                        $toCompare[$x]->quantite_prise = $toCompare[$x]->pivot->quantite_offerte;
-
-                        // Puis passons au fournisseur suivant si il en reste
-                        if( ($x + 1) < sizeof($toCompare) ){
-                            $x++;
-                        } else {
-                            // Sinon on stoppe
-                            break;
-                        }
-                    }
-                    // Si la quantité a recevoir est inférieure a la quantite offerte par le fournisseur x
-                    else {
-                        // On prend seulement la quantité restante et on stoppe l'exectution
-                        $toCompare[$x]->quantite_prise = $qte_recevable ;
-                        break;
-                    }
-
-                    // On soustrait la quantité prise chez le fournisseur x de notre total
-                    if($x > 0){
-                        $qte_recevable = $qte_recevable - $toCompare[$x-1]->quantite_prise;
-                    } else {
-                        $qte_recevable = $qte_recevable - $toCompare[$x]->quantite_prise;
-                    }
-
-                    // Stoppe la boucle si nous sommes au bout de notre tableau de fournisseur
-                    if( $x >= sizeof($toCompare)  ) {
-                        break;
-                    }
-
-                }
-                // return $x;
-
-
-                for ($y=0; $y <= $x ; $y++) {
-                    if( $toCompare[$y]->pivot->checked !== -1 ){
-                        if( $bc = BonCommande::where('demande_id' , $toCompare[$y]->pivot->demande_id )->first() )
-                        {
-                            DB::table('bon_commande_sectionnable')->insert([
-                                'bon_commande_id' => $bc->id,
-                                'sectionnable_id' => $toCompare[$y]->id,
-                                'quantite' => $toCompare[$y]->quantite_prise,
-                                'prix_achat' => $toCompare[$y]->pivot->offre
-                            ]);
-                        }
-                        else
-                        {
-                            $demande = Demande::find($toCompare[$y]->pivot->demande_id);
-                            $bc = BonCommande::create([
-                                'commande_id' => $commande->id,
-                                'nom' => 'Bon Commande ' . $demande->nom ,
-                                'demande_id' => $toCompare[$y]->pivot->demande_id
-                            ]);
-                            DB::table('bon_commande_sectionnable')->insert([
-                                'bon_commande_id' => $bc->id,
-                                'sectionnable_id' => $toCompare[$y]->id,
-                                'quantite' => $toCompare[$y]->quantite_prise,
-                                'prix_achat' => $toCompare[$y]->pivot->offre
-                            ]);
-                        }
-                        DB::table('demande_sectionnable')
-                        ->where('id', $toCompare[$y]->pivot->id)
-                        ->update([
-                            'checked' => 1
-                        ]);
-                        $toCompare[$y]->pivot->checked = 1;
-                    }
-                }
-
-            }
-
-
-        }
-
-
-    }
-});
-
-Route::get('/commande/{commande}/conflits', function(Commande $commande){
-    $commande->load('demandes', 'bonsCommandes', 'demandes.sectionnables', 'sections', 'sections.articles', 'sections.products');
-
-    $conflits = array();
-    foreach ($commande->sections as $section ) {
-
-        foreach ($section->articles as $article ) {
-            if($article->pivot->conflit === 1 ){
-                array_push($conflits, $article);
-            }
-        }
-        foreach ($section->products as $product ) {
-            if($product->pivot->conflit === 1 ){
-                array_push($conflits, $product);
-            }
-        }
-    }
-    foreach( $conflits as $conflit ){
-        $conflit->elements_conflictuels = DB::table('demande_sectionnable')->where( 'sectionnable_id', $conflit->pivot->id )->get();
-    }
-    $commande->conflits = $conflits;
-    return view('commande.conflits', compact('commande', 'conflits'));
-});
-
+// Conflits
+Route::get('/commande/{commande}/conflits', 'BonCommandeController@showConflit');
 Route::post('/commande/{commande}/résoudre-conflit', function(Commande $commande, Request $request){
 
         // Fonction Résoudre Conflit
@@ -296,63 +128,6 @@ Route::post('/commande/{commande}/résoudre-conflit', function(Commande $command
             'conflit' => 0
         ]);
 });
-
-Route::get('/commande/{commande}/bons-commandes', function(Commande $commande){
-    $commande->loadMissing(['bonsCommandes', 'bonsCommandes.sectionnables' ,'bonsCommandes.sectionnables.product']);
-    return view('commande.bon-commandes', compact('commande'));
-});
-Route::get('/commande/{commande}/bons-commandes/{bc}', function (Commande $commande, BonCommande $bc) {
-    $commande->loadMissing(['bonsCommandes', 'bonsCommandes.sectionnables', 'bonsCommandes.sectionnables.product']);
-    $bc->loadMissing('sectionnables', 'sectionnables.product', 'sectionnables.article' );
-    return view('commande.bon_commande_show', compact('commande', 'bc'));
-});
-
-Route::get('/commande/{commande}/dispatch-produits-dans-demandes', function(Commande $commande){
-    $commande->loadMissing('sections', 'sections.sectionnables', 'sections.sectionnables.product', 'sections.sectionnables.product.fournisseurs');
-    /***
-        Pour chaque section de la commande
-        Exemple : Toyota C... / Avensis / Joints / Nouveaux Produits sont des sections
-    */
-    foreach($commande->sections as $section){
-        /***
-            Chaque Section a des sectionnables. Les sectionnables sont des éléments qui appartiennent à des sections
-            Il existe 2 types de sectionnables : Les Produits Vend & Les Articles Demandées par les clients dans Fiche de Renseignement
-            Donc Pour chaque sectionnable de chaque Section
-        */
-        foreach($section->sectionnables as $sectionnable){
-            if($sectionnable->sectionnable_type === 'App\\Product'){
-                foreach($sectionnable->product->fournisseurs as $fournisseur){
-                    if($demande = Demande::where( ['fournisseur_id' => $fournisseur->id, 'commande_id' => $commande->id])->first() ){
-                        DB::table('demande_sectionnable')->insert([
-                            'sectionnable_id' => $sectionnable->id,
-                            'demande_id' => $demande->id,
-                            'offre' => 0,
-                            'quantite_offerte' => 0
-                            // 'offre' => rand(1, 9) * 1000,
-                            // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
-                        ]);
-                    } else {
-                        $demande = Demande::create([
-                            'nom' => $fournisseur->nom,
-                            'commande_id' => $commande->id,
-                            'fournisseur_id' => $fournisseur->id
-                        ]);
-                        DB::table('demande_sectionnable')->insert([
-                            'sectionnable_id' => $sectionnable->id,
-                            'demande_id' => $demande->id,
-                            'offre' => 0,
-                            'quantite_offerte' => 0
-                            // 'offre' => rand(1, 9) * 1000,
-                            // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
-                        ]);
-                    }
-                }
-            }
-        }
-    }
-    return 'OK';
-});
-
 Route::get('/erase-conflits', function(){
     $sectionnables = App\Sectionnable::all();
     foreach($sectionnables as $sectionnable){
@@ -361,84 +136,21 @@ Route::get('/erase-conflits', function(){
         ]);
     }
 });
-Route::post('/demande-sectionnable', function(Request $request){
-    // return $request->all();
-    // foreach ($request['demandes'] as $demande ) {
-        // foreach ($request['products'] as $product) {
-            DB::table('demande_sectionnable')->insert([
-                'demande_id' => $request['demandes']['id'],
-                'sectionnable_id' => $request['products']['pivot']['id'],
-                'offre' => 0,
-                'quantite_offerte' => 0
-            ]);
-        // }
-    // }
-});
-Route::delete('demande-sectionnable/{id}', function ($id) {
-    DB::table('demande_sectionnable')->where('id', $id)->delete();
-});
-
-Route::put('demande/{demande}/update-product', function (Demande $demande, Request $request) {
-
-    if($request['pivot']['quantite_offerte'] < $request['quantite']){
-
-    }
-    DB::table('demande_sectionnable')->where('id', $request['pivot']['id'])->update([
-        'offre' => $request['pivot']['offre'],
-        'quantite_offerte' => $request['pivot']['quantite_offerte']
-    ]);
-
-});
-Route::get('/kd', function(){
-    return App\Sectionnable::all();
-});
 
 
-Route::post('/product-section', 'SectionController@addProduct');
+// Bons de Commandes
+Route::get('/commande/{commande}/bons-commandes', 'BonCommandeController@index');
+Route::get('/commande/{commande}/bons-commandes/{bc}', 'BonCommandeController@show');
+Route::get('/commande/{commande}/générer-bons', 'BonCommandeController@générerBonsCommandes');
+Route::get('/bons-commandes/export/{bon_commande}', 'BonCommandeController@export');
+Route::get('/commande/{commande}/export-all-bons-commandes', 'BonCommandeController@exportall');
+
+Route::put('/bon-commande/{sectionnable}', 'BonCommandeController@updateSectionnable');
+Route::put('/bon-commande/sectionnables', 'BonCommandeController@updateAllSectionnable');
 
 
-Route::post('/product-template', 'ProductTemplateController@addProduct');
-Route::post('/product-template/delete', 'ProductTemplateController@removeProduct');
-
-Route::post('/product-commande', 'CommandeController@addProduct');
-Route::post('/template-commande', 'CommandeController@addTemplate');
-
-
-
-
-Route::post('/reorderpoint-commande', 'CommandeController@addReorderPoint');
-
-
-
-Route::get('/test','CommandeController@consignment');
-
-Route::get('/test', 'CommandeController@addReorderPoint');
-
-Route::post('/commande-quantité', 'CommandeController@addQuantities');
-
-
-Route::get('/t', function(){
-    $produits = App\Product::where('handle', 'PlateauDembrayageAisin')->get();
-    return view('work', compact('produits'));
-});
-
-
-
-// /section-product/delete/' + article.id + '/' + section.id
-
-Route::get('/section-product/delete/{article}/{section}', function($article, $section){
-    $var = DB::table('sectionnables')->where(['section_id' => $section, 'sectionnable_id' => $article])->delete();
-    return $var;
-});
-
-Route::put('product-template', function ( Request $request) {
-    foreach ($request->all() as $prodTemp) {
-        DB::table('product_template')->where(['template_id' => $prodTemp['template_id'] , 'product_id' => $prodTemp['product_id']])->update([
-            'quantite' => $prodTemp['quantite']
-        ]);
-    }
-    return $request->all();
-});
+// Fournisseurs
+Route::resource('/fournisseur', 'FournisseurController');
 Route::post('product-fournisseur', function(Request $request){
 
     // $product = Product::where('id', $request['product']['id'])->first();
@@ -461,6 +173,51 @@ Route::post('product-fournisseur', function(Request $request){
         //     }
         // }
 });
+
+
+Route::get('/remettre-a-zero', function(){
+    DB::table('demande_sectionnable')->whereIn('demande_id', [4,5,6,7,8])->update([
+        'checked' => 0
+    ]);
+    $bcs = DB::table('bon_commandes')->whereIn('demande_id', [4,5,6,7,8])->pluck('id');
+    DB::table('bon_commande_sectionnable')->whereIn('bon_commande_id', $bcs)->delete();
+    DB::table('bon_commandes')->whereIn('demande_id', [4,5,6,7,8])->delete();
+});
+
+Route::get('/kd', function(){
+    return App\Sectionnable::all();
+});
+
+
+
+
+
+
+
+
+
+
+Route::get('/reorderpoint-commande', 'CommandeController@addReorderPoint');
+Route::get('/test','CommandeController@consignment');
+
+
+
+Route::post('/commande-quantité', 'CommandeController@addQuantities');
+
+
+Route::get('/t', function(){
+    $produits = App\Product::where('handle', 'PlateauDembrayageAisin')->get();
+    return view('work', compact('produits'));
+});
+
+
+
+// /section-product/delete/' + article.id + '/' + section.id
+
+
+
+
+
 
 Route::put('article-update', function( Request $request){
     // return $request->all();
@@ -599,11 +356,10 @@ Route::get('/api/sales', function () {
             if($sale_date >= $start_trim1 && $page[$i]['status'] !== 'SAVED'){
                 foreach($page[$i]['register_sale_products'] as $sale_product){
 
-
                     if($sale = Sales::where('product_id', $sale_product['product_id'])->first()){
 
                         $sale->increment('quantite_vendue', $sale_product['quantity']);
-
+                        //
                         if( $sale_date >= $start_trim1 && $sale_date <= $end_trim1 ){
                             $sale->increment('Trim1',  $sale_product['quantity']);
                         } else if( $sale_date >= $start_trim2 && $sale_date <= $end_trim2 ){
@@ -708,65 +464,6 @@ Route::get('/api/stocktake/products', function () {
 });
 
 
-Route::get('demande/export/{demande}', 'DemandeController@export');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Route::get('/api/stock', function () {
 
     $client = new Client();
@@ -797,16 +494,6 @@ Route::get('/api/stock', function () {
 
     // return $totalProducts;
 });
-
-
-
-
-
-
-
-
-
-
 Route::get('/api/products', function () {
 
     $client = new Client();
@@ -846,51 +533,8 @@ Route::get('/api/products', function () {
     // return $totalProducts;
 });
 
-Route::post('api/inventory', function (Request $request) {
-    // return $request->all();
-
-    $client = new Client();
-    $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
-        'Accept'        => 'application/json',
-    ];
-
-    $response = $client->request('POST', 'https://stapog.vendhq.com/api/2.0/consignments', [
-        'headers' => $headers,
-        'form_params' => [
-            'outlet_id' => '06bf537b-c77f-11e6-ff13-fb602832ccea',
-            'name' => $request->nom,
-            'type' => 'STOCKTAKE',
-            'status' => 'STOCKTAKE_SCHEDULED',
-            'filters' => $request->prods
-        ]
-    ]);
-    $data = json_decode((string) $response->getBody(), true);
-});
-
-Route::get('/inventory-count', function () {
-
-    $templates = App\Template::with('products')->get();
-    return view('inventory.index', compact('templates'));
-});
-
-
-
-// Route::get('api/products', function (Request $request) {
-//     // return $request->all();
-
-//     $client = new Client();
-//     $headers = [
-//         "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
-//         'Accept'        => 'application/json',
-//     ];
-
-//     $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/products?page_size=4000', [
-//         'headers' => $headers
-//     ]);
-//     return $data = json_decode((string) $response->getBody(), true);
-// });
+Route::post('api/inventory', 'TemplateController@createVend');
+Route::get('/inventory-count', 'TemplateController@inventory');
 
 Auth::routes();
-
 Route::get('/home', 'HomeController@index')->name('home');

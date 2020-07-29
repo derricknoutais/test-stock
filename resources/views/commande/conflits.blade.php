@@ -13,9 +13,10 @@
                             <a data-toggle="collapse" data-parent="#accordianId" :href="'#Conflit' + conflit.pivot.id" aria-expanded="true" aria-controls="section1ContentId" v-if="conflit.name">
                                 @{{ conflit.name }} --- @{{ conflit.pivot.quantite }}
                             </a>
-                            <a data-toggle="collapse" data-parent="#accordianId" href="#section1ContentId" aria-expanded="true" aria-controls="section1ContentId" v-else>
-                                @{{ conflit.nom }}
-                            </a>
+                            {{--
+                                <a data-toggle="collapse" data-parent="#accordianId" href="#section1ContentId" aria-expanded="true" aria-controls="section1ContentId" v-else>
+                                @{{ conflit.nom }}</a>
+                            --}}
                         </h5>
                     </div>
                     <div :id="'Conflit' + conflit.pivot.id" class="collapse in" role="tabpanel" aria-labelledby="section1HeaderId">
@@ -23,14 +24,15 @@
                             <ul class="list-group">
                                 <li class="list-group-item tw-px-10 tw-flex tw-justify-between" v-for="element in conflit.elements_conflictuels">
 
-                                    ACCORDION DE CHAQUE ELEMENT CONFLICTUEL
+                                    {{-- ACCORDION DE CHAQUE ELEMENT CONFLICTUEL --}}
 
                                     <div :id="'element_conflictuel_accord' + element.id " role="tablist" aria-multiselectable="true">
                                         <div class="card">
                                             <div class="card-header" role="tab" id="section1HeaderId">
                                                 <h5 class="mb-0">
                                                     <a data-toggle="collapse" :data-parent="'#element_conflictuel_accord' + element.id" :href="'#element_confictuel_content' + element.id" aria-expanded="true" aria-controls="section1ContentId">
-                                                        {{-- <span>Fournisseur : @{{ element.demande.nom }}</span> --}}
+                                                        <span v-if="element.demande">Fournisseur : @{{ element.demande.nom }}</span>
+                                                        {{-- <span v-else>Fournisseur : @{{ element.demande.nom }}</span> --}}
                                                         <span>Prix : @{{ element.offre | currency }}</span>
                                                         <span>Quantité Offerte : @{{ element.quantite_offerte }}</span>
                                                     </a>
@@ -48,7 +50,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                <button class="tw-btn tw-btn-dark tw-mt-5" @click="selectionnerElementConflictuel(conflit)">Selectionner</button>
+                                {{-- <button class="tw-btn tw-btn-dark tw-mt-5" @click="selectionnerElementConflictuel(conflit)">Selectionner</button> --}}
                             </ul>
                         </div>
                     </div>

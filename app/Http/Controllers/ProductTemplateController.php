@@ -15,5 +15,5 @@ class ProductTemplateController extends Controller
         DB::table('product_template')->where(['product_id' => $request->product_id, 'template_id' => $request->template_id])->delete();
         return 'OK';
     }
-    
+
 }
