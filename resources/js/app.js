@@ -28,7 +28,7 @@ const app = new Vue({
     el: '#app',
     methods: {
       formatToPrice(value) {
-        return `XAF ${value.toFixed(0)}`;
+        return `${value.toFixed(2)}`;
       }
     }
 });

@@ -32,8 +32,10 @@
                     <tr>
                         <th>Nom du Produit</th>
                         <th>Quantité</th>
-                        <th>Prix Achat</th>
-                        <th>Total</th>
+                        <th>Prix Achat (XAF)</th>
+                        <th>Total (XAF)</th>
+                        <th>Prix Achat (AED)</th>
+                        <th>Total (AED)</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -47,17 +49,31 @@
                             <input v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)" class="tw-input focus:tw-border-gray-600" type="text" v-model="sectionnable.pivot.quantite">
                             <span v-else>@{{ sectionnable.pivot.quantite }}</span>
                         </td>
-                        {{-- Prix Achat du Produit --}}
+                        {{-- Prix Achat (XAF) --}}
                         <td>
                             {{-- En Mode Edit --}}
                             <input v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)" class="tw-input focus:tw-border-gray-600" type="text"  v-model="sectionnable.pivot.prix_achat">
                             {{-- En Mode Normal --}}
                             <span v-else >@{{ sectionnable.pivot.prix_achat }}</span>
                         </td>
-
+                        {{-- Total XAF --}}
                         <td>
                             <animated-number
                                 :value="sectionnable.pivot.quantite * sectionnable.pivot.prix_achat"
+                                :format-value="formatToPrice"
+                                :duration="500"
+                            />
+                        </td>
+                        {{-- Prix Achat (AED) --}}
+                        <td>
+
+                            <span >@{{ sectionnable.pivot.prix_achat / 165 }}</span>
+                        </td>
+
+                        {{-- Total AED --}}
+                        <td>
+                            <animated-number
+                                :value="sectionnable.pivot.quantite * (sectionnable.pivot.prix_achat / 165)"
                                 :format-value="formatToPrice"
                                 :duration="500"
                             />
@@ -73,6 +89,7 @@
                         <td scope="row">@{{ sectionnable.article.nom }} </td>
                         <td>@{{ sectionnable.pivot.quantite }}</td>
                         <td>@{{ sectionnable.pivot.prix_achat }}</td>
+                        <td>@{{ sectionnable.pivot.prix_achat / 165 }}</td>
                         <td>
                             <animated-number
                                 :value="sectionnable.pivot.quantite * sectionnable.pivot.prix_achat"

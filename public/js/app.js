@@ -55409,7 +55409,7 @@ var app = new Vue({
   el: '#app',
   methods: {
     formatToPrice: function formatToPrice(value) {
-      return "XAF ".concat(value.toFixed(0));
+      return "".concat(value.toFixed(2));
     }
   }
 });

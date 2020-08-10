@@ -16,6 +16,8 @@ class CreateCommandesTable extends Migration
         Schema::create('commandes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->enum('state', ['préparation', 'achat', 'logistique' ]);
+
             $table->timestamps();
         });
     }
