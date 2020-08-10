@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBonCommandesTable extends Migration
+class CreateFacturesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateBonCommandesTable extends Migration
      */
     public function up()
     {
-        Schema::create('bon_commandes', function (Blueprint $table) {
+        Schema::create('factures', function (Blueprint $table) {
             $table->bigIncrements('id');
-
             $table->string('nom');
             $table->unsignedBigInteger('commande_id');
             $table->unsignedBigInteger('demande_id');
             $table->unsignedBigInteger('fournisseur_id')->nullable();
             $table->foreign('commande_id')->references('id')->on('commandes')->onDelete('cascade')->onUpdate('cascade');
-
             $table->timestamps();
         });
     }
@@ -33,6 +31,6 @@ class CreateBonCommandesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bon_commandes');
+        Schema::dropIfExists('factures');
     }
 }

@@ -1,6 +1,5 @@
 @extends('layouts.welcome')
 
-
 @section('content')
     <bon-commande-show :bc_prop="{{$bc}}" inline-template>
         <div class="tw-container tw-mx-auto tw-flex tw-flex-col">
@@ -9,8 +8,9 @@
             {{-- Titre Document --}}
             <h1 class="tw-text-center tw-text-5xl">@{{ bc.nom }}</h1>
             {{-- Boutons de Fonction --}}
-            <div>
-                <a href="/bons-commandes/export/{{ $bc->id }}" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5">Export .xlsx</a>
+            <div class="tw-mt-5">
+                <a href="/bons-commandes/export/{{ $bc->id }}" class="tw-btn tw-inline-block tw-btn-dark">Export .xlsx</a>
+                <button class="tw-btn tw-inline-block tw-btn-dark" @click="createInvoice()">Créer Facture</button>
                 {{-- <button v-if="! editMode" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="toggleEditMode()">Modifier</button>
                 <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button> --}}
             </div>

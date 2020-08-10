@@ -103,6 +103,14 @@ export default {
 
                   }
             })
+        },
+        createInvoice(){
+            axios.get('/bon-commande/' + this.bc.id + '/create-invoice').then(response => {
+                console.log(response.data);
+
+            }).catch(error => {
+                console.log(error);
+            });
         }
     },
     created(){

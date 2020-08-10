@@ -35,6 +35,10 @@ class Commande extends Model
     {
         return $this->hasMany('App\BonCommande');
     }
+    public function factures()
+    {
+        return $this->hasMany('App\Facture');
+    }
 
 
 

@@ -7,6 +7,7 @@ use App\BonCommande;
 use App\Commande;
 use App\Product;
 use App\Section;
+use App\Facture;
 use App\Sectionnable;
 use App\Exports\BCommandeExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -307,5 +308,32 @@ class BonCommandeController extends Controller
 
     public function destroySectionnable($sectionnable){
         DB::table('bon_commande_sectionnable')->where('id', $sectionnable)->delete();
+    }
+
+
+    public function createInvoice(BonCommande $bc ){
+        $facture = Facture::create([
+            'nom' => $bc->nom,
+            'commande_id' => $bc->commande_id,
+            'demande_id' => $bc->demande_id,
+            'fournisseur_id' => $bc->fournisseur_id,
+            'bon_commande_id' => $bc->id
+        ]);
+
+        $sectionnables = DB::table('bon_commande_sectionnable')->where('bon_commande_id', $bc->id)->get();
+
+        foreach ($sectionnables as $sectionnable ) {
+            DB::table('facture_sectionnable')->insert([
+                'sectionnable_id' => $sectionnable->sectionnable_id,
+                'facture_id' => $facture->id,
+                'quantite' => $sectionnable->quantite,
+                'prix_achat' => $sectionnable->prix_achat
+            ]);
+        }
+
+
+
+
+
     }
 }

@@ -152,6 +152,15 @@ Route::put('/bon-commande/sectionnables', 'BonCommandeController@updateAllSectio
 Route::delete('/bon-commande/sectionnable/{sectionnable}', 'BonCommandeController@destroySectionnable');
 
 
+Route::get('/bon-commande/{bc}/create-invoice', 'BonCommandeController@createInvoice');
+
+
+
+// Factures
+// Route::resource('facture', 'FactureController');
+Route::get('/commande/{commande}/factures', 'FactureController@index');
+Route::get('facture/{facture}', 'FactureController@show');
+
 // Fournisseurs
 Route::resource('/fournisseur', 'FournisseurController');
 Route::post('product-fournisseur', function(Request $request){
