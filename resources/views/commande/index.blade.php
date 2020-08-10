@@ -3,7 +3,7 @@
 
 @section('content')
     <commande-index :commandes_prop="{{$commandes}}" inline-template>
-        <div>
+        <div class="tw-bg-gray-300">
             <section class="tw-flex tw-flex-col tw-items-center tw-bg-gray-800 tw-text-white">
                 <p class="tw-text-4xl tw-text-bold tw-my-4">Mes Commandes</p>
                 <p class="tw-mb-4 tw-text-lg">

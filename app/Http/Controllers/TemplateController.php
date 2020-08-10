@@ -31,7 +31,7 @@ class TemplateController extends Controller
     }
 
     public function inventory() {
-        $templates = App\Template::with('products')->get();
+        $templates = \App\Template::with('products')->get();
         return view('inventory.index', compact('templates'));
     }
 

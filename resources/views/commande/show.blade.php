@@ -6,9 +6,9 @@
 <commande-show :commande_prop="{{ $commande }}" :products_prop="{{ $products }}" :templates_prop="{{ $templates }}"  inline-template>
     <section>
 
-        <header class="tw-flex tw-flex-col tw-items-center tw-bg-gray-800 tw-text-white">
-            <p class="tw-text-4xl tw-text-bold tw-mt-6 tw-leading-none">Prépa - {{ $commande->name }}</p>
-            <p class="tw-mt-6 tw-leading-none tw-text-2xl">
+        <header class="tw-flex tw-flex-col tw-items-center tw-bg-gray-600 tw-text-white tw-py-10">
+            <p class="tw-text-black tw-text-4xl tw-text-bold tw-mt-6 tw-leading-none">Prépa - {{ $commande->name }}</p>
+            <p class="tw-text-black tw-mt-6 tw-leading-none tw-text-2xl">
                 Bienvenue dans le tableau de bord de votre commande. Ici vous aurez toutes les informations par rapport à la dite commande
             </p>
 
@@ -111,13 +111,16 @@
             <!-- Modal -->
         </header>
 
-        <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-mt-5">
+        <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-py-20 tw-bg-gray-400 ">
 
             {{-- Sections --}}
-            <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
-            <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" @click="majStock" >Mettre à Jour Vend Stock
-                <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
-            </button>
+            <div class="tw-flex tw-justify-center">
+                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
+                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" @click="majStock" >Mettre à Jour Vend Stock
+                    <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
+                </button>
+            </div>
+
 
             {{-- Modal --}}
             <div class="modal fade" id="sectionDelete" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="removeSection()">
@@ -168,9 +171,8 @@
             <div id="accordianId" role="tablist" aria-multiselectable="true" class="tw-mt-5 tw-w-3/4">
                 <div class="card" v-for="section in commande.sections">
 
-                    <div class="card-header tw-flex tw-justify-between tw-items-center" >
-                        <h5 class="mb-0 tw-text-xl" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">
-                            <a data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">@{{section.nom}}</a>
+                    <div  class="tw-border tw-border-gray-400 tw-shadow tw-cursor-pointer card-header tw-flex tw-justify-between tw-items-center tw-bg-gray-200 tw-text-gray-800" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">
+                        <h5 class="mb-0 tw-text-xl " data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">@{{section.nom}}
                         </h5>
                         <div>
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
@@ -180,9 +182,10 @@
                     </div>
 
                     <div :id="'section' + section.id" class="collapse in" role="tabpanel" aria-labelledby="section1HeaderId">
-                        <div class="card-body tw-flex-col tw-items-center tw-justify-center">
+                        <div class="card-body tw-flex-col tw-items-center tw-justify-center tw-p-0">
 
-                            <div class="tw-flex-col tw-justify-center tw-items-center">
+                            {{-- SECTION TOOLBAR--}}
+                            <div class="tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full tw-p-16">
                                 <div class="form-check tw-flex tw-justify-around">
                                     <label class="form-check-label">
                                         <input type="radio" class="form-check-input" v-model="sectionnable_type" id="" value="Template">
@@ -223,12 +226,9 @@
 
                                     <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
                                 </div>
-
-
-
                             </div>
 
-                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full" v-if="section.articles.length > 0">
+                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="section.articles.length > 0">
                                 <table class="table">
                                     <h4 class="tw-text-2xl tw-my-5 tw-font-bold tw-underline tw-tracking-wide">Nouveaux Produits</h4>
                                     <thead>
@@ -255,9 +255,9 @@
                                 </table>
                             </div>
 
-                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-w-full tw-mt-12" v-if="section.products.length > 0">
+                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-w-full tw-px-32 tw-py-12" v-if="section.products.length > 0">
                                 <table class="table">
-                                    <h4 class="tw-text-2xl tw-my-5 tw-font-bold tw-underline tw-tracking-wide">Produits VEND</h4>
+                                    <h4 class="tw-text-2xl tw-font-bold tw-underline tw-tracking-wide">Produits VEND</h4>
                                     <thead>
                                         <tr class="">
                                             <th class="tw-text-xl tw-my-5 tw-font-bold tw-w-3/4  tw-tracking-normal">Produit</th>

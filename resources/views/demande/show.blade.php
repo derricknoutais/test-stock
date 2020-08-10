@@ -5,6 +5,7 @@
 
 <demande-show :demande_prop="{{$demande}}" inline-template>
     <div class="tw-container tw-mx-auto">
+        <en-tete bg-color="tw-bg-green-500"></en-tete>
 
         <h1 class="tw-text-5xl tw-text-center tw-mt-20 tw-uppercase">Demande @{{ demande.nom }}</h1>
         <div class="tw-mt-10">
@@ -12,6 +13,7 @@
         </div>
 
         <table class="table tw-mt-10">
+
             <thead>
                 <tr>
                     <th>Id</th>
@@ -23,6 +25,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
                 <tr v-for="sectionnable in demande.sectionnables" v-if="sectionnable.product">
                     <td >
@@ -81,6 +84,7 @@
                     <td>@{{totalDemande | currency }}</td>
                 </tr>
             </tbody>
+
         </table>
 
         <!-- Modal -->
@@ -89,14 +93,12 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Modal title</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
-                        <p class="">
-                            Êtes-vous sûr de vouloir supprimer cet élement. Cette action est irréversible
-                        </p>
+                        <p class="">Êtes-vous sûr de vouloir supprimer cet élement. Cette action est irréversible</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>

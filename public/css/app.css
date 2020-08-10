@@ -27575,7 +27575,7 @@ video {
   padding-right: 2.5rem;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  border-radius: 9999px;
+  border-radius: 0.5rem;
   text-align: center;
   text-decoration: none;
 }

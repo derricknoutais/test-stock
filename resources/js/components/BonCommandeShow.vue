@@ -7,7 +7,8 @@ export default {
     data(){
         return {
             bc: null,
-            editMode : false
+            editMode : false,
+            newProduct: null,
         }
     },
     computed:{
@@ -23,12 +24,21 @@ export default {
         addEdited(sectionnable){
             sectionnable.edited = true
         },
+        addNewProduct(){
+            if(this.newProduct){
+                axios.post('/bon-commande/sectionnable', { product: this.newProduct, bc: this.bc, }).then(response => {
+                    console.log(response.data);
+                    window.location.reload()
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+        },
         toggleEditMode(){
             this.editMode = ! this.editMode
         },
         updateAllEdited(){
 
-            console.log('Hello')
             axios.put('/bon-commande/sectionnables', ['hi', 'hello', 'bjr'] ).then(response => {
                 console.log(response)
                 // this.$swal({
@@ -67,6 +77,33 @@ export default {
                 console.log(error);
             });
         },
+        deleteSectionnable(sectionnable){
+            console.log('hello')
+            this.$swal({
+                title: 'Êtes-vous sûr(e)?',
+                  text: "Cette action est irréversible!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Oui, Supprimer!',
+                  cancelButtonText: 'Annuler',
+                }).then((result) => {
+                  if (result.value) {
+                      axios.delete('/bon-commande/sectionnable/' + sectionnable.pivot.id ).then( response => {
+                          this.$swal(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                          )
+                      }).catch( error =>{
+                          console.log(error)
+                      })
+
+
+                  }
+            })
+        }
     },
     created(){
         this.bc = this.bc_prop

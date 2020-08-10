@@ -145,8 +145,11 @@ Route::get('/commande/{commande}/générer-bons', 'BonCommandeController@génér
 Route::get('/bons-commandes/export/{bon_commande}', 'BonCommandeController@export');
 Route::get('/commande/{commande}/export-all-bons-commandes', 'BonCommandeController@exportall');
 
+Route::post('/bon-commande/sectionnable', 'BonCommandeController@storeSectionnable');
+
 Route::put('/bon-commande/{sectionnable}', 'BonCommandeController@updateSectionnable');
 Route::put('/bon-commande/sectionnables', 'BonCommandeController@updateAllSectionnable');
+Route::delete('/bon-commande/sectionnable/{sectionnable}', 'BonCommandeController@destroySectionnable');
 
 
 // Fournisseurs

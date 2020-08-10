@@ -6,17 +6,22 @@
     <div class="tw-flex tw-flex-col">
 
         <div class="tw-flex">
-            <div class="tw-mx-auto tw-container tw-w-3/4">
+            {{-- Prepa Demande --}}
+            <div class="tw-mx-auto tw-container-fluid tw-w-3/4 tw-bg-gray-300">
+                {{-- Titre --}}
                 <h1 class="tw-text-4xl tw-mt-10 tw-tracking-widest tw-font-hairline tw-font- tw-text-center">Prepa - Demandes - {{ $commande->name }}</h1>
+                {{-- Bouton Flottant Ajouter a Demande --}}
                 <div class="tw-flex tw-mt-5 tw-py-1 tw-justify-center tw-items-center tw-sticky tw-top-0" v-if="selected_products.length > 0">
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" data-toggle="modal" data-target="#ajouter-demande-modal">Ajouter à <span>@{{ selected_products.length }}</span> éléments à Demande ... <i class="fas fa-mail-bulk tw-ml-2"></i></button>
                 </div>
-                <div class="tw-mt-5">
+                {{-- Bouttons Options --}}
+                <div class="tw-mt-24 tw-bg-gray-500 tw-py-10 tw-w-full">
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="filter_demandé()" >Déja Demandé</button>
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="filter_non_demandé()" >Pas encore Demandé</button>
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="réinitialiser()" >Réinitialiser</button>
                 </div>
-                <div v-for="section in commande.sections" v-show="filtered.sections.length <= 0">
+                {{-- Sections --}}
+                <div class="tw-bg-gray-300 tw-px-32" v-for="section in commande.sections" v-show="filtered.sections.length <= 0">
 
                     <div class="tw-flex tw-items-center tw-mt-24" @click="toggleSection(section)">
                         <i class="fas fa-chevron-down tw-cursor-pointer" @click="toggleSection(section)" v-if="section.show"></i>
@@ -115,15 +120,18 @@
                     </table>
                 </div>
             </div>
-            <div class="tw-mx-auto tw-container tw-w-1/4">
+            {{-- Demandes --}}
+            <div class="tw-mx-auto tw-container tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-bg-gray-300 tw-border tw-border-gray-400 tw-border-r-0 tw-border-t-0 tw-border-b-0">
                 <h1 class="tw-text-3xl tw-uppercase tw-tracking-wide tw-text-center tw-my-5 ">Demandes</h1>
-                <button type="button" name="" id="" class="tw-btn tw-btn-dark btn-block tw-uppercase " @click="dispatchProduits()">
+
+                <button type="button" name="" id="" class="tw-btn tw-btn-dark tw-uppercase" data-toggle="modal" data-target="#demande-modal">Ajouter Une Demande</button>
+                <button type="button" name="" id="" class="tw-mt-5 tw-btn tw-btn-dark tw-uppercase " @click="dispatchProduits()">
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.toutesDemandes"></i>
                     Génerer Toutes Les Demandes
                 </button>
-                <button type="button" name="" id="" class="tw-btn tw-btn-dark btn-block tw-uppercase" data-toggle="modal" data-target="#demande-modal">Ajouter Une Demande</button>
+
                 <div class="tw-w-3/4">
-                    <ul class="tw-mt-10 tw-fixed ">
+                    <ul class="tw-mt-10">
                         <a :href="'/demande/' + demande.id" v-for="demande in commande.demandes">
                             <li class="list-group-item d-flex justify-content-between align-items-center" >
 
@@ -162,8 +170,8 @@
             </div>
 
         </div>
-
-        <div class="tw-flex tw-my-10 tw-py-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0">
+        {{-- Boutons <-- Précédent - Suivant --> --}}
+        <div class="tw-flex tw-py-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0 tw-bg-gray-500">
             <a href="/commande/{{$commande->id}}" class="tw-btn tw-btn-dark tw-leading-none">Précédent</a>
             <a href="/commande/{{$commande->id}}/demandes" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5">Suivant</a>
         </div>

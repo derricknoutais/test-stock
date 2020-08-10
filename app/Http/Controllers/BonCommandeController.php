@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use DB;
 use App\BonCommande;
 use App\Commande;
+use App\Product;
+use App\Section;
+use App\Sectionnable;
 use App\Exports\BCommandeExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class BonCommandeController extends Controller
 {
@@ -25,7 +29,8 @@ class BonCommandeController extends Controller
     public function show(Commande $commande, BonCommande $bc){
         $commande->loadMissing(['bonsCommandes', 'bonsCommandes.sectionnables', 'bonsCommandes.sectionnables.product']);
         $bc->loadMissing('sectionnables', 'sectionnables.product', 'sectionnables.article' );
-        return view('commande.bon_commande_show', compact('commande', 'bc'));
+        $products = Product::all();
+        return view('commande.bon_commande_show', compact('commande', 'bc', 'products'));
     }
     public function updateSectionnable($sectionnable, Request $request){
         DB::table('bon_commande_sectionnable')->where('id', $sectionnable)->update([
@@ -228,6 +233,7 @@ class BonCommandeController extends Controller
             $commande->conflits = $conflits;
             return view('commande.conflits', compact('commande', 'conflits'));
     }
+
     public function export(BonCommande $bonCommande)
     {
         return Excel::download(new BCommandeExport($bonCommande->id), $bonCommande->nom . '.xlsx');
@@ -238,5 +244,68 @@ class BonCommandeController extends Controller
         foreach ($commande->bonsCommandes as $bc) {
             $this->export( $bc );
         }
+    }
+
+    public function storeSectionnable(Request $request){
+        //
+        $section = Section::where([ 'commande_id' => $request['bc']['commande_id'], 'nom' => '***Retard***' ])->first();
+
+        if($section){
+            // Crée le Sectionnable
+            $sectionnable = Sectionnable::create([
+                'section_id' => $section->id,
+                'sectionnable_id' => $request['product']['id'],
+                'sectionnable_type' => 'App\Product',
+                'quantite' => $request['product']['quantite'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'conflit' => 0
+            ]);
+            // Insère le sectionnable au bon de commande
+
+            DB::table('bon_commande_sectionnable')->insert([
+                'sectionnable_id' => $sectionnable->id,
+                'bon_commande_id' => $request['bc']['id'],
+                'quantite' => $request['product']['quantite'],
+                'prix_achat' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+
+        } else {
+            $section = Section::create([
+                'commande_id' => $request['bc']['commande_id'],
+                'nom' => '***Retard***',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            // Crée le Sectionnable
+            $sectionnable = Sectionnable::create([
+                'section_id' => $section->id,
+                'sectionnable_id' => $request['product']['id'],
+                'sectionnable_type' => 'App\Product',
+                'quantite' => $request['product']['quantite'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'conflit' => 0
+            ]);
+            // Insère le sectionnable au bon de commande
+            DB::table('bon_commande_sectionnable')->insert([
+                'sectionnable_id' => $sectionnable->id,
+                'bon_commande_id' => $request['bc']['id'],
+                'quantite' => $request['product']['quantite'],
+                'prix_achat' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+        }
+
+        return $sectionnable;
+    }
+
+    public function destroySectionnable($sectionnable){
+        DB::table('bon_commande_sectionnable')->where('id', $sectionnable)->delete();
     }
 }

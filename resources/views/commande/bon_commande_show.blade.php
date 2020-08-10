@@ -4,14 +4,28 @@
 @section('content')
     <bon-commande-show :bc_prop="{{$bc}}" inline-template>
         <div class="tw-container tw-mx-auto tw-flex tw-flex-col">
+            {{-- En Tete --}}
+            <en-tete></en-tete>
+            {{-- Titre Document --}}
             <h1 class="tw-text-center tw-text-5xl">@{{ bc.nom }}</h1>
+            {{-- Boutons de Fonction --}}
             <div>
                 <a href="/bons-commandes/export/{{ $bc->id }}" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5">Export .xlsx</a>
-                <button v-if="! editMode" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="toggleEditMode()">Modifier</button>
-                <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button>
+                {{-- <button v-if="! editMode" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="toggleEditMode()">Modifier</button>
+                <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button> --}}
             </div>
 
+            {{-- Sous-Titre --}}
             <h2 class="tw-text-3xl tw-mt-20">Liste des Produits</h2>
+            {{-- Selecteur --}}
+            <div class="tw-flex tw-items-center tw">
+                <multiselect class="tw-cursor-text" v-model="newProduct" :options="{{ $products }}" :searchable="true" :close-on-select="true" :show-labels="false"
+                placeholder="Pick a value" label="name"></multiselect>
+
+                <input v-if="newProduct" type="number" v-model.number="newProduct.quantite" class="tw-input tw-ml-5 tw-bg-white tw-h-full" placeholder="Quantité">
+            </div>
+            {{-- Boutton Ajouter Nouveau Produit --}}
+            <button v-if="! editMode" class="tw-btn tw-inline-block tw-bg-green-800 tw-text-white tw-mt-5 " @click="addNewProduct()">Ajouter Produit</button>
 
             <table class="table tw-mt-10">
                 <thead>
@@ -49,8 +63,9 @@
                             />
                         </td>
                         <td>
-                            <i v-if="sectionnable.editMode" class="fas fa-save" @click="updateSectionnable(sectionnable)"></i>
-                            <i v-if="! sectionnable.editMode && !editMode" class="fas fa-edit" @click="enableSectionnableEditMode(sectionnable)"></i>
+                            <i v-if="sectionnable.editMode" class="fas fa-save tw-text-green-700 tw-cursor-pointer" @click="updateSectionnable(sectionnable)"></i>
+                            <i v-if="! sectionnable.editMode && !editMode " class="fas fa-edit tw-text-blue-700 tw-cursor-pointer" @click="enableSectionnableEditMode(sectionnable)"></i>
+                            <i class="fas fa-trash tw-text-red-700 tw-ml-5 tw-cursor-pointer" @click="deleteSectionnable(sectionnable)"></i>
                         </td>
                     </tr>
                     {{-- Articles --}}
