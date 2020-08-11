@@ -16,4 +16,8 @@ class BonCommande extends Model
     {
         return $this->belongsTo('App\Commande');
     }
+    public function fournisseur()
+    {
+        return $this->belongsTo('App\Fournisseur');
+    }
 }

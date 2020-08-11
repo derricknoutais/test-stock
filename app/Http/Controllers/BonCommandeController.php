@@ -319,6 +319,9 @@ class BonCommandeController extends Controller
             'fournisseur_id' => $bc->fournisseur_id,
             'bon_commande_id' => $bc->id
         ]);
+        $bc->update([
+            'facture_id' => $facture->id
+        ]);
 
         $sectionnables = DB::table('bon_commande_sectionnable')->where('bon_commande_id', $bc->id)->get();
 
@@ -331,7 +334,7 @@ class BonCommandeController extends Controller
             ]);
         }
 
-
+        return $facture->id;
 
 
 

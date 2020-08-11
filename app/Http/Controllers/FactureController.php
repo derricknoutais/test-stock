@@ -6,6 +6,7 @@ use DB;
 use App\Facture;
 use App\Product;
 use App\Commande;
+use App\BonCommande;
 use Illuminate\Http\Request;
 
 class FactureController extends Controller
@@ -54,6 +55,7 @@ class FactureController extends Controller
     public function show(Facture $facture)
     {
         $facture->loadMissing('sectionnables', 'sectionnables.product');
+        // return  BonCommande::with('fournisseur')->get();
         $products = Product::all();
         return view('facture.show', compact('facture', 'products'));
     }

@@ -20,6 +20,7 @@ class CreateBonCommandesTable extends Migration
             $table->unsignedBigInteger('commande_id');
             $table->unsignedBigInteger('demande_id');
             $table->unsignedBigInteger('fournisseur_id')->nullable();
+            $table->unsignedBigInteger('facture_id')->nullable();
             $table->foreign('commande_id')->references('id')->on('commandes')->onDelete('cascade')->onUpdate('cascade');
 
             $table->timestamps();

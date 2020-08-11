@@ -1874,7 +1874,7 @@ module.exports = function isBuffer (obj) {
 __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['bc_prop'],
+  props: ['bc_prop', 'commande_prop'],
   data: function data() {
     return {
       bc: null,
@@ -1979,8 +1979,11 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     createInvoice: function createInvoice() {
+      var _this3 = this;
+
       axios.get('/bon-commande/' + this.bc.id + '/create-invoice').then(function (response) {
         console.log(response.data);
+        _this3.bc.facture_id = response.data;
       })["catch"](function (error) {
         console.log(error);
       });

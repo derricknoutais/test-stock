@@ -1,7 +1,7 @@
 @extends('layouts.welcome')
 
 @section('content')
-    <bon-commande-show :bc_prop="{{$bc}}" inline-template>
+    <bon-commande-show :bc_prop="{{$bc}}" :commande_prop="{{ $commande }}" inline-template>
         <div class="tw-container tw-mx-auto tw-flex tw-flex-col">
             {{-- En Tete --}}
             <en-tete></en-tete>
@@ -10,7 +10,11 @@
             {{-- Boutons de Fonction --}}
             <div class="tw-mt-5">
                 <a href="/bons-commandes/export/{{ $bc->id }}" class="tw-btn tw-inline-block tw-btn-dark">Export .xlsx</a>
-                <button class="tw-btn tw-inline-block tw-btn-dark" @click="createInvoice()">Créer Facture</button>
+                <a class="tw-btn tw-inline-block tw-btn-dark"  :href="'/facture/' + bc.facture_id " v-if="bc.facture_id">Voir Facture</a>
+                <button class="tw-btn tw-inline-block tw-btn-dark" @click="createInvoice()" v-else>Créer Facture</button>
+                {{-- Voir Facture --}}
+
+
                 {{-- <button v-if="! editMode" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="toggleEditMode()">Modifier</button>
                 <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button> --}}
             </div>

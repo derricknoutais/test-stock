@@ -2,7 +2,7 @@
 <script>
 
 export default {
-    props: [ 'bc_prop' ],
+    props: [ 'bc_prop', 'commande_prop' ],
 
     data(){
         return {
@@ -108,7 +108,7 @@ export default {
         createInvoice(){
             axios.get('/bon-commande/' + this.bc.id + '/create-invoice').then(response => {
                 console.log(response.data);
-
+                this.bc.facture_id = response.data
             }).catch(error => {
                 console.log(error);
             });
