@@ -29,7 +29,7 @@
         <button v-if="! editMode" class="tw-btn tw-inline-block tw-bg-green-800 tw-text-white tw-mt-5 "
             @click="addNewProduct()">Ajouter Produit</button>
 
-        <table class="table tw-mt-10">
+        <table class="table tw-mt-10 tw-w-2/3">
             <thead>
                 <tr class="tw-bg-gray-800 tw-text-gray-100">
                     <th>Nom du Produit</th>

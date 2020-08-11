@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\Template;
 use DB;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 class TemplateController extends Controller
@@ -36,7 +37,6 @@ class TemplateController extends Controller
     }
 
     public function createVend (Request $request) {
-
         $client = new Client();
         $headers = [
             "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",

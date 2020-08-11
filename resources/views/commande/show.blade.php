@@ -53,6 +53,19 @@
                     </div>
                 </div>
 
+                {{-- Carte Facture --}}
+                <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-1/4 tw-mx-5">
+                    <a :href="'/commande/' + commande.id  + '/bons-commandes'" class="tw-flex tw-flex-col tw-w-full tw-justify-center tw-items-center tw-py-3 tw-bg-gray-900 tw-rounded-t-lg">
+                        <i class="fas fa-handshake  fa-2x"></i>
+                        <h3 class="tw-text-xl tw-mt-3">Factures ( @{{ commande.factures.length }} )</h3>
+                    </a>
+
+                    <div class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full  tw-rounded-b-lg tw-py-10">
+                        {{-- <h4 class="tw-text-xl"> <i class="fas fa-money"></i>XAF @{{ totalBonsCommandes }} </h4> --}}
+                        {{-- <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i>Produit par Section</h4>
+                        <h4 class="tw-text-lg tw-mt-3"> <i class="fas fa-rocket"></i> 9 Produit par Section</h4>  --}}
+                    </div>
+                </div>
 
             </div>
 

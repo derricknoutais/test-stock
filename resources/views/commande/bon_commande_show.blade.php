@@ -26,7 +26,7 @@
             </div>
             {{-- Boutton Ajouter Nouveau Produit --}}
             <button v-if="! editMode" class="tw-btn tw-inline-block tw-bg-green-800 tw-text-white tw-mt-5 " @click="addNewProduct()">Ajouter Produit</button>
-
+            {{--  --}}
             <table class="table tw-mt-10">
                 <thead>
                     <tr>
