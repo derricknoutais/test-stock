@@ -18,15 +18,33 @@ export default {
                 total += (sect.pivot.quantite * sect.pivot.prix_achat)
             })
             return total
-        }
+        },
+        convert(amount, currency){
+            switch (currency) {
+                case 'XAF':
+                    amount = amount / 165
+                    break;
+                case 'AED':
+                    amount = amount * 165
+                    break;
+                default:
+                    break;
+            }
+        },
+
     },
     methods : {
+        convertToXaf(sectionnable){
+            sectionnable.prix_achat = this.$refs.prix_achat_aed[0].value
+            this.$forceUpdate()
+            // console.log(this.$refs.prix_achat_aed[0].value)
+        },
         addEdited(sectionnable){
             sectionnable.edited = true
         },
-        addNewProduct(){
+        addNewProduct(location){
             if(this.newProduct){
-                axios.post('/bon-commande/sectionnable', { product: this.newProduct, bc: this.bc, }).then(response => {
+                axios.post('/' + location + '/sectionnable', { product: this.newProduct, bc: this.bc, }).then(response => {
                     console.log(response.data);
                     window.location.reload()
                 }).catch(error => {

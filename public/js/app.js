@@ -1889,15 +1889,33 @@ __webpack_require__.r(__webpack_exports__);
         total += sect.pivot.quantite * sect.pivot.prix_achat;
       });
       return total;
+    },
+    convert: function convert(amount, currency) {
+      switch (currency) {
+        case 'XAF':
+          amount = amount / 165;
+          break;
+
+        case 'AED':
+          amount = amount * 165;
+          break;
+
+        default:
+          break;
+      }
     }
   },
   methods: {
+    convertToXaf: function convertToXaf(sectionnable) {
+      sectionnable.prix_achat = this.$refs.prix_achat_aed[0].value;
+      this.$forceUpdate(); // console.log(this.$refs.prix_achat_aed[0].value)
+    },
     addEdited: function addEdited(sectionnable) {
       sectionnable.edited = true;
     },
-    addNewProduct: function addNewProduct() {
+    addNewProduct: function addNewProduct(location) {
       if (this.newProduct) {
-        axios.post('/bon-commande/sectionnable', {
+        axios.post('/' + location + '/sectionnable', {
           product: this.newProduct,
           bc: this.bc
         }).then(function (response) {

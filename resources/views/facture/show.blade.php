@@ -24,10 +24,14 @@
 
             <input v-if="newProduct" type="number" v-model.number="newProduct.quantite"
                 class="tw-input tw-ml-5 tw-bg-white tw-h-full" placeholder="Quantité">
+            <input v-if="newProduct" type="number" v-model.number="newProduct.prix_achat"
+                class="tw-input tw-ml-5 tw-bg-white tw-h-full" placeholder="Prix">
         </div>
         {{-- Boutton Ajouter Nouveau Produit --}}
-        <button v-if="! editMode" class="tw-btn tw-inline-block tw-bg-green-800 tw-text-white tw-mt-5 "
-            @click="addNewProduct()">Ajouter Produit</button>
+        <button v-if="! editMode"
+            class="tw-btn tw-inline-block tw-bg-green-800 tw-text-white tw-mt-5 "
+            @click="addNewProduct('facture')">Ajouter Produit
+        </button>
 
         <table class="table tw-mt-10">
             <thead>
@@ -77,8 +81,10 @@
                     </td>
                     {{-- Prix Achat (AED) --}}
                     <td class=" tw-bg-indigo-600 tw-text-white">
+                        <input v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                            class="tw-input focus:tw-border-gray-600" type="text" @keyup="convertToXaf(sectionnable)" ref="prix_achat_aed">
 
-                        <span v-if="sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
+                        <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
                         <span v-else>AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
                     </td>
 

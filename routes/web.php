@@ -150,8 +150,6 @@ Route::post('/bon-commande/sectionnable', 'BonCommandeController@storeSectionnab
 Route::put('/bon-commande/{sectionnable}', 'BonCommandeController@updateSectionnable');
 Route::put('/bon-commande/sectionnables', 'BonCommandeController@updateAllSectionnable');
 Route::delete('/bon-commande/sectionnable/{sectionnable}', 'BonCommandeController@destroySectionnable');
-
-
 Route::get('/bon-commande/{bc}/create-invoice', 'BonCommandeController@createInvoice');
 
 
@@ -162,7 +160,7 @@ Route::get('/commande/{commande}/factures', 'FactureController@index');
 Route::get('facture/{facture}', 'FactureController@show');
 Route::put('/facture/{sectionnable}', 'FactureController@updateSectionnable');
 Route::delete('/facture/sectionnable/{sectionnable}', 'FactureController@destroySectionnable');
-
+Route::post('/facture/sectionnable', 'FactureController@storeSectionnable');
 
 // Fournisseurs
 Route::resource('/fournisseur', 'FournisseurController');

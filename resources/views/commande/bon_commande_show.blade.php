@@ -30,7 +30,7 @@
             </div>
             {{-- Boutton Ajouter Nouveau Produit --}}
             <button v-if="! editMode" class="tw-btn tw-inline-block tw-bg-green-800 tw-text-white tw-mt-5 " @click="addNewProduct()">Ajouter Produit</button>
-            {{--  --}}
+            {{-- Tableau  --}}
             <table class="table tw-mt-10">
                 <thead>
                     <tr>
@@ -70,9 +70,14 @@
                         </td>
                         {{-- Prix Achat (AED) --}}
                         <td>
-
+                            <input
+                                v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                                class="tw-input focus:tw-border-gray-600"
+                                type="text" v-model="sectionnable.pivot.prix_achat"
+                            >
                             <span >@{{ sectionnable.pivot.prix_achat / 165 }}</span>
                         </td>
+
 
                         {{-- Total AED --}}
                         <td>

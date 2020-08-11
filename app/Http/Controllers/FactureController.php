@@ -7,6 +7,8 @@ use App\Facture;
 use App\Product;
 use App\Commande;
 use App\BonCommande;
+use App\Section;
+use App\Sectionnable;
 use Illuminate\Http\Request;
 
 class FactureController extends Controller
@@ -103,5 +105,63 @@ class FactureController extends Controller
     public function destroySectionnable($sectionnable){
         // return $sectionnable;
         DB::table('facture_sectionnable')->where('id', $sectionnable)->delete();
+    }
+    public function storeSectionnable(Request $request){
+        //
+        $section = Section::where([ 'commande_id' => $request['bc']['commande_id'], 'nom' => '***Retard***' ])->first();
+
+        if($section){
+            // Crée le Sectionnable
+            $sectionnable = Sectionnable::create([
+                'section_id' => $section->id,
+                'sectionnable_id' => $request['product']['id'],
+                'sectionnable_type' => 'App\Product',
+                'quantite' => $request['product']['quantite'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'conflit' => 0
+            ]);
+            // Insère le sectionnable au bon de commande
+
+            DB::table('facture_sectionnable')->insert([
+                'sectionnable_id' => $sectionnable->id,
+                'facture_id' => $request['bc']['id'],
+                'quantite' => $request['product']['quantite'],
+                'prix_achat' => $request['product']['prix_achat'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+
+        } else {
+            $section = Section::create([
+                'commande_id' => $request['bc']['commande_id'],
+                'nom' => '***Retard***',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            // Crée le Sectionnable
+            $sectionnable = Sectionnable::create([
+                'section_id' => $section->id,
+                'sectionnable_id' => $request['product']['id'],
+                'sectionnable_type' => 'App\Product',
+                'quantite' => $request['product']['quantite'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'conflit' => 0
+            ]);
+            // Insère le sectionnable au bon de commande
+            DB::table('facture_sectionnable')->insert([
+                'sectionnable_id' => $sectionnable->id,
+                'facture_id' => $request['bc']['id'],
+                'quantite' => $request['product']['quantite'],
+                'prix_achat' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+        }
+
+        return $sectionnable;
     }
 }
