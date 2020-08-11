@@ -78,10 +78,11 @@
                                 :duration="500"
                             />
                         </td>
+
                         <td>
-                            <i v-if="sectionnable.editMode" class="fas fa-save tw-text-green-700 tw-cursor-pointer" @click="updateSectionnable(sectionnable)"></i>
+                            <i v-if="sectionnable.editMode" class="fas fa-save tw-text-green-700 tw-cursor-pointer" @click="updateSectionnable(sectionnable, 'bon-commande')"></i>
                             <i v-if="! sectionnable.editMode && !editMode " class="fas fa-edit tw-text-blue-700 tw-cursor-pointer" @click="enableSectionnableEditMode(sectionnable)"></i>
-                            <i class="fas fa-trash tw-text-red-700 tw-ml-5 tw-cursor-pointer" @click="deleteSectionnable(sectionnable)"></i>
+                            <i class="fas fa-trash tw-text-red-700 tw-ml-5 tw-cursor-pointer" @click="deleteSectionnable(sectionnable, 'bon-commande')"></i>
                         </td>
                     </tr>
                     {{-- Articles --}}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Facture;
 use App\Product;
 use App\Commande;
@@ -77,7 +78,7 @@ class FactureController extends Controller
      */
     public function update(Request $request, Facture $facture)
     {
-        //
+
     }
 
     /**
@@ -89,5 +90,16 @@ class FactureController extends Controller
     public function destroy(Facture $facture)
     {
         //
+    }
+
+    public function updateSectionnable($sectionnable, Request $request){
+        DB::table('facture_sectionnable')->where('id', $sectionnable)->update([
+            'quantite' => $request['pivot']['quantite'],
+            'prix_achat' => $request['pivot']['prix_achat']
+        ]);
+    }
+    public function destroySectionnable($sectionnable){
+        // return $sectionnable;
+        DB::table('facture_sectionnable')->where('id', $sectionnable)->delete();
     }
 }

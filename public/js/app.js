@@ -1932,10 +1932,10 @@ __webpack_require__.r(__webpack_exports__);
     formatToPrice: function formatToPrice(value) {
       return "XAF ".concat(value.toFixed(0));
     },
-    updateSectionnable: function updateSectionnable(sectionnable) {
+    updateSectionnable: function updateSectionnable(sectionnable, location) {
       var _this = this;
 
-      axios.put('/bon-commande/' + sectionnable.pivot.id, sectionnable).then(function (response) {
+      axios.put('/' + location + '/' + sectionnable.pivot.id, sectionnable).then(function (response) {
         _this.$swal({
           position: 'top-end',
           width: 300,
@@ -1953,7 +1953,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    deleteSectionnable: function deleteSectionnable(sectionnable) {
+    deleteSectionnable: function deleteSectionnable(sectionnable, location) {
       var _this2 = this;
 
       console.log('hello');
@@ -1968,8 +1968,10 @@ __webpack_require__.r(__webpack_exports__);
         cancelButtonText: 'Annuler'
       }).then(function (result) {
         if (result.value) {
-          axios["delete"]('/bon-commande/sectionnable/' + sectionnable.pivot.id).then(function (response) {
+          axios["delete"]('/' + location + '/sectionnable/' + sectionnable.pivot.id).then(function (response) {
             _this2.$swal('Deleted!', 'Your file has been deleted.', 'success');
+
+            console.log(response.data);
           })["catch"](function (error) {
             console.log(error);
           });

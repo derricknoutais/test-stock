@@ -60,8 +60,8 @@ export default {
         formatToPrice(value) {
           return `XAF ${value.toFixed(0)}`;
         },
-        updateSectionnable(sectionnable){
-            axios.put('/bon-commande/' + sectionnable.pivot.id, sectionnable).then(response => {
+        updateSectionnable(sectionnable, location){
+            axios.put('/' + location + '/' + sectionnable.pivot.id, sectionnable).then(response => {
                 this.$swal({
                     position: 'top-end',
                     width: 300,
@@ -77,7 +77,7 @@ export default {
                 console.log(error);
             });
         },
-        deleteSectionnable(sectionnable){
+        deleteSectionnable(sectionnable, location){
             console.log('hello')
             this.$swal({
                 title: 'Êtes-vous sûr(e)?',
@@ -90,12 +90,13 @@ export default {
                   cancelButtonText: 'Annuler',
                 }).then((result) => {
                   if (result.value) {
-                      axios.delete('/bon-commande/sectionnable/' + sectionnable.pivot.id ).then( response => {
+                      axios.delete('/' + location + '/sectionnable/' + sectionnable.pivot.id ).then( response => {
                           this.$swal(
                             'Deleted!',
                             'Your file has been deleted.',
                             'success'
                           )
+                          console.log(response.data);
                       }).catch( error =>{
                           console.log(error)
                       })
