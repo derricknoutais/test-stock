@@ -127,7 +127,7 @@ class FactureController extends Controller
                 'sectionnable_id' => $sectionnable->id,
                 'facture_id' => $request['bc']['id'],
                 'quantite' => $request['product']['quantite'],
-                'prix_achat' => $request['product']['prix_achat'],
+                'prix_achat' => $request['product']['prix_achat'] * 165,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
