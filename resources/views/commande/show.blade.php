@@ -125,12 +125,15 @@
             <!-- Modal -->
         </header>
 
-        <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-py-20 tw-bg-gray-400 ">
+        {{-- Sections --}}
+        <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-bg-gray-400 ">
 
-            {{-- Sections --}}
-            <div class="tw-flex tw-justify-center">
+            <h2 class="tw-my-10 tw-text-5xl ">Mes Sections</h2>
+
+            {{-- Boutons de fonction --}}
+            <div class="tw-flex tw-justify-center tw-bg-gray-200 tw-w-full tw-py-20">
                 <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
-                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" @click="majStock" >Mettre à Jour Vend Stock
+                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5" @click="majStock" >Mettre à Jour Vend Stock
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
                 </button>
             </div>
@@ -181,10 +184,10 @@
                 </div>
             </div>
 
-            {{-- Section Accordeon --}}
-            <div id="accordianId" role="tablist" aria-multiselectable="true" class="tw-mt-5 tw-w-3/4">
+            {{-- Accordeon de chaque Section --}}
+            <div id="accordianId" role="tablist" aria-multiselectable="true" class="tw-mt-20 tw-w-3/4">
                 <div class="card" v-for="section in commande.sections">
-
+                    {{-- En-Tête de Section --}}
                     <div  class="tw-border tw-border-gray-400 tw-shadow tw-cursor-pointer card-header tw-flex tw-justify-between tw-items-center tw-bg-gray-200 tw-text-gray-800" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">
                         <h5 class="mb-0 tw-text-xl " data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">@{{section.nom}}
                         </h5>
@@ -192,21 +195,23 @@
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
                             <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(section)"></i>
                         </div>
-
                     </div>
-
+                    {{-- Corps de Section --}}
                     <div :id="'section' + section.id" class="collapse in" role="tabpanel" aria-labelledby="section1HeaderId">
+
                         <div class="card-body tw-flex-col tw-items-center tw-justify-center tw-p-0">
 
                             {{-- SECTION TOOLBAR--}}
                             <div class="tw-flex-col tw-justify-center tw-items-center tw-bg-gray-600 tw-w-full tw-p-16">
+
+                                {{-- Type de Produits (Vend, Nouveaux Produits, Template) --}}
                                 <div class="form-check tw-flex tw-justify-around">
                                     <label class="form-check-label">
                                         <input type="radio" class="form-check-input" v-model="sectionnable_type" id="" value="Template">
                                         Template
                                     </label>
                                     <label class="form-check-label">
-                                        <input type="radio" class="form-check-input" v-model="sectionnable_type" id="" value="Article">
+                                        <input type="radio" class="form-check-input" v-model="sectionnable_type" id="" value="ArticleAPI">
                                         Nouveaux Produits
                                     </label>
                                     <label class="form-check-label">
@@ -214,7 +219,22 @@
                                         Produits Vend
                                     </label>
                                 </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
+
+                                {{-- Barre de Recherche --}}
+                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
+                                    <multiselect
+                                        v-model="selected_article" :options="list_type" :searchable="true"
+                                        :show-labels="false" placeholder="Pick a value" :label="label"
+                                        id="select" @search-change="asyncFind"
+                                    ></multiselect>
+                                    <input type="text" v-model.number="selected_article.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
+
+                                    <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
+                                </div>
+
+                                {{-- ANALYTICS --}}
+
+                                {{-- <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
                                     <p class="tw-text-lg">Avril-Juin</p>
                                     <p class="tw-text-lg tw-text-red-500">Juillet-Septembre</p>
                                     <p class="tw-text-lg">Octobre-Décembre</p>
@@ -232,16 +252,34 @@
                                     <p class="tw-text-lg">Stock Actuel:  @{{ selected_article.quantity ? selected_article.quantity : 0 }}</p>
                                     <p class="tw-text-lg">En Commande:  @{{ consignment ? consignment : 0 }}</p>
                                     <p class="tw-text-lg">Subzeros:  @{{ sub ? sub : '0'  }}</p>
-                                </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
-                                    <multiselect v-model="selected_article" :options="list_type" :searchable="true"  :show-labels="false"
-                                    placeholder="Pick a value" :label="label" id="select" ></multiselect>
-                                    <input type="text" v-model.number="selected_article.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
+                                </div> --}}
 
-                                    <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
+                                {{-- Stock --}}
+                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-items-center tw-flex tw-bg-gray-200 tw-p-3" >
+                                    <p class="tw-text-lg tw-mr-4">Stock :</p>
+                                    <i class="fas fa-spinner fa-spin" v-if="selected_article && selected_article.stock_loading"></i>
+                                    <span v-else>@{{ selected_article.stock }}</span>
                                 </div>
+
+                                {{--  --}}
+                                <div class="tw-w-full tw-justify-between tw-mr-4 tw-mt-1 tw-items-center tw-flex tw-bg-gray-200 tw-p-3" >
+                                    <div class="tw-flex">
+                                        <p class="tw-text-lg tw-mr-4">Subzero :</p>
+                                        <i class="fas fa-spinner fa-spin" v-if="selected_article && selected_article.sub_loading"></i>
+                                        <span v-else>@{{ selected_article.sub }}</span>
+
+                                    </div>
+                                    <div>
+                                        <span class="tw-mx-3">Entre </span>
+                                        <input type="date" v-model="sub_date_apres">
+                                        <span class="tw-mx-3">Et </span>
+
+                                        <input type="date" v-model="sub_date_avant" >
+                                    </div>
+                                </div>
+
                             </div>
-
+                            {{-- Nouveaux Produits --}}
                             <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="section.articles.length > 0">
                                 <table class="table">
                                     <h4 class="tw-text-2xl tw-my-5 tw-font-bold tw-underline tw-tracking-wide">Nouveaux Produits</h4>
@@ -269,6 +307,7 @@
                                 </table>
                             </div>
 
+                            {{-- Produits Vend --}}
                             <div class="tw-flex tw-flex-col tw-justify-items-center tw-w-full tw-px-32 tw-py-12" v-if="section.products.length > 0">
                                 <table class="table">
                                     <h4 class="tw-text-2xl tw-font-bold tw-underline tw-tracking-wide">Produits VEND</h4>
@@ -302,7 +341,8 @@
                 </div>
             </div>
 
-            <div class="tw-flex tw-mt-5 tw-justify-center tw-items-center">
+            {{-- Boutons  --}}
+            <div class="tw-flex tw-mt-10 tw-bg-gray-200 tw-w-full tw-py-10 tw-justify-center tw-items-center">
                 <a class="tw-btn tw-btn-dark tw-leading-none" href="/commande">Précédent</a>
                 <a :href=" '/commande/' + commande.id + '/prepa-demande'" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" v-if="commande.sections.length > 0">Suivant</a>
             </div>

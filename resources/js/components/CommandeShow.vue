@@ -8,6 +8,10 @@ export default {
             selected_product: false,
             selected_template: false,
             selected_article: false,
+
+            sub_date_apres : false,
+            sub_date_avant : false,
+
             new_section: 'Huiles Moteur',
             isUpdating: false,
             isDeleting: false,
@@ -15,9 +19,14 @@ export default {
             isLoading : {
                 stock: false,
                 reorder_point: false,
-                majStock: false
+                majStock: false,
+                article: false
             },
             reorderPoint : null,
+
+            articlesApi : false,
+
+
 
             products : null,
             templates: null,
@@ -52,15 +61,48 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
-            axios.get('/subzero/' + this.selected_article.id).then(response => {
-                this.sub = response.data
+
+            this.selected_article.sub_loading = true;
+
+            axios.get('/subzero/' + this.selected_article.id +  (this.sub_date_apres ?  '/' + this.sub_date_apres : '') +   (this.sub_date_avant ? '/' + this.sub_date_avant : '') ).then(response => {
+                this.selected_article.sub = response.data
                 // console.log('Sub: ' + response.data)
+                this.selected_article.sub_loading = false;
             }).catch(error => {
                 console.log(error);
             });
+
+            this.selected_article.stock_loading = true;
+
+
+            axios.get('/api/stock/' + this.selected_article.id).then(response => {
+                this.selected_article.stock = response.data
+                this.selected_article.stock_loading = false
+                this.$forceUpdate()
+            }).catch(error => {
+                this.$swal({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Something went wrong!',
+                  footer: '<a href>Why do I have this issue?</a>'
+                })
+            });
+
         }
     },
     methods:{
+        asyncFind(query){
+            console.log(query)
+            this.isLoading.article = true
+            axios.get('https://azimuts.ga/article/api/search/' + query).then(response => {
+                console.log(response.data);
+                this.sectionnable_type === 'ArticleAPI'
+                this.articlesApi = response.data
+                this.$forceUpdate()
+            }).catch(error => {
+                console.log(error);
+            });
+        },
         addProduct(){
             console.log(this.selected_product)
             axios.post('/product-commande', {commande_id : this.commande.id, product_id : this.selected_product.id } ).then(response => {
@@ -488,9 +530,6 @@ export default {
             var prix_moyen = 0
             return prix_moyen = total / (this.commande.demandes.length)
         },
-        totalBonsCommandes(){
-
-        },
         list_type(){
             if(this.sectionnable_type === 'Product'){
                 this.label = 'name'
@@ -501,6 +540,10 @@ export default {
             } else if(this.sectionnable_type === 'Template'){
                 this.label = 'name'
                 return this.templates
+            }
+            else if( this.sectionnable_type === 'ArticleAPI'){
+                this.label = 'nom'
+                return this.articlesApi
             } else {
                 return this.products
             }

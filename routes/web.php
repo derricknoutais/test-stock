@@ -255,19 +255,31 @@ Route::get('/consignment/{product}', function($product){
 });
 
 
-Route::get('/subzero/{product}', function ($product) {
+Route::get('/subzero/{product}/{apres?}/{avant?}', function ($product, $apres = null, $avant = null) {
 
     $client = new Client();
     $headers = [
         "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
         'Accept'        => 'application/json',
     ];
-    $response = $client->request('GET', 'http://subzero.azimuts.ga/api/sub/' . $product);
+    $response = $client->request('GET', 'http://subzero.azimuts.ga/api/sub/' . $product . ($apres ?  '/' . $apres : null ) . ($avant ?  '/' . $avant : null));
     return $data = json_decode((string) $response->getBody(), true);
 });
 
 
 // VEND API
+Route::get('/api/stock/{product}', function($product){
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
+    $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/products/' . $product . '/inventory'  , ['headers' => $headers]);
+
+    $data = json_decode((string) $response->getBody(), true);
+    return $data['data'][0]['inventory_level'];
+
+});
 Route::get('/vend/update-quantities', function(){
     $client = new Client();
     $headers = [
