@@ -455,6 +455,7 @@ export default {
                     });
 
                 }
+
                 this.$forceUpdate()
             }).catch(error => {
                 console.log(error);
@@ -628,7 +629,8 @@ export default {
                 this.commande.sections.map( section => {
                     if(section.id === article.section_id){
                         response.data.pivot =  {
-                            quantite : article.quantite
+                            quantite : article.quantite,
+                            id: article.id
                         }
                         section.articles.push(response.data)
                     }

@@ -2825,7 +2825,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this14.commande.sections.map(function (section) {
           if (section.id === article.section_id) {
             response.data.pivot = {
-              quantite: article.quantite
+              quantite: article.quantite,
+              id: article.id
             };
             section.articles.push(response.data);
           }
