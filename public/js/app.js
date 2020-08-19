@@ -2178,16 +2178,17 @@ __webpack_require__.r(__webpack_exports__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['commande_prop', 'products_prop', 'templates_prop'],
+  props: ['commande_prop', 'products_prop', 'templates_prop', 'articles_prop'],
   data: function data() {
     return {
       show_products: false,
       selected_product: false,
       selected_template: false,
       selected_article: false,
+      dernieres_commandes: false,
       sub_date_apres: false,
       sub_date_avant: false,
-      new_section: 'Huiles Moteur',
+      new_section: '',
       isUpdating: false,
       isDeleting: false,
       commande: null,
@@ -2198,7 +2199,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         article: false
       },
       reorderPoint: null,
-      articlesApi: false,
+      articlesApi: [],
+      articlesFetched: [],
       products: null,
       templates: null,
       articles: false,
@@ -2238,34 +2240,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       })["catch"](function (error) {
         console.log(error);
       });
-      this.selected_article.stock_loading = true;
-      axios.get('/api/stock/' + this.selected_article.id).then(function (response) {
-        _this.selected_article.stock = response.data;
-        _this.selected_article.stock_loading = false;
-
-        _this.$forceUpdate();
+      axios.get('/dernières-commandes/' + this.sectionnable_type + '/' + this.selected_article.id).then(function (response) {
+        console.log(response.data);
+        _this.dernieres_commandes = response.data;
       })["catch"](function (error) {
-        _this.$swal({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Something went wrong!',
-          footer: '<a href>Why do I have this issue?</a>'
-        });
+        console.log(error);
       });
+
+      if (this.sectionnable_type === 'Product') {
+        this.selected_article.stock_loading = true;
+        axios.get('/api/stock/' + this.selected_article.id).then(function (response) {
+          _this.selected_article.stock = response.data;
+          _this.selected_article.stock_loading = false;
+
+          _this.$forceUpdate();
+        })["catch"](function (error) {
+          _this.$swal({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: '<a href>Why do I have this issue?</a>'
+          });
+        });
+      }
     }
   },
   methods: _defineProperty({
     asyncFind: function asyncFind(query) {
       var _this2 = this;
 
-      console.log(query);
+      if (query === '' || this.sectionnable_type !== 'Article') {
+        this.articlesApi = [];
+        return;
+      }
+
       this.isLoading.article = true;
       axios.get('https://azimuts.ga/article/api/search/' + query).then(function (response) {
-        console.log(response.data);
-        _this2.sectionnable_type === 'ArticleAPI';
-        _this2.articlesApi = response.data;
+        console.log(response.data); // this.sectionnable_type === 'ArticleAPI'
 
-        _this2.$forceUpdate();
+        _this2.articlesApi = response.data;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2330,16 +2343,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     addProductToSection: function addProductToSection(section) {
       var _this6 = this;
 
+      // Initialise les variables
       var products = [];
+      var articles = []; // Grab tous les produits et tous les articles et store les dans les variables créées
+
       this.commande.sections.forEach(function (sect) {
         sect.products.forEach(function (prod) {
           prod.section = sect;
           products.push(prod);
         });
-      });
-      this.found = products.find(function (prod) {
-        return _this6.selected_article.id === prod.id;
-      });
+        sect.articles.forEach(function (art) {
+          art.section = sect;
+          articles.push(art);
+        });
+      }); // Check le produit/article selectionné contre tous les produits/articles de la commande
+
+      if (this.sectionnable_type === 'Product') {
+        this.found = products.find(function (prod) {
+          return _this6.selected_article.id === prod.id;
+        });
+      } else if (this.sectionnable_type === 'Article') {
+        this.found = products.find(function (prod) {
+          return _this6.selected_article.id === prod.id;
+        });
+      } // Si le produit existe déjà
+
 
       if (this.found) {
         this.$swal({
@@ -2370,6 +2398,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 quantite: _this6.selected_article.quantite
               }
             });
+
+            _this6.$forceUpdate();
+
             axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_article.id + '/commandé').then(function (response) {
               console.log(response.data);
             })["catch"](function (error) {
@@ -2734,13 +2765,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.sectionnable_type === 'Product') {
         this.label = 'name';
         return this.products;
-      } else if (this.sectionnable_type === 'Article') {
-        this.label = 'nom';
-        return this.articles;
       } else if (this.sectionnable_type === 'Template') {
         this.label = 'name';
         return this.templates;
-      } else if (this.sectionnable_type === 'ArticleAPI') {
+      } else if (this.sectionnable_type === 'Article') {
         this.label = 'nom';
         return this.articlesApi;
       } else {
@@ -2788,6 +2816,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     })["catch"](function (error) {
       console.log(error);
+    });
+    console.log(this.articles_prop);
+    this.articles_prop.forEach(function (article) {
+      axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id).then(function (response) {
+        _this14.articlesFetched.push(response.data);
+
+        _this14.commande.sections.map(function (section) {
+          if (section.id === article.section_id) {
+            response.data.pivot = {
+              quantite: article.quantite
+            };
+            section.articles.push(response.data);
+          }
+
+          _this14.$forceUpdate();
+        });
+      })["catch"](function (error) {
+        console.log(error);
+      });
     });
     this.mapArrays();
   }

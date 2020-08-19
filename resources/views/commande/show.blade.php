@@ -3,7 +3,7 @@
 
 @section('content')
 
-<commande-show :commande_prop="{{ $commande }}" :products_prop="{{ $products }}" :templates_prop="{{ $templates }}"  inline-template>
+<commande-show :articles_prop="{{ $id_articles }}" :commande_prop="{{ $commande }}" :products_prop="{{ $products }}" :templates_prop="{{ $templates }}"  inline-template>
     <section>
 
         <header class="tw-flex tw-flex-col tw-items-center tw-bg-gray-600 tw-text-white tw-py-10">
@@ -125,7 +125,7 @@
             <!-- Modal -->
         </header>
 
-        {{-- Sections --}}
+        {{-- Mes Sections --}}
         <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-bg-gray-400 ">
 
             <h2 class="tw-my-10 tw-text-5xl ">Mes Sections</h2>
@@ -163,7 +163,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Supprimer Section</h5>
+                            <h5 class="modal-title">Ajouter Section</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -211,7 +211,7 @@
                                         Template
                                     </label>
                                     <label class="form-check-label">
-                                        <input type="radio" class="form-check-input" v-model="sectionnable_type" id="" value="ArticleAPI">
+                                        <input type="radio" class="form-check-input" v-model="sectionnable_type" id="" value="Article">
                                         Nouveaux Produits
                                     </label>
                                     <label class="form-check-label">
@@ -232,27 +232,6 @@
                                     <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
                                 </div>
 
-                                {{-- ANALYTICS --}}
-
-                                {{-- <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
-                                    <p class="tw-text-lg">Avril-Juin</p>
-                                    <p class="tw-text-lg tw-text-red-500">Juillet-Septembre</p>
-                                    <p class="tw-text-lg">Octobre-Décembre</p>
-                                    <p class="tw-text-lg">Janvier-Mars</p>
-                                    <p class="tw-text-lg">Total</p>
-                                </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-between tw-items-center" v-if="selected_article">
-                                    <p class="tw-text-lg">@{{ vente.Trim1 ? vente.Trim1 : 0 }}</p>
-                                    <p class="tw-text-lg tw-text-red-500">@{{ vente.Trim2 ? vente.Trim2 : 0}}</p>
-                                    <p class="tw-text-lg">@{{ vente.Trim3 ? vente.Trim3 : 0}}</p>
-                                    <p class="tw-text-lg">@{{ vente.Trim4 ? vente.Trim4 : 0}}</p>
-                                    <p class="tw-text-lg">@{{ vente.quantite_vendue ? vente.quantite_vendue : 0}}</p>
-                                </div>
-                                <div class="tw-w-full tw-mr-4 tw-mt-10 tw-flex tw-justify-around tw-items-center" v-if="selected_article">
-                                    <p class="tw-text-lg">Stock Actuel:  @{{ selected_article.quantity ? selected_article.quantity : 0 }}</p>
-                                    <p class="tw-text-lg">En Commande:  @{{ consignment ? consignment : 0 }}</p>
-                                    <p class="tw-text-lg">Subzeros:  @{{ sub ? sub : '0'  }}</p>
-                                </div> --}}
 
                                 {{-- Stock --}}
                                 <div class="tw-w-full tw-mr-4 tw-mt-10 tw-items-center tw-flex tw-bg-gray-200 tw-p-3" >
@@ -261,7 +240,7 @@
                                     <span v-else>@{{ selected_article.stock }}</span>
                                 </div>
 
-                                {{--  --}}
+                                {{-- Subzero --}}
                                 <div class="tw-w-full tw-justify-between tw-mr-4 tw-mt-1 tw-items-center tw-flex tw-bg-gray-200 tw-p-3" >
                                     <div class="tw-flex">
                                         <p class="tw-text-lg tw-mr-4">Subzero :</p>
@@ -278,9 +257,25 @@
                                     </div>
                                 </div>
 
+                                {{-- Dernières Commandes --}}
+                                <div class="tw-flex tw-flex-col tw-w-full tw-bg-gray-200 tw-p-3 tw-mt-1">
+                                    <div class="tw-flex">
+                                        <p class="tw-text-2xl tw-mr-4 tw-text-center">Dernières Commandes</p>
+                                    </div>
+                                    <div class="tw-flex tw-flex-col tw-mt-5 tw-bg-gray-400 tw-p-5" v-if="dernieres_commandes" v-for="dc in dernieres_commandes">
+                                        <p class="tw-text-xl tw-underline">@{{ dc.commande.name }}</p>
+                                        <a :href=" '/commande/' + commande.id + '/bons-commandes/' + dc.id " class="tw-text-lg tw-mt-3">@{{ dc.nom }}</a>
+                                        <p class="tw-text-lg">
+                                            <span class="tw-text-red-500">
+                                                @{{ dc.sectionnable.quantite }}
+                                            </span>
+                                            x @{{ dc.sectionnable.prix_achat }} = @{{ dc.sectionnable.quantite * dc.sectionnable.prix_achat }}</p>
+                                    </div>
+                                </div>
+
                             </div>
                             {{-- Nouveaux Produits --}}
-                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="section.articles.length > 0">
+                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="articlesFetched.length > 0">
                                 <table class="table">
                                     <h4 class="tw-text-2xl tw-my-5 tw-font-bold tw-underline tw-tracking-wide">Nouveaux Produits</h4>
                                     <thead>

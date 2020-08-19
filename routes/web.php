@@ -1,13 +1,15 @@
 <?php
 ini_set('max_execution_time', 180);
-// use DB;
+use DB;
 use App\Product;
 use App\Consignment;
 use App\Sales;
 use App\Commande;
 use App\BonCommande;
 use App\Demande;
+use App\Section;
 use App\Fournisseur;
+use App\Sectionnable;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
@@ -42,6 +44,30 @@ Route::put('product-template', function ( Request $request) {
 Route::resource('/commande', 'CommandeController');
 Route::post('/product-commande', 'CommandeController@addProduct');
 Route::post('/template-commande', 'CommandeController@addTemplate');
+Route::get('/dernières-commandes/{sectionnable_type}/{selected_article}', function($sectionnable_type, $selected_article){
+    // return $selected_article;
+    if($sectionnable_type === 'Product'){
+        $commande_en_cours = Commande::where('state', '<>', 'Terminé')->pluck('id');
+        $sections_en_cours = Section::whereIn('commande_id', $commande_en_cours)->pluck('id');
+        $sectionnables = Sectionnable::where('sectionnable_id', $selected_article)->whereIn('section_id', $sections_en_cours)->pluck('id');
+        $bc_sectionnable_pluck =  DB::table('bon_commande_sectionnable')->whereIn('sectionnable_id', $sectionnables)->pluck('bon_commande_id');
+        $bc_sectionnable =  DB::table('bon_commande_sectionnable')->whereIn('sectionnable_id', $sectionnables)->get();
+        $bon_commande = BonCommande::whereIn('id', $bc_sectionnable_pluck)->get();
+        foreach ($bon_commande as $bc ) {
+            $bc['commande'] = Commande::find($bc->commande_id);
+            foreach($bc_sectionnable as $sec){
+                if($sec->bon_commande_id === $bc->id){
+                    $bc['sectionnable'] = $sec;
+                }
+            }
+        }
+
+        return  $bon_commande;
+
+    }
+    // return $selected_article;
+});
+
 
 
 /**

@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: ['commande_prop', 'products_prop', 'templates_prop' ],
+    props: ['commande_prop', 'products_prop', 'templates_prop', 'articles_prop' ],
     data(){
         return {
 
@@ -9,10 +9,12 @@ export default {
             selected_template: false,
             selected_article: false,
 
+            dernieres_commandes : false,
+
             sub_date_apres : false,
             sub_date_avant : false,
 
-            new_section: 'Huiles Moteur',
+            new_section: '',
             isUpdating: false,
             isDeleting: false,
             commande: null,
@@ -24,8 +26,9 @@ export default {
             },
             reorderPoint : null,
 
-            articlesApi : false,
+            articlesApi : [],
 
+            articlesFetched : [],
 
 
             products : null,
@@ -72,33 +75,44 @@ export default {
                 console.log(error);
             });
 
-            this.selected_article.stock_loading = true;
-
-
-            axios.get('/api/stock/' + this.selected_article.id).then(response => {
-                this.selected_article.stock = response.data
-                this.selected_article.stock_loading = false
-                this.$forceUpdate()
+            axios.get('/dernières-commandes/' + this.sectionnable_type + '/' + this.selected_article.id ).then(response => {
+                console.log(response.data);
+                this.dernieres_commandes = response.data
             }).catch(error => {
-                this.$swal({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: 'Something went wrong!',
-                  footer: '<a href>Why do I have this issue?</a>'
-                })
+                console.log(error);
             });
 
+            if(this.sectionnable_type === 'Product'){
+
+                this.selected_article.stock_loading = true;
+
+                axios.get('/api/stock/' + this.selected_article.id).then(response => {
+                    this.selected_article.stock = response.data
+                    this.selected_article.stock_loading = false
+                    this.$forceUpdate()
+                }).catch(error => {
+                    this.$swal({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Something went wrong!',
+                      footer: '<a href>Why do I have this issue?</a>'
+                    })
+                });
+            }
         }
     },
     methods:{
         asyncFind(query){
-            console.log(query)
+            if(query === '' || this.sectionnable_type !== 'Article'){
+                this.articlesApi = []
+                return
+            }
             this.isLoading.article = true
             axios.get('https://azimuts.ga/article/api/search/' + query).then(response => {
                 console.log(response.data);
-                this.sectionnable_type === 'ArticleAPI'
+                // this.sectionnable_type === 'ArticleAPI'
                 this.articlesApi = response.data
-                this.$forceUpdate()
+
             }).catch(error => {
                 console.log(error);
             });
@@ -144,16 +158,34 @@ export default {
             }
         },
         addProductToSection(section){
+            // Initialise les variables
             var products = []
+            var articles = []
+
+            // Grab tous les produits et tous les articles et store les dans les variables créées
             this.commande.sections.forEach( sect => {
                 sect.products.forEach(prod => {
                     prod.section = sect
                     products.push(prod)
                 })
+                sect.articles.forEach( art => {
+                    art.section = sect
+                    articles.push(art)
+                })
             });
-            this.found = products.find( prod => {
-                return this.selected_article.id === prod.id
-            });
+
+            // Check le produit/article selectionné contre tous les produits/articles de la commande
+            if(this.sectionnable_type === 'Product'){
+                this.found = products.find( prod => {
+                    return this.selected_article.id === prod.id
+                });
+            } else if( this.sectionnable_type === 'Article') {
+                this.found = products.find( prod => {
+                    return this.selected_article.id === prod.id
+                });
+            }
+
+            // Si le produit existe déjà
             if(this.found){
                 this.$swal({
                     icon: 'error',
@@ -176,6 +208,7 @@ export default {
                                 quantite : this.selected_article.quantite
                             },
                         });
+                        this.$forceUpdate()
 
                         axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_article.id + '/commandé').then(response => {
                             console.log(response.data);
@@ -534,14 +567,11 @@ export default {
             if(this.sectionnable_type === 'Product'){
                 this.label = 'name'
                 return this.products
-            } else if(this.sectionnable_type === 'Article'){
-                this.label = 'nom'
-                return this.articles
             } else if(this.sectionnable_type === 'Template'){
                 this.label = 'name'
                 return this.templates
             }
-            else if( this.sectionnable_type === 'ArticleAPI'){
+            else if( this.sectionnable_type === 'Article'){
                 this.label = 'nom'
                 return this.articlesApi
             } else {
@@ -576,16 +606,38 @@ export default {
                         article.type = article.fiche_renseignement.type.nom
                         article.search_name += ' ' + article.fiche_renseignement.type.nom
                     }
+
                     if(article.fiche_renseignement.moteur){
                         article.moteur = article.fiche_renseignement.moteur.nom
                         article.search_name += ' ' + article.fiche_renseignement.moteur.nom
                     }
+
                 }
             })
 
 
         }).catch(error => {
             console.log(error);
+        });
+
+        console.log(this.articles_prop)
+        this.articles_prop.forEach( article => {
+
+            axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id ).then(response => {
+                this.articlesFetched.push(response.data)
+                this.commande.sections.map( section => {
+                    if(section.id === article.section_id){
+                        response.data.pivot =  {
+                            quantite : article.quantite
+                        }
+                        section.articles.push(response.data)
+                    }
+                    this.$forceUpdate()
+                })
+            }).catch( error => {
+                console.log(error);
+            });
+
         });
 
 
