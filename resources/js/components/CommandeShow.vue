@@ -180,8 +180,8 @@ export default {
                     return this.selected_article.id === prod.id
                 });
             } else if( this.sectionnable_type === 'Article') {
-                this.found = products.find( prod => {
-                    return this.selected_article.id === prod.id
+                this.found = articles.find( art => {
+                    return this.selected_article.id === art.id
                 });
             }
 

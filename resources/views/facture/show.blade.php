@@ -24,6 +24,7 @@
 
             <input v-if="newProduct" type="number" v-model.number="newProduct.quantite"
                 class="tw-input tw-ml-5 tw-bg-white tw-h-full" placeholder="Quantité">
+
             <input v-if="newProduct" type="number" v-model.number="newProduct.prix_achat"
                 class="tw-input tw-ml-5 tw-bg-white tw-h-full" placeholder="Prix">
         </div>
@@ -47,7 +48,7 @@
             </thead>
             <tbody>
                 {{-- Produits --}}
-                <tr v-for="sectionnable in bc.sectionnables" v-if="sectionnable.product">
+                <tr v-for="(sectionnable, index) in bc.sectionnables" v-if="sectionnable.product">
 
                     {{-- Nom du Produit --}}
                     <td
@@ -81,11 +82,14 @@
                     </td>
                     {{-- Prix Achat (AED) --}}
                     <td class=" tw-bg-indigo-600 tw-text-white">
-                        <input v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
-                            class="tw-input focus:tw-border-gray-600" type="text" @keyup="convertToXaf(sectionnable)" ref="prix_achat_aed">
+                        <input v-show="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                            class="tw-input focus:tw-border-gray-600 tw-text-black" type="number"
+                            @keyup="convertToXaf(sectionnable, index)" :ref="'prix_achat_aed_' + index"
+                            value=""
+                        >
 
                         <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
-                        <span v-else>AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
+                        <span v-if=" ! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 === 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
                     </td>
 
                     {{-- Total AED --}}
@@ -97,7 +101,9 @@
                         {{-- Edit Mode --}}
                         <i v-if="! sectionnable.editMode && !editMode "
                             class="fas fa-edit tw-text-blue-700 tw-cursor-pointer"
-                            @click="enableSectionnableEditMode(sectionnable)"></i>
+                            @click="enableSectionnableEditMode(sectionnable, index)">
+                        </i>
+
                         {{-- Enregistrer --}}
                         <i v-if="sectionnable.editMode" class="fas fa-save tw-text-green-700 tw-cursor-pointer"
                             @click="updateSectionnable(sectionnable, 'facture')"></i>

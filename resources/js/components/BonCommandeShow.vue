@@ -34,10 +34,9 @@ export default {
 
     },
     methods : {
-        convertToXaf(sectionnable){
-            sectionnable.prix_achat = this.$refs.prix_achat_aed[0].value
+        convertToXaf(sectionnable, index){
+            sectionnable.pivot.prix_achat = this.$refs['prix_achat_aed_' + index ][0].value * 165
             this.$forceUpdate()
-            // console.log(this.$refs.prix_achat_aed[0].value)
         },
         addEdited(sectionnable){
             sectionnable.edited = true
@@ -70,8 +69,9 @@ export default {
                 console.log(error);
             });
         },
-        enableSectionnableEditMode(sectionnable){
-            console.log(sectionnable)
+        enableSectionnableEditMode(sectionnable, index){
+            console.log(this.$refs)
+            this.$refs['prix_achat_aed_' + index ][0].value = sectionnable.pivot.prix_achat / 165
             sectionnable.editMode = true;
             this.$forceUpdate()
         },

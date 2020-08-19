@@ -1906,9 +1906,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    convertToXaf: function convertToXaf(sectionnable) {
-      sectionnable.prix_achat = this.$refs.prix_achat_aed[0].value;
-      this.$forceUpdate(); // console.log(this.$refs.prix_achat_aed[0].value)
+    convertToXaf: function convertToXaf(sectionnable, index) {
+      sectionnable.pivot.prix_achat = this.$refs['prix_achat_aed_' + index][0].value * 165;
+      this.$forceUpdate();
     },
     addEdited: function addEdited(sectionnable) {
       sectionnable.edited = true;
@@ -1942,8 +1942,9 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    enableSectionnableEditMode: function enableSectionnableEditMode(sectionnable) {
-      console.log(sectionnable);
+    enableSectionnableEditMode: function enableSectionnableEditMode(sectionnable, index) {
+      console.log(this.$refs);
+      this.$refs['prix_achat_aed_' + index][0].value = sectionnable.pivot.prix_achat / 165;
       sectionnable.editMode = true;
       this.$forceUpdate();
     },
@@ -2363,8 +2364,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return _this6.selected_article.id === prod.id;
         });
       } else if (this.sectionnable_type === 'Article') {
-        this.found = products.find(function (prod) {
-          return _this6.selected_article.id === prod.id;
+        this.found = articles.find(function (art) {
+          return _this6.selected_article.id === art.id;
         });
       } // Si le produit existe déjà
 
