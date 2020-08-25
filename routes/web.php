@@ -294,13 +294,52 @@ Route::get('/subzero/{product}/{apres?}/{avant?}', function ($product, $apres = 
 
 
 // VEND API
+
+Route::post('/creer-bl', function(Request $request){
+    // return $request->all();
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        'Accept'        => 'application/json',
+    ];
+    // Créer un nouveau Consignment
+    $response = $client->request('POST', 'https://stapog.vendhq.com/api/consignment', [
+        'headers' => $headers,
+        'body' => json_encode([
+            'outlet_id' => '06bf537b-c77f-11e6-ff13-fb602832ccea',
+            'name' => $request->nom . ' ' . $request['commande']['name'],
+            'type' => 'SUPPLIER',
+            'status' => 'DISPATCHED'
+        ])
+    ]);
+    $data = json_decode((string) $response->getBody(), true);
+
+    // Créer un Produit dans le consignment
+    foreach ($request['sectionnables'] as $sect) {
+        $response2 = $client->request('POST', 'https://stapog.vendhq.com/api/consignment_product', [
+            'headers' => $headers,
+            'body' => json_encode([
+                'consignment_id' => $data['id'],
+                'product_id' => $sect['sectionnable_id'],
+                'count' => $sect['quantite'],
+                'cost' => $sect['pivot']['prix_achat']
+            ])
+        ]);
+    }
+
+    return $data;
+});
+
+
 Route::get('/api/stock/{product}', function($product){
     $client = new Client();
     $headers = [
         "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
         'Accept'        => 'application/json',
     ];
-    $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/products/' . $product . '/inventory'  , ['headers' => $headers]);
+    $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/products/' . $product . '/inventory'  , [
+        'headers' => $headers
+    ]);
 
     $data = json_decode((string) $response->getBody(), true);
     return $data['data'][0]['inventory_level'];

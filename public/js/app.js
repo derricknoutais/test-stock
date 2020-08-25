@@ -1943,7 +1943,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     enableSectionnableEditMode: function enableSectionnableEditMode(sectionnable, index) {
-      console.log(this.$refs);
       this.$refs['prix_achat_aed_' + index][0].value = sectionnable.pivot.prix_achat / 165;
       sectionnable.editMode = true;
       this.$forceUpdate();
@@ -2006,13 +2005,35 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    creerBonLivraison: function creerBonLivraison() {
+      axios.post('/creer-bl/', this.bc).then(function (response) {
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   created: function created() {
+    var _this4 = this;
+
     this.bc = this.bc_prop;
     this.bc.sectionnables.map(function (sectionnable) {
       sectionnable.editMode = false;
       sectionnable.edited = false;
+    });
+    this.bc.sectionnables.forEach(function (sect) {
+      // console.log('hello')
+      if (sect.sectionnable_type === "App\\Article") {
+        console.log('hello');
+        axios.get('https://azimuts.ga/article/api/' + sect.sectionnable_id).then(function (response) {
+          sect.article = response.data;
+
+          _this4.$forceUpdate();
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
     });
   }
 });

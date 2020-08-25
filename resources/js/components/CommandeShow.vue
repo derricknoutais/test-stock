@@ -443,8 +443,10 @@ export default {
             axios.delete('/sectionnable/' + produit.pivot.id).then(response => {
 
                 if(type === 'Product'){
+
                     var index = section.products.indexOf(produit)
                     section.products.splice(index, 1)
+
                 } else {
                     axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(response => {
                         console.log(response.data);
@@ -622,11 +624,14 @@ export default {
         });
 
         console.log(this.articles_prop)
+
         this.articles_prop.forEach( article => {
 
             axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id ).then(response => {
-                this.articlesFetched.push(response.data)
+                this.articlesFetched.push(response.data);
+
                 this.commande.sections.map( section => {
+
                     if(section.id === article.section_id){
                         response.data.pivot =  {
                             quantite : article.quantite,

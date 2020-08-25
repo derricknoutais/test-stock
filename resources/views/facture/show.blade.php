@@ -11,8 +11,10 @@
         {{-- Boutons de Fonction --}}
         <div class="tw-mt-5">
             {{-- <a href="/factures/export/{{ $facture->id }}" class="tw-btn tw-inline-block tw-btn-dark">Export .xlsx</a> --}}
+            <button class="tw-btn tw-btn-dark" @click="creerBonLivraison()">Créer B.L dans Vend</button>
+
             {{-- <button v-if="! editMode" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="toggleEditMode()">Modifier</button>
-                <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button> --}}
+            <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button> --}}
         </div>
 
         {{-- Sous-Titre --}}
@@ -82,12 +84,11 @@
                     </td>
                     {{-- Prix Achat (AED) --}}
                     <td class=" tw-bg-indigo-600 tw-text-white">
-                        <input v-show="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                        <input
+                            v-show="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
                             class="tw-input focus:tw-border-gray-600 tw-text-black" type="number"
                             @keyup="convertToXaf(sectionnable, index)" :ref="'prix_achat_aed_' + index"
-                            value=""
                         >
-
                         <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
                         <span v-if=" ! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 === 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
                     </td>

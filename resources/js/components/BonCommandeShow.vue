@@ -70,7 +70,6 @@ export default {
             });
         },
         enableSectionnableEditMode(sectionnable, index){
-            console.log(this.$refs)
             this.$refs['prix_achat_aed_' + index ][0].value = sectionnable.pivot.prix_achat / 165
             sectionnable.editMode = true;
             this.$forceUpdate()
@@ -130,6 +129,14 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
+        },
+        creerBonLivraison(){
+            axios.post('/creer-bl/', this.bc ).then(response => {
+                console.log(response.data);
+
+            }).catch(error => {
+                console.log(error);
+            });
         }
     },
     created(){
@@ -138,6 +145,23 @@ export default {
             sectionnable.editMode = false
             sectionnable.edited = false
         })
+
+        this.bc.sectionnables.forEach( sect => {
+            // console.log('hello')
+            if(sect.sectionnable_type === "App\\Article" ){
+                console.log('hello')
+                axios.get('https://azimuts.ga/article/api/' + sect.sectionnable_id ).then(response => {
+
+                    sect.article = response.data
+                    this.$forceUpdate()
+                }).catch( error => {
+                    console.log(error);
+                });
+            }
+
+
+
+        });
     }
 }
 </script>

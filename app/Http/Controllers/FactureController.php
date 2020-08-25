@@ -25,7 +25,7 @@ class FactureController extends Controller
 
     public function show(Facture $facture)
     {
-        $facture->loadMissing('sectionnables', 'sectionnables.product');
+        $facture->loadMissing('sectionnables', 'sectionnables.product', 'commande');
         // return  BonCommande::with('fournisseur')->get();
         $products = Product::all();
         return view('facture.show', compact('facture', 'products'));
