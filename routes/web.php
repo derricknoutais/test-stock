@@ -27,6 +27,9 @@ Route::resource('/product', 'ProductController');
 
 // Templates
 Route::resource('/template', 'TemplateController');
+Route::get('/template/type/{type}', 'TemplateController@type');
+
+
 
 Route::post('/product-template', 'ProductTemplateController@addProduct');
 Route::post('/product-template/delete', 'ProductTemplateController@removeProduct');

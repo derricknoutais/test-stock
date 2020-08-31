@@ -11,7 +11,11 @@ use Illuminate\Http\Request;
 class TemplateController extends Controller
 {
     public function index(){
-        $templates = Template::all();
+        return view('template.menu');
+    }
+
+    public function type($type){
+        $templates = Template::where('type', $type)->get();
         return view('template.index', compact('templates'));
     }
 
