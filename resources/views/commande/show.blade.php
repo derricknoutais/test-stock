@@ -133,9 +133,11 @@
             {{-- Boutons de fonction --}}
             <div class="tw-flex tw-justify-center tw-bg-gray-200 tw-w-full tw-py-20">
                 <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none" data-toggle="modal" data-target="#section" >Ajouter Section</button>
+                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5" data-toggle="modal" data-target="#reorderpoint" >Ajouter Reorder Point</button>
                 <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5" @click="majStock" >Mettre à Jour Vend Stock
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
                 </button>
+
             </div>
 
 
@@ -159,6 +161,32 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="reorderpoint" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="removeSection()">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Ajouter Reorder Point</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                              <label for="">Identifiant Reorder Point</label>
+                              <input type="text"
+                                class="form-control" v-model="reorder_point_id" placeholder="Copiez l'Identifiant du Reorder Point dans Vend">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="tw-btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            {{-- <a href="/api/vend/reorderpoint/8483855f-3d03-4390-b319-186fccea9c99" type="button" class="tw-btn btn-primary">Ajouter Reorder Point </a> --}}
+                            <button type="button" class="tw-btn btn-primary" @click="addReorderPoint()">Ajouter Reorder Point</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade" id="section" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="addSection()">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">

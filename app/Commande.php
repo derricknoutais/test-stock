@@ -15,7 +15,7 @@ class Commande extends Model
 
     public function sections()
     {
-        return $this->morphedByMany('App\Section', 'commandable');
+        return $this->hasMany('App\Section');
     }
 
     public function templates()

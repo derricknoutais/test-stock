@@ -24,12 +24,12 @@
                     <tr>
                         <td scope="row">
                             <a href="/template/{{ $template->id }}">{{ $template->name }}</a>
-                            
+
                         </td>
                         <td>{{ sizeof($template->products) }}</td>
                     </tr>
                 @endforeach
-                
+
             </tbody>
         </table>
     </section>
@@ -48,13 +48,19 @@
                 </div>
                 <form action="/template" method="POST">
                 <div class="modal-body">
-                    
                         @csrf
                         <div class="form-group">
                           <label for="">Nom </label>
-                          <input type="text" class="form-control" name="name" id="" aria-describedby="helpId" placeholder="">
+                          <input type="text" class="form-control" name="name" id="" aria-describedby="helpId">
                         </div>
-                    
+                        <div class="form-group">
+                          <label for="">Type</label>
+                          <select class="form-control" name="type">
+                            <option>Inventaire</option>
+                            <option>Commande</option>
+                          </select>
+                        </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>

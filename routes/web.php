@@ -288,7 +288,7 @@ Route::get('/subzero/{product}/{apres?}/{avant?}', function ($product, $apres = 
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
     $response = $client->request('GET', 'http://subzero.azimuts.ga/api/sub/' . $product . ($apres ?  '/' . $apres : null ) . ($avant ?  '/' . $avant : null));
@@ -302,7 +302,7 @@ Route::post('/creer-bl', function(Request $request){
     // return $request->all();
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
     // Créer un nouveau Consignment
@@ -332,12 +332,46 @@ Route::post('/creer-bl', function(Request $request){
 
     return $data;
 });
+Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', function($commande_id, $reorderpoint_id){
+    $client = new Client();
+    $headers = [
+        "Authorization" => "Bearer "  . env('VEND_TOKEN'),
+        'Accept'        => 'application/json',
+    ];
+    $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/consignments/' . $reorderpoint_id . '/products'  , [
+        'headers' => $headers
+    ]);
 
+    $data = json_decode((string) $response->getBody(), true);
+    $totaux = array();
+    $totaux['products'] = sizeof($data['data']);
+        if( ! $section = Section::where( ['nom' => 'Reorder Point', 'commande_id' => $commande_id ] )->first() )
+        {
+            $section = Section::create([
+                'nom' => 'Reorder Point',
+                'commande_id' => $commande_id
+            ]);
+        }
+    $totaux['inserted'] = 0;
+    foreach( $data['data'] as $product )
+    {
+        if( ! DB::table('sectionnables')->where(['section_id' => $section->id, 'sectionnable_id' => $product['product_id'] ])->first() ){
+            DB::table('sectionnables')->insert([
+                'section_id' => $section->id,
+                'sectionnable_id' => $product['product_id'],
+                'sectionnable_type' => 'App\\Product',
+                'quantite' => $product['count']
+            ]);
+            $totaux['inserted'] += 1;
+        }
+    }
+    return $totaux;
+});
 
 Route::get('/api/stock/{product}', function($product){
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
     $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/products/' . $product . '/inventory'  , [
@@ -351,7 +385,7 @@ Route::get('/api/stock/{product}', function($product){
 Route::get('/vend/update-quantities', function(){
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
 
@@ -380,7 +414,7 @@ Route::get('/api/produits', function () {
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
 
@@ -423,7 +457,7 @@ Route::get('/api/sales', function () {
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
 
@@ -497,7 +531,7 @@ Route::get('/api/stocktake', function () {
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
 
@@ -527,7 +561,7 @@ Route::get('/api/stocktake/products', function () {
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
 
@@ -561,7 +595,7 @@ Route::get('/api/stock', function () {
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
     for ($j = 1; $j <= 17; $j++) {
@@ -591,7 +625,7 @@ Route::get('/api/products', function () {
 
     $client = new Client();
     $headers = [
-        "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+        "Authorization" => "Bearer " . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
 

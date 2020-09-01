@@ -20,16 +20,15 @@ class TemplateController extends Controller
     }
 
     public function show(Template $template){
-
         $template->loadMissing('products');
         $products = Product::all();
         return view('template.show', compact('template', 'products'));
-
     }
 
     public function store(Request $request){
         $template = Template::create([
-            'name' => $request->name
+            'name' => $request->name,
+            'type' => $request->type
         ]);
         if ($template)
             return redirect()->back();

@@ -17,6 +17,7 @@ class CreateArticleSectionTable extends Migration
             $table->bigIncrements('id');
 
             $table->unsignedBigInteger('section_id');
+            $table->unique(['section_id', 'sectionnable_id']);
             $table->string('sectionnable_id');
             $table->string('sectionnable_type');
             $table->unsignedBigInteger('quantite');

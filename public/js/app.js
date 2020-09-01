@@ -2197,6 +2197,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+var _methods;
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2207,6 +2209,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selected_product: false,
       selected_template: false,
       selected_article: false,
+      reorder_point_id: false,
       dernieres_commandes: false,
       sub_date_apres: false,
       sub_date_avant: false,
@@ -2287,7 +2290,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
-  methods: _defineProperty({
+  methods: (_methods = {
     asyncFind: function asyncFind(query) {
       var _this2 = this;
 
@@ -2520,9 +2523,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     addReorderpoint: function addReorderpoint() {
+      var _this8 = this;
+
       axios.post('/reorderpoint-commande', {
         commande_id: this.commande.id
       }).then(function (response) {
+        _this8.$swal();
+
         console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
@@ -2550,11 +2557,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     mapArrays: function mapArrays() {
-      var _this8 = this;
+      var _this9 = this;
 
       if (this.commande && this.commande.templates[0] && this.commande.templates[0].products) {
         this.commande.templates[0].products.map(function (template_product) {
-          var found = _this8.commande.products.find(function (product) {
+          var found = _this9.commande.products.find(function (product) {
             return product.id === template_product.id;
           });
 
@@ -2563,7 +2570,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     deleteProductSection: function deleteProductSection(section, article, type) {
-      var _this9 = this;
+      var _this10 = this;
 
       axios.get('/section-product/delete/' + article.id + '/' + section.id).then(function (response) {
         console.log(response.data);
@@ -2571,7 +2578,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (response.data === 0) {
           alert('Article Pas Supprimé. Veuillez Reesayé');
         } else {
-          var section_trouvée = _this9.commande.sections.find(function (sect) {
+          var section_trouvée = _this10.commande.sections.find(function (sect) {
             return sect.id === section.id;
           });
 
@@ -2582,7 +2589,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             var index = section_trouvée.articles.indexOf(article_trouvée);
             section_trouvée.articles.splice(index, 1);
 
-            _this9.$forceUpdate();
+            _this10.$forceUpdate();
           } else if (type === 'Product') {
             var article_trouvée = section_trouvée.products.find(function (prod) {
               return prod.id === article.id;
@@ -2590,7 +2597,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             var index = section_trouvée.products.indexOf(article_trouvée);
             section_trouvée.products.splice(index, 1);
 
-            _this9.$forceUpdate();
+            _this10.$forceUpdate();
           } // alert('Article Suprrimé')
 
         }
@@ -2621,18 +2628,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       $('#sectionDelete').modal('show');
     },
     updateSection: function updateSection(section) {
-      var _this10 = this;
+      var _this11 = this;
 
       axios.put('/section/' + this.section_being_updated.id, {
         nom: this.new_section
       }).then(function (response) {
         console.log(response.data);
-        _this10.section_being_updated.nom = _this10.new_section;
-        _this10.isUpdating = false;
-        _this10.section_being_updated = false;
-        _this10.new_section = false;
+        _this11.section_being_updated.nom = _this11.new_section;
+        _this11.isUpdating = false;
+        _this11.section_being_updated = false;
+        _this11.new_section = false;
 
-        _this10.$forceUpdate();
+        _this11.$forceUpdate();
 
         $('#section').modal('hide');
       })["catch"](function (error) {
@@ -2640,16 +2647,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeSection: function removeSection(section) {
-      var _this11 = this;
+      var _this12 = this;
 
       axios["delete"]('/section/' + this.section_being_deleted.id).then(function (response) {
-        var index = _this11.commande.sections.indexOf(section);
+        var index = _this12.commande.sections.indexOf(section);
 
-        _this11.commande.sections.splice(index, 1);
+        _this12.commande.sections.splice(index, 1);
 
         $('#sectionDelete').modal('hide');
 
-        _this11.$forceUpdate();
+        _this12.$forceUpdate();
 
         console.log(response.data);
       })["catch"](function (error) {
@@ -2657,7 +2664,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeProduct: function removeProduct(section, produit, type) {
-      var _this12 = this;
+      var _this13 = this;
 
       axios["delete"]('/sectionnable/' + produit.pivot.id).then(function (response) {
         if (type === 'Product') {
@@ -2673,22 +2680,49 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           });
         }
 
-        _this12.$forceUpdate();
+        _this13.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
       });
     }
-  }, "majStock", function majStock() {
-    var _this13 = this;
+  }, _defineProperty(_methods, "majStock", function majStock() {
+    var _this14 = this;
 
     this.isLoading.majStock = true;
     axios.get('/vend/update-quantities').then(function (response) {
       console.log(response.data);
-      _this13.isLoading.majStock = false;
+      _this14.isLoading.majStock = false;
     })["catch"](function (error) {
       console.log(error);
     });
-  }),
+  }), _defineProperty(_methods, "addReorderPoint", function addReorderPoint() {
+    var _this15 = this;
+
+    axios.get('/api/vend/commande/' + this.commande.id + '/reorderpoint/' + this.reorder_point_id).then(function (response) {
+      console.log(response.data);
+      $('#reorderpoint').modal('hide');
+
+      if (response.data.inserted === 0 || response.data.inserted < response.data.products) {
+        _this15.$swal({
+          icon: 'error',
+          title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés.',
+          text: 'Il existe ' + (response.data.products - response.data.inserted) + ' Produits déjà enregistrés. Aucun Duplicata n est accepté'
+        });
+      } else {
+        _this15.$swal({
+          icon: 'success',
+          title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés'
+        });
+      }
+    })["catch"](function (error) {
+      _this15.$swal({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Une erreur est survenue veuillez vous assurer ',
+        footer: '<a href>Why do I have this issue?</a>'
+      });
+    });
+  }), _methods),
   computed: {
     numberOfProducts: function numberOfProducts() {
       var total = 0;
@@ -2799,7 +2833,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   created: function created() {
-    var _this14 = this;
+    var _this16 = this;
 
     this.sectionnable_type = 'Product';
 
@@ -2816,9 +2850,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
 
     axios.get('https://azimuts.ga/article/api/non-commandé').then(function (response) {
-      _this14.articles = response.data;
+      _this16.articles = response.data;
 
-      _this14.articles.map(function (article) {
+      _this16.articles.map(function (article) {
         if (article.fiche_renseignement) {
           if (article.fiche_renseignement.marque) {
             article.marque = article.fiche_renseignement.marque.nom;
@@ -2842,9 +2876,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     console.log(this.articles_prop);
     this.articles_prop.forEach(function (article) {
       axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id).then(function (response) {
-        _this14.articlesFetched.push(response.data);
+        _this16.articlesFetched.push(response.data);
 
-        _this14.commande.sections.map(function (section) {
+        _this16.commande.sections.map(function (section) {
           if (section.id === article.section_id) {
             response.data.pivot = {
               quantite: article.quantite,
@@ -2853,7 +2887,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             section.articles.push(response.data);
           }
 
-          _this14.$forceUpdate();
+          _this16.$forceUpdate();
         });
       })["catch"](function (error) {
         console.log(error);

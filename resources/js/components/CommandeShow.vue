@@ -8,7 +8,7 @@ export default {
             selected_product: false,
             selected_template: false,
             selected_article: false,
-
+            reorder_point_id : false,
             dernieres_commandes : false,
 
             sub_date_apres : false,
@@ -315,6 +315,7 @@ export default {
         },
         addReorderpoint(){
             axios.post('/reorderpoint-commande', {commande_id : this.commande.id}).then(response => {
+                this.$swal()
                 console.log(response.data);
             }).catch(error => {
                 console.log(error);
@@ -470,6 +471,31 @@ export default {
                 this.isLoading.majStock = false
             }).catch(error => {
                 console.log(error);
+            });
+        },
+        addReorderPoint(){
+            axios.get('/api/vend/commande/' + this.commande.id +  '/reorderpoint/' + this.reorder_point_id).then(response => {
+                console.log(response.data)
+                $('#reorderpoint').modal('hide')
+                if(response.data.inserted === 0 || response.data.inserted < response.data.products){
+                    this.$swal({
+                        icon: 'error',
+                        title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés.',
+                        text: 'Il existe ' + ( response.data.products - response.data.inserted) + ' Produits déjà enregistrés. Aucun Duplicata n est accepté'
+                    })
+                } else {
+                    this.$swal({
+                        icon: 'success',
+                        title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés'
+                    })
+                }
+            }).catch(error => {
+                this.$swal({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Une erreur est survenue veuillez vous assurer ',
+                    footer: '<a href>Why do I have this issue?</a>'
+                })
             });
         }
     },

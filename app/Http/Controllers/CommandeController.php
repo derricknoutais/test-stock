@@ -27,6 +27,7 @@ class CommandeController extends Controller
         // return $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables');
         $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables', 'factures');
 
+        // return $commande;
         $sections = Section::where('commande_id', $commande->id)->pluck('id');
         $id_articles = Sectionnable::where(['sectionnable_type' => 'App\Article'])->whereIn('section_id', $sections)->get();
 
