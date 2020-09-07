@@ -685,11 +685,11 @@ export default {
             });
 
         });
-        this.articles_prop.forEach( article => {
+        this.articlesFetched.forEach( (article, index) => {
 
             this.commande.sections.map( section => {
 
-                if(section.id === article.section_id){
+                if(section.id === this.articles_prop[index].section_id){
                     article.pivot =  {
                         quantite : article.quantite,
                         id: article.id

@@ -2897,9 +2897,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         console.log(error);
       });
     });
-    this.articles_prop.forEach(function (article) {
+    this.articlesFetched.forEach(function (article, index) {
       _this16.commande.sections.map(function (section) {
-        if (section.id === article.section_id) {
+        if (section.id === _this16.articles_prop[index].section_id) {
           article.pivot = {
             quantite: article.quantite,
             id: article.id
