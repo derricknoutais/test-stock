@@ -251,11 +251,11 @@
                                 {{-- Barre de Recherche --}}
                                 <div class="tw-w-full tw-mr-4 tw-mt-3 tw-flex tw-justify-center tw-items-center">
                                     <multiselect
-                                        v-model="selected_article" :options="list_type" :searchable="true"
+                                        v-model="selected_element" :options="list_type" :searchable="true"
                                         :show-labels="false" placeholder="Pick a value" :label="label"
                                         id="select" @search-change="asyncFind"
                                     ></multiselect>
-                                    <input type="text" v-model.number="selected_article.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
+                                    <input type="text" v-model.number="selected_element.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
 
                                     <button class="tw-btn ml-5 tw-btn-dark tw-leading-none" @click="addProductToSection(section.id)">Ajouter Produit</button>
                                 </div>
@@ -264,16 +264,16 @@
                                 {{-- Stock --}}
                                 <div class="tw-w-full tw-mr-4 tw-mt-10 tw-items-center tw-flex tw-bg-gray-200 tw-p-3" >
                                     <p class="tw-text-lg tw-mr-4">Stock :</p>
-                                    <i class="fas fa-spinner fa-spin" v-if="selected_article && selected_article.stock_loading"></i>
-                                    <span v-else>@{{ selected_article.stock }}</span>
+                                    <i class="fas fa-spinner fa-spin" v-if="selected_element && selected_element.stock_loading"></i>
+                                    <span v-else>@{{ selected_element.stock }}</span>
                                 </div>
 
                                 {{-- Subzero --}}
                                 <div class="tw-w-full tw-justify-between tw-mr-4 tw-mt-1 tw-items-center tw-flex tw-bg-gray-200 tw-p-3" >
                                     <div class="tw-flex">
                                         <p class="tw-text-lg tw-mr-4">Subzero :</p>
-                                        <i class="fas fa-spinner fa-spin" v-if="selected_article && selected_article.sub_loading"></i>
-                                        <span v-else>@{{ selected_article.sub }}</span>
+                                        <i class="fas fa-spinner fa-spin" v-if="selected_element && selected_element.sub_loading"></i>
+                                        <span v-else>@{{ selected_element.sub }}</span>
 
                                     </div>
                                     <div>

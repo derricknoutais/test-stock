@@ -15,6 +15,7 @@ class DemandeExport implements FromView
     }
     public function view(): View
     {
-        return view('exports.demandes',     [ 'demande' => Demande::where('id', $this->demande_id)->with('sectionnables', 'sectionnables.product', 'sectionnables.article')->first() ]);
+        $demande = Demande::where('id', $this->demande_id)->with('sectionnables', 'sectionnables.product', 'sectionnables.product.handle', 'sectionnables.article')->first();
+        return view('exports.demandes',  compact('demande'));
     }
 }

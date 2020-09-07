@@ -7,3 +7,5 @@
         <a href="/template/type/commande" class="tw-btn tw-bg-gray-500 tw-border tw-m-10">Commandes</a>
     </div>
 @endsection
+
+

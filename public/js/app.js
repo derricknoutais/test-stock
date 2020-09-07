@@ -2208,7 +2208,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       show_products: false,
       selected_product: false,
       selected_template: false,
-      selected_article: false,
+      selected_element: false,
       reorder_point_id: false,
       dernieres_commandes: false,
       sub_date_apres: false,
@@ -2243,29 +2243,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   watch: {
-    'selected_article': function selected_article() {
+    'selected_element': function selected_element() {
       var _this = this;
 
       document.getElementById('quantiteInput').focus();
-      axios.get('/quantite-vendue/' + this.selected_article.id).then(function (response) {
+      axios.get('/quantite-vendue/' + this.selected_element.id).then(function (response) {
         _this.vente = response.data; // console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
-      axios.get('/consignment/' + this.selected_article.id).then(function (response) {
+      axios.get('/consignment/' + this.selected_element.id).then(function (response) {
         _this.consignment = response.data; // console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
-      this.selected_article.sub_loading = true;
-      axios.get('/subzero/' + this.selected_article.id + (this.sub_date_apres ? '/' + this.sub_date_apres : '') + (this.sub_date_avant ? '/' + this.sub_date_avant : '')).then(function (response) {
-        _this.selected_article.sub = response.data; // console.log('Sub: ' + response.data)
+      this.selected_element.sub_loading = true;
+      axios.get('/subzero/' + this.selected_element.id + (this.sub_date_apres ? '/' + this.sub_date_apres : '') + (this.sub_date_avant ? '/' + this.sub_date_avant : '')).then(function (response) {
+        _this.selected_element.sub = response.data; // console.log('Sub: ' + response.data)
 
-        _this.selected_article.sub_loading = false;
+        _this.selected_element.sub_loading = false;
       })["catch"](function (error) {
         console.log(error);
       });
-      axios.get('/dernières-commandes/' + this.sectionnable_type + '/' + this.selected_article.id).then(function (response) {
+      axios.get('/dernières-commandes/' + this.sectionnable_type + '/' + this.selected_element.id).then(function (response) {
         console.log(response.data);
         _this.dernieres_commandes = response.data;
       })["catch"](function (error) {
@@ -2273,10 +2273,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
 
       if (this.sectionnable_type === 'Product') {
-        this.selected_article.stock_loading = true;
-        axios.get('/api/stock/' + this.selected_article.id).then(function (response) {
-          _this.selected_article.stock = response.data;
-          _this.selected_article.stock_loading = false;
+        this.selected_element.stock_loading = true;
+        axios.get('/api/stock/' + this.selected_element.id).then(function (response) {
+          _this.selected_element.stock = response.data;
+          _this.selected_element.stock_loading = false;
 
           _this.$forceUpdate();
         })["catch"](function (error) {
@@ -2368,33 +2368,52 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     addProductToSection: function addProductToSection(section) {
       var _this6 = this;
 
-      // Initialise les variables
+      // Initialise les variables qui serviront a verifier les duplicatas
       var products = [];
-      var articles = []; // Grab tous les produits et tous les articles et store les dans les variables créées
+      var articles = []; // Grab tous les produits et tous les articles de la commande et store les dans les variables créées pour pouvoir les comparer avec
 
       this.commande.sections.forEach(function (sect) {
-        sect.products.forEach(function (prod) {
-          prod.section = sect;
-          products.push(prod);
-        });
-        sect.articles.forEach(function (art) {
-          art.section = sect;
-          articles.push(art);
-        });
+        //
+        if (sect.products && sect.products.length > 0) {
+          sect.products.forEach(function (prod) {
+            prod.section = sect;
+            products.push(prod);
+          });
+        } //
+
+
+        if (sect.articles && sect.articles.length > 0) {
+          sect.articles.forEach(function (art) {
+            art.section = sect;
+            articles.push(art);
+          });
+        }
       }); // Check le produit/article selectionné contre tous les produits/articles de la commande
 
       if (this.sectionnable_type === 'Product') {
         this.found = products.find(function (prod) {
-          return _this6.selected_article.id === prod.id;
+          return _this6.selected_element.id === prod.id;
         });
       } else if (this.sectionnable_type === 'Article') {
         this.found = articles.find(function (art) {
-          return _this6.selected_article.id === art.id;
+          return _this6.selected_element.id === art.id;
         });
+      } else if (this.sectionnable_type === 'Template') {
+        this.found = [];
+        this.selected_element.products.forEach(function (temp_prod, index) {
+          products.forEach(function (prod) {
+            if (temp_prod.id === prod.id) {
+              _this6.found.push(prod);
+
+              _this6.selected_element.products.splice(index, 1);
+            }
+          });
+        });
+        console.log(this.found);
       } // Si le produit existe déjà
 
 
-      if (this.found) {
+      if (this.found && this.sectionnable_type !== 'Template') {
         this.$swal({
           icon: 'error',
           title: 'Attention Duplicata',
@@ -2404,10 +2423,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.new_section = section;
 
-      if (!this.found) {
+      if (!this.found || this.found && this.sectionnable_type === 'Template') {
         axios.post('/product-section', {
           section: section,
-          product: this.selected_article,
+          product: this.selected_element,
           type: 'App\\' + this.sectionnable_type
         }).then(function (response) {
           // console.log(response.data)
@@ -2417,33 +2436,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
           if (_this6.sectionnable_type === 'Article') {
             found.articles.unshift({
-              nom: _this6.selected_article.nom,
+              nom: _this6.selected_element.nom,
               pivot: {
                 id: response.data.id,
-                quantite: _this6.selected_article.quantite
+                quantite: _this6.selected_element.quantite
               }
             });
 
             _this6.$forceUpdate();
 
-            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_article.id + '/commandé').then(function (response) {
+            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_element.id + '/commandé').then(function (response) {
               console.log(response.data);
             })["catch"](function (error) {
               console.log(error);
             });
           } else if (_this6.sectionnable_type === 'Template') {
-            response.data.forEach(function (element) {
-              found.products.unshift({
-                name: element.name
-              });
-            });
+            console.log(response.data); // response.data.forEach(element => {
+            //     found.products.unshift({
+            //         name: element.name
+            //     })
+            // });
           } else {
             found.products.unshift({
-              id: _this6.selected_article.id,
-              name: _this6.selected_article.name,
+              id: _this6.selected_element.id,
+              name: _this6.selected_element.name,
               pivot: {
                 id: response.data.id,
-                quantite: _this6.selected_article.quantite
+                quantite: _this6.selected_element.quantite
               }
             });
           }
@@ -2451,7 +2470,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           _this6.new_section = false;
           document.getElementById('select').focus();
           document.getElementById('quantiteInput').value = 0; // this.found = false
-          // this.selected_article = null
+          // this.selected_element = null
         })["catch"](function (error) {
           console.log(error);
         });
@@ -3316,6 +3335,43 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.fournisseur = this.fournisseur_prop;
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HandleIndex.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/HandleIndex.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['handles_prop'],
+  data: function data() {
+    return {
+      handles: null
+    };
+  },
+  methods: {
+    updateDisplay: function updateDisplay(handle, field) {
+      console.log(handle[field]);
+      axios.put('/handle/' + handle.id, {
+        handle: handle,
+        field: field
+      }).then(function (response) {
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  },
+  created: function created() {
+    this.handles = this.handles_prop;
   }
 });
 
@@ -55536,6 +55592,7 @@ var map = {
 	"./components/Facture.vue": "./resources/js/components/Facture.vue",
 	"./components/FournisseurIndex.vue": "./resources/js/components/FournisseurIndex.vue",
 	"./components/FournisseurShow.vue": "./resources/js/components/FournisseurShow.vue",
+	"./components/HandleIndex.vue": "./resources/js/components/HandleIndex.vue",
 	"./components/InventoryIndex.vue": "./resources/js/components/InventoryIndex.vue",
 	"./components/PrepaDemande.vue": "./resources/js/components/PrepaDemande.vue",
 	"./components/ProductIndex.vue": "./resources/js/components/ProductIndex.vue",
@@ -56331,6 +56388,56 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FournisseurShow_vue_vue_type_template_id_6104fea3___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/components/HandleIndex.vue":
+/*!*************************************************!*\
+  !*** ./resources/js/components/HandleIndex.vue ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _HandleIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HandleIndex.vue?vue&type=script&lang=js& */ "./resources/js/components/HandleIndex.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+var render, staticRenderFns
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  _HandleIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"],
+  render,
+  staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/HandleIndex.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/HandleIndex.vue?vue&type=script&lang=js&":
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/HandleIndex.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_HandleIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./HandleIndex.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HandleIndex.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_HandleIndex_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 

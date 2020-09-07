@@ -61,19 +61,20 @@ class SectionController extends Controller
             ]);
             return $sectionnable;
         } else {
-            $template = Template::where('id', $request['product'])->with('products')->first();
-            $products = $template->products;
-            foreach ($products as $product) {
+            // $template = Template::where('id', $request['product']['id'])->with('products')->first();
+            // $products = $template->products;
+            foreach ($request['product']['products'] as $product) {
                 DB::table('sectionnables')->insert([
                     'section_id' => $request['section'],
-                    'sectionnable_id' => $product->id,
-                    'sectionnable_type' => 'App\Product'
+                    'sectionnable_id' => $product['id'],
+                    'sectionnable_type' => 'App\Product',
+                    'quantite' => $product['pivot']['quantite']
                 ]);
             }
-            return $products;
+            // return $products;
 
         }
-        
+
     }
 
     /**
@@ -122,7 +123,7 @@ class SectionController extends Controller
     public function destroy(Section $section)
     {
         $section->delete();
-        
+
     }
     public function destroyProduct(Sectionnable $product){
         $product->delete();

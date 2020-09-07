@@ -17,7 +17,8 @@
             <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Produit</th>
+                    <th>Produit (Français)</th>
+                    <th>Product (English)</th>
                     <th>Quantité</th>
                     <th>Quantité Offerte</th>
                     <th>Offre</th>
@@ -28,15 +29,27 @@
 
             <tbody>
                 <tr v-for="sectionnable in demande.sectionnables" v-if="sectionnable.product">
+
                     <td >
                         @{{ sectionnable.pivot.id }}
                     </td>
-                    <td scope="row">@{{ sectionnable.product.name }}</td>
+                    <td>
+                        @{{ sectionnable.product.name }}
+                    </td>
+
+                    <td scope="row">
+                        @{{ sectionnable.product.handle.translation }}
+                        <span v-if="sectionnable.product.handle.display1">/ @{{ sectionnable.product[sectionnable.product.handle.display1] }}</span>
+                        <span v-if="sectionnable.product.handle.display2">/ @{{ sectionnable.product[sectionnable.product.handle.display2] }}</span>
+                        <span v-if="sectionnable.product.handle.display3">/ @{{ sectionnable.product[sectionnable.product.handle.display3] }}</span>
+                    </td>
+
                     <td>@{{ sectionnable.quantite }} </td>
+
                     <td class="tw-flex tw-items-center">
-                        <i class="fas fa-arrow-down  tw-text-red-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte < sectionnable.quantite"></i>
-                        <i class="fas fa-arrow-up  tw-text-yellow-600 tw-px-5" v-if="sectionnable.pivot.quantite_offerte > sectionnable.quantite"></i>
-                        <i class="fas fa-thumbs-up  tw-text-green-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte === sectionnable.quantite"></i>
+                        <i class="fas fa-arrow-down tw-text-red-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte < sectionnable.quantite"></i>
+                        <i class="fas fa-arrow-up tw-text-yellow-600 tw-px-5" v-if="sectionnable.pivot.quantite_offerte > sectionnable.quantite"></i>
+                        <i class="fas fa-thumbs-up tw-text-green-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte === sectionnable.quantite"></i>
                         <input type="number" class="form-control" min="0" step="1" v-model.number="sectionnable.pivot.quantite_offerte" @input="enregisterOffre(sectionnable)">
                     </td>
                     <td>
@@ -45,7 +58,6 @@
                     <td >
                         <span v-if="sectionnable.hasError" class="tw-text-red-500"> Erreur! Vérifiez vos entrées!!!</span>
                         <span v-else>@{{ sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre | currency }}</span>
-
                     </td>
                     <td>
                         <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(sectionnable)"></i>

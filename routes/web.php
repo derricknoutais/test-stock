@@ -1,6 +1,6 @@
 <?php
 ini_set('max_execution_time', 180);
-use DB;
+// use DB;
 use App\Product;
 use App\Consignment;
 use App\Sales;
@@ -20,9 +20,16 @@ Route::get('/', function () {
 });
 
 
+Route::get('/test', function(){
+    return Product::where('id', '06bf537b-c771-11e6-ff13-fc4651e2a841')->with('handle')->first();
+});
+
 // Products
 Route::resource('/product', 'ProductController');
 
+
+// Handles
+Route::resource('/handle', 'HandleController');
 
 
 // Templates
@@ -240,7 +247,7 @@ Route::get('/kd', function(){
 
 
 Route::get('/reorderpoint-commande', 'CommandeController@addReorderPoint');
-Route::get('/test','CommandeController@consignment');
+// Route::get('/test','CommandeController@consignment');
 
 
 
@@ -420,16 +427,17 @@ Route::get('/api/produits', function () {
 
     $pages = array();
 
-    for ($j = 1; $j <= 18; $j++) {
+    for ($j = 11; $j <= 18; $j++) {
 
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/products?page_size=200&page=' . $j, ['headers' => $headers]);
         $data = json_decode((string) $response->getBody(), true);
         array_push($pages, $data['products']);
 
+
     }
     foreach ($pages as $products) {
         foreach ($products as $product) {
-            if (!Product::where('id', $product['id'])->first()) {
+            if (! Product::where('id', $product['id'])->first()) {
 
                 $prod = Product::create([
                     'id' => $product['id'],
@@ -437,7 +445,13 @@ Route::get('/api/produits', function () {
                     'name' => $product['name'],
                     'sku' => $product['sku'],
                     'price' => $product['price'],
-                    'supply_price' => $product['supply_price']
+                    'supply_price' => $product['supply_price'],
+                    'variant_option_one_name' => $product['variant_option_one_name'],
+                    'variant_option_one_value' => $product['variant_option_one_value'],
+                    'variant_option_two_name' => $product['variant_option_two_name'],
+                    'variant_option_two_value' => $product['variant_option_two_value'],
+                    'variant_option_three_name' => $product['variant_option_three_name'],
+                    'variant_option_three_value' => $product['variant_option_three_value']
                 ]);
 
                 if( isset($product['inventory']) && isset($product['inventory'][0]['count'])){
@@ -445,12 +459,25 @@ Route::get('/api/produits', function () {
                         'quantity' => ( (int) $product['inventory'][0]['count'] )
                     ]) ;
                 }
+            } else {
+                Product::find($product['id'])->update([
+                    'variant_option_one_name' => $product['variant_option_one_name'],
+                    'variant_option_one_value' => $product['variant_option_one_value'],
+                    'variant_option_two_name' => $product['variant_option_two_name'],
+                    'variant_option_two_value' => $product['variant_option_two_value'],
+                    'variant_option_three_name' => $product['variant_option_three_name'],
+                    'variant_option_three_value' => $product['variant_option_three_value']
+                ]) ;
             }
         }
     }
 
 
     // return $totalProducts;
+});
+
+Route::get('/api/handle', function(){
+
 });
 
 Route::get('/api/sales', function () {

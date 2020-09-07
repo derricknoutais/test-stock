@@ -23,4 +23,8 @@ class Product extends Model
     {
         return $this->belongsToMany('App\Fournisseur', 'product_fournisseur');
     }
+    public function handle()
+    {
+        return $this->belongsTo('App\Handle');
+    }
 }

@@ -7,7 +7,7 @@ export default {
             show_products: false,
             selected_product: false,
             selected_template: false,
-            selected_article: false,
+            selected_element: false,
             reorder_point_id : false,
             dernieres_commandes : false,
 
@@ -48,16 +48,16 @@ export default {
         }
     },
     watch: {
-        'selected_article' : function(){
+        'selected_element' : function(){
             document.getElementById('quantiteInput').focus()
-            axios.get('/quantite-vendue/' + this.selected_article.id).then(response => {
+            axios.get('/quantite-vendue/' + this.selected_element.id).then(response => {
                 this.vente = response.data
                 // console.log(response.data);
 
             }).catch(error => {
                 console.log(error);
             });
-            axios.get('/consignment/' + this.selected_article.id).then(response => {
+            axios.get('/consignment/' + this.selected_element.id).then(response => {
                 this.consignment = response.data
                 // console.log(response.data);
 
@@ -65,17 +65,17 @@ export default {
                 console.log(error);
             });
 
-            this.selected_article.sub_loading = true;
+            this.selected_element.sub_loading = true;
 
-            axios.get('/subzero/' + this.selected_article.id +  (this.sub_date_apres ?  '/' + this.sub_date_apres : '') +   (this.sub_date_avant ? '/' + this.sub_date_avant : '') ).then(response => {
-                this.selected_article.sub = response.data
+            axios.get('/subzero/' + this.selected_element.id +  (this.sub_date_apres ?  '/' + this.sub_date_apres : '') +   (this.sub_date_avant ? '/' + this.sub_date_avant : '') ).then(response => {
+                this.selected_element.sub = response.data
                 // console.log('Sub: ' + response.data)
-                this.selected_article.sub_loading = false;
+                this.selected_element.sub_loading = false;
             }).catch(error => {
                 console.log(error);
             });
 
-            axios.get('/dernières-commandes/' + this.sectionnable_type + '/' + this.selected_article.id ).then(response => {
+            axios.get('/dernières-commandes/' + this.sectionnable_type + '/' + this.selected_element.id ).then(response => {
                 console.log(response.data);
                 this.dernieres_commandes = response.data
             }).catch(error => {
@@ -84,11 +84,11 @@ export default {
 
             if(this.sectionnable_type === 'Product'){
 
-                this.selected_article.stock_loading = true;
+                this.selected_element.stock_loading = true;
 
-                axios.get('/api/stock/' + this.selected_article.id).then(response => {
-                    this.selected_article.stock = response.data
-                    this.selected_article.stock_loading = false
+                axios.get('/api/stock/' + this.selected_element.id).then(response => {
+                    this.selected_element.stock = response.data
+                    this.selected_element.stock_loading = false
                     this.$forceUpdate()
                 }).catch(error => {
                     this.$swal({
@@ -158,59 +158,80 @@ export default {
             }
         },
         addProductToSection(section){
-            // Initialise les variables
+            // Initialise les variables qui serviront a verifier les duplicatas
             var products = []
             var articles = []
 
-            // Grab tous les produits et tous les articles et store les dans les variables créées
+            // Grab tous les produits et tous les articles de la commande et store les dans les variables créées pour pouvoir les comparer avec
             this.commande.sections.forEach( sect => {
-                sect.products.forEach(prod => {
-                    prod.section = sect
-                    products.push(prod)
-                })
-                sect.articles.forEach( art => {
-                    art.section = sect
-                    articles.push(art)
-                })
+                //
+                if(sect.products && sect.products.length > 0){
+                    sect.products.forEach(prod => {
+                        prod.section = sect
+                        products.push(prod)
+                    })
+                }
+                //
+                if(sect.articles && sect.articles.length > 0){
+                    sect.articles.forEach( art => {
+                        art.section = sect
+                        articles.push(art)
+                    })
+                }
             });
 
             // Check le produit/article selectionné contre tous les produits/articles de la commande
             if(this.sectionnable_type === 'Product'){
                 this.found = products.find( prod => {
-                    return this.selected_article.id === prod.id
+                    return this.selected_element.id === prod.id
                 });
             } else if( this.sectionnable_type === 'Article') {
                 this.found = articles.find( art => {
-                    return this.selected_article.id === art.id
+                    return this.selected_element.id === art.id
                 });
+            } else if( this.sectionnable_type === 'Template') {
+
+                this.found = []
+                this.selected_element.products.forEach( (temp_prod, index) => {
+                    products.forEach( prod => {
+                        if (temp_prod.id === prod.id)
+                        {
+                            this.found.push(prod)
+                            this.selected_element.products.splice(index, 1)
+                        }
+                    })
+                })
+                console.log(this.found)
             }
 
             // Si le produit existe déjà
-            if(this.found){
+            if(this.found && this.sectionnable_type !== 'Template') {
                 this.$swal({
                     icon: 'error',
                     title: 'Attention Duplicata',
                     text: 'Ce produit existe déjà dans une section ' + this.found.section.nom
                 });
             }
+
+
             this.new_section = section
-            if(! this.found){
-                axios.post('/product-section',{ section: section, product: this.selected_article, type: 'App\\' + this.sectionnable_type} ).then(response => {
+            if(! this.found || (this.found && this.sectionnable_type === 'Template')){
+                axios.post('/product-section',{ section: section, product: this.selected_element, type: 'App\\' + this.sectionnable_type} ).then(response => {
                     // console.log(response.data)
                     var found = this.commande.sections.find( (sect, section) => {
                         return sect.id ===  this.new_section
                     })
                     if(this.sectionnable_type === 'Article'){
                         found.articles.unshift({
-                            nom : this.selected_article.nom,
+                            nom : this.selected_element.nom,
                             pivot: {
                                 id: response.data.id,
-                                quantite : this.selected_article.quantite
+                                quantite : this.selected_element.quantite
                             },
                         });
                         this.$forceUpdate()
 
-                        axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_article.id + '/commandé').then(response => {
+                        axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/commandé').then(response => {
                             console.log(response.data);
 
                         }).catch(error => {
@@ -218,19 +239,21 @@ export default {
                         });
 
 
-                    } else if(this.sectionnable_type === 'Template'){
-                        response.data.forEach(element => {
-                            found.products.unshift({
-                                name: element.name
-                            })
-                        });
+                    }
+                    else if(this.sectionnable_type === 'Template'){
+                        console.log(response.data)
+                        // response.data.forEach(element => {
+                        //     found.products.unshift({
+                        //         name: element.name
+                        //     })
+                        // });
                     } else {
                         found.products.unshift({
-                            id: this.selected_article.id,
-                            name: this.selected_article.name,
+                            id: this.selected_element.id,
+                            name: this.selected_element.name,
                             pivot: {
                                 id: response.data.id,
-                                quantite : this.selected_article.quantite
+                                quantite : this.selected_element.quantite
                             },
                         })
 
@@ -240,7 +263,7 @@ export default {
                     document.getElementById('select').focus()
                     document.getElementById('quantiteInput').value = 0
                     // this.found = false
-                    // this.selected_article = null
+                    // this.selected_element = null
                 }).catch(error => {
                     console.log(error);
                 });
