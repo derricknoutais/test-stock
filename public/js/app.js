@@ -2866,50 +2866,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     if (this.templates_prop) {
       this.templates = this.templates_prop;
-    }
+    } // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
+    //     this.articles = response.data
+    //     this.articles.map( article => {
+    //         if(article.fiche_renseignement){
+    //             if(article.fiche_renseignement.marque){
+    //                 article.marque = article.fiche_renseignement.marque.nom
+    //                 article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom
+    //             }
+    //             if(article.fiche_renseignement.type){
+    //                 article.type = article.fiche_renseignement.type.nom
+    //                 article.search_name += ' ' + article.fiche_renseignement.type.nom
+    //             }
+    //             if(article.fiche_renseignement.moteur){
+    //                 article.moteur = article.fiche_renseignement.moteur.nom
+    //                 article.search_name += ' ' + article.fiche_renseignement.moteur.nom
+    //             }
+    //         }
+    //     })
+    // }).catch(error => {
+    //     console.log(error);
+    // });
 
-    axios.get('https://azimuts.ga/article/api/non-commandé').then(function (response) {
-      _this16.articles = response.data;
 
-      _this16.articles.map(function (article) {
-        if (article.fiche_renseignement) {
-          if (article.fiche_renseignement.marque) {
-            article.marque = article.fiche_renseignement.marque.nom;
-            article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom;
-          }
-
-          if (article.fiche_renseignement.type) {
-            article.type = article.fiche_renseignement.type.nom;
-            article.search_name += ' ' + article.fiche_renseignement.type.nom;
-          }
-
-          if (article.fiche_renseignement.moteur) {
-            article.moteur = article.fiche_renseignement.moteur.nom;
-            article.search_name += ' ' + article.fiche_renseignement.moteur.nom;
-          }
-        }
-      });
-    })["catch"](function (error) {
-      console.log(error);
-    });
     console.log(this.articles_prop);
     this.articles_prop.forEach(function (article) {
       axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id).then(function (response) {
         _this16.articlesFetched.push(response.data);
-
-        _this16.commande.sections.map(function (section) {
-          if (section.id === article.section_id) {
-            response.data.pivot = {
-              quantite: article.quantite,
-              id: article.id
-            };
-            section.articles.push(response.data);
-          }
-
-          _this16.$forceUpdate();
-        });
       })["catch"](function (error) {
         console.log(error);
+      });
+    });
+    this.articlesFetched.forEach(function (article) {
+      _this16.commande.sections.map(function (section) {
+        if (section.id === article.section_id) {
+          article.pivot = {
+            quantite: article.quantite,
+            id: article.id
+          };
+          section.articles.push(article);
+        }
       });
     });
     this.mapArrays();

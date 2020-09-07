@@ -644,33 +644,33 @@ export default {
             this.templates = this.templates_prop
         }
 
-        axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
-            this.articles = response.data
-            this.articles.map( article => {
-                if(article.fiche_renseignement){
+        // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
+        //     this.articles = response.data
+        //     this.articles.map( article => {
+        //         if(article.fiche_renseignement){
 
-                    if(article.fiche_renseignement.marque){
-                        article.marque = article.fiche_renseignement.marque.nom
-                        article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom
-                    }
+        //             if(article.fiche_renseignement.marque){
+        //                 article.marque = article.fiche_renseignement.marque.nom
+        //                 article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom
+        //             }
 
-                    if(article.fiche_renseignement.type){
-                        article.type = article.fiche_renseignement.type.nom
-                        article.search_name += ' ' + article.fiche_renseignement.type.nom
-                    }
+        //             if(article.fiche_renseignement.type){
+        //                 article.type = article.fiche_renseignement.type.nom
+        //                 article.search_name += ' ' + article.fiche_renseignement.type.nom
+        //             }
 
-                    if(article.fiche_renseignement.moteur){
-                        article.moteur = article.fiche_renseignement.moteur.nom
-                        article.search_name += ' ' + article.fiche_renseignement.moteur.nom
-                    }
+        //             if(article.fiche_renseignement.moteur){
+        //                 article.moteur = article.fiche_renseignement.moteur.nom
+        //                 article.search_name += ' ' + article.fiche_renseignement.moteur.nom
+        //             }
 
-                }
-            })
+        //         }
+        //     })
 
 
-        }).catch(error => {
-            console.log(error);
-        });
+        // }).catch(error => {
+        //     console.log(error);
+        // });
 
         console.log(this.articles_prop)
 
@@ -679,22 +679,25 @@ export default {
             axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id ).then(response => {
                 this.articlesFetched.push(response.data);
 
-                this.commande.sections.map( section => {
 
-                    if(section.id === article.section_id){
-                        response.data.pivot =  {
-                            quantite : article.quantite,
-                            id: article.id
-                        }
-                        section.articles.push(response.data)
-                    }
-                    this.$forceUpdate()
-                })
             }).catch( error => {
                 console.log(error);
             });
 
         });
+        this.articlesFetched.forEach( article => {
+
+            this.commande.sections.map( section => {
+
+                if(section.id === article.section_id){
+                    article.pivot =  {
+                        quantite : article.quantite,
+                        id: article.id
+                    }
+                    section.articles.push(article)
+                }
+            })
+        })
 
 
 
