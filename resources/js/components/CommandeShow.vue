@@ -685,7 +685,7 @@ export default {
             });
 
         });
-        this.articlesFetched.forEach( article => {
+        this.articles_prop.forEach( article => {
 
             this.commande.sections.map( section => {
 
