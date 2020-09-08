@@ -692,7 +692,7 @@ export default {
                 this.commande.sections.map( section => {
                     if(section.id === this.articles_prop[index].section_id){
                         article.pivot =  {
-                            quantite : article.quantite,
+                            quantite : this.articles_prop[index].quantite,
                             id: article.id
                         }
                         section.articles.push(article)
