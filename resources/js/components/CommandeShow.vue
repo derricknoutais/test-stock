@@ -643,7 +643,9 @@ export default {
         if(this.templates_prop){
             this.templates = this.templates_prop
         }
-
+        this.commande.sections.forEach( section => {
+            section.articles = []
+        })
         // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
         //     this.articles = response.data
         //     this.articles.map( article => {
@@ -686,19 +688,37 @@ export default {
         //     console.log(error);
         // });
 
-        axios.post('https://azimuts.ga/article/api/bulk-fetch',  article_ids ).then(response => {
-            this.articlesFetched = response.data ;
-            this.articlesFetched.forEach( (article, index) => {
-                this.commande.sections.map( section => {
-                    if(section.id === this.articles_prop[index].section_id){
-                        article.pivot =  {
-                            quantite : this.articles_prop[index].quantite,
-                            id: article.id
+        axios.post('https://azimuts.ga/article/api/bulk-fetch',  article_ids ).then( response => {
+
+            this.articlesFetched = response.data;
+
+            this.articlesFetched.forEach( artFetched => {
+                this.articles_prop.forEach( artProp => {
+                    if( artFetched.id == artProp.sectionnable_id ){
+
+                        artFetched.pivot =  {
+                            section_id: artProp.section_id,
+                            quantite : artProp.quantite,
+                            id: +artProp.sectionnable_id
                         }
-                        section.articles.push(article)
+
                     }
                 })
+
+
             })
+
+            this.articlesFetched.forEach( (article, index) => {
+
+                this.commande.sections.forEach( section => {
+
+                    if( section.id === article.pivot.section_id ){
+                        section.articles.push(article)
+                    }
+
+                })
+            })
+
         }).catch( error => {
             console.log(error);
         });

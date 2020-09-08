@@ -2866,7 +2866,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     if (this.templates_prop) {
       this.templates = this.templates_prop;
-    } // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
+    }
+
+    this.commande.sections.forEach(function (section) {
+      section.articles = [];
+    }); // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
     //     this.articles = response.data
     //     this.articles.map( article => {
     //         if(article.fiche_renseignement){
@@ -2888,7 +2892,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     //     console.log(error);
     // });
 
-
     console.log(this.articles_prop);
     var article_ids = [];
     this.articles_prop.forEach(function (article) {
@@ -2902,13 +2905,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     axios.post('https://azimuts.ga/article/api/bulk-fetch', article_ids).then(function (response) {
       _this16.articlesFetched = response.data;
 
-      _this16.articlesFetched.forEach(function (article, index) {
-        _this16.commande.sections.map(function (section) {
-          if (section.id === _this16.articles_prop[index].section_id) {
-            article.pivot = {
-              quantite: _this16.articles_prop[index].quantite,
-              id: article.id
+      _this16.articlesFetched.forEach(function (artFetched) {
+        _this16.articles_prop.forEach(function (artProp) {
+          if (artFetched.id == artProp.sectionnable_id) {
+            artFetched.pivot = {
+              section_id: artProp.section_id,
+              quantite: artProp.quantite,
+              id: +artProp.sectionnable_id
             };
+          }
+        });
+      });
+
+      _this16.articlesFetched.forEach(function (article, index) {
+        _this16.commande.sections.forEach(function (section) {
+          if (section.id === article.pivot.section_id) {
             section.articles.push(article);
           }
         });

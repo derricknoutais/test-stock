@@ -25,7 +25,7 @@ class CommandeController extends Controller
     public function show(Commande $commande){
 
         // return $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables');
-        $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.articles', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables', 'factures');
+        $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables', 'factures');
 
         // return $commande;
         $sections = Section::where('commande_id', $commande->id)->pluck('id');
