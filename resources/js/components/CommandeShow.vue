@@ -675,7 +675,7 @@ export default {
         console.log(this.articles_prop)
         var article_ids = []
         this.articles_prop.forEach( article => {
-            article_ids.push(article.id)
+            article_ids.push(article.sectionnable_id)
         });
 
 

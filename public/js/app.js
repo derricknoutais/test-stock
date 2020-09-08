@@ -2892,7 +2892,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     console.log(this.articles_prop);
     var article_ids = [];
     this.articles_prop.forEach(function (article) {
-      article_ids.push(article.id);
+      article_ids.push(article.sectionnable_id);
     }); // axios.post('https://azimuts.ga/article/api/bulk-fetch',  {articles: article_ids} ).then(response => {
     //     this.articlesFetched = response.data ;
     // }).catch( error => {
