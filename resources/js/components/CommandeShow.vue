@@ -673,31 +673,37 @@ export default {
         // });
 
         console.log(this.articles_prop)
-
+        var article_ids = []
         this.articles_prop.forEach( article => {
-
-            axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id ).then(response => {
-                this.articlesFetched.push(response.data);
-
-
-            }).catch( error => {
-                console.log(error);
-            });
-
+            article_ids.push(article.id)
         });
-        this.articlesFetched.forEach( (article, index) => {
 
-            this.commande.sections.map( section => {
 
-                if(section.id === this.articles_prop[index].section_id){
-                    article.pivot =  {
-                        quantite : article.quantite,
-                        id: article.id
+
+        // axios.post('https://azimuts.ga/article/api/bulk-fetch',  {articles: article_ids} ).then(response => {
+        //     this.articlesFetched = response.data ;
+        // }).catch( error => {
+        //     console.log(error);
+        // });
+
+        axios.post('https://azimuts.ga/article/api/bulk-fetch',  article_ids ).then(response => {
+            this.articlesFetched = response.data ;
+            this.articlesFetched.forEach( (article, index) => {
+                this.commande.sections.map( section => {
+                    if(section.id === this.articles_prop[index].section_id){
+                        article.pivot =  {
+                            quantite : article.quantite,
+                            id: article.id
+                        }
+                        section.articles.push(article)
                     }
-                    section.articles.push(article)
-                }
+                })
             })
-        })
+        }).catch( error => {
+            console.log(error);
+        });
+
+
 
 
 

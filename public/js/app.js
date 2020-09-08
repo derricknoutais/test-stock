@@ -2890,23 +2890,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
     console.log(this.articles_prop);
+    var article_ids = [];
     this.articles_prop.forEach(function (article) {
-      axios.get('https://azimuts.ga/article/api/' + article.sectionnable_id).then(function (response) {
-        _this16.articlesFetched.push(response.data);
-      })["catch"](function (error) {
-        console.log(error);
+      article_ids.push(article.id);
+    }); // axios.post('https://azimuts.ga/article/api/bulk-fetch',  {articles: article_ids} ).then(response => {
+    //     this.articlesFetched = response.data ;
+    // }).catch( error => {
+    //     console.log(error);
+    // });
+
+    axios.post('https://azimuts.ga/article/api/bulk-fetch', article_ids).then(function (response) {
+      _this16.articlesFetched = response.data;
+
+      _this16.articlesFetched.forEach(function (article, index) {
+        _this16.commande.sections.map(function (section) {
+          if (section.id === _this16.articles_prop[index].section_id) {
+            article.pivot = {
+              quantite: article.quantite,
+              id: article.id
+            };
+            section.articles.push(article);
+          }
+        });
       });
-    });
-    this.articlesFetched.forEach(function (article, index) {
-      _this16.commande.sections.map(function (section) {
-        if (section.id === _this16.articles_prop[index].section_id) {
-          article.pivot = {
-            quantite: article.quantite,
-            id: article.id
-          };
-          section.articles.push(article);
-        }
-      });
+    })["catch"](function (error) {
+      console.log(error);
     });
     this.mapArrays();
   }
