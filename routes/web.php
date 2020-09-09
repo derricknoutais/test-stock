@@ -8,6 +8,7 @@ use App\Commande;
 use App\BonCommande;
 use App\Demande;
 use App\Section;
+use App\Facture;
 use App\Fournisseur;
 use App\Sectionnable;
 use GuzzleHttp\Client;
@@ -337,7 +338,9 @@ Route::post('/creer-bl', function(Request $request){
         ]);
     }
 
-    return $data;
+    Facture::find($request->id)->update([
+        'bon_livraison_id' => $data['id']
+    ])
 });
 Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', function($commande_id, $reorderpoint_id){
     $client = new Client();
