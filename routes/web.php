@@ -340,7 +340,7 @@ Route::post('/creer-bl', function(Request $request){
 
     Facture::find($request->id)->update([
         'bon_livraison_id' => $data['id']
-    ])
+    ]);
 });
 Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', function($commande_id, $reorderpoint_id){
     $client = new Client();
