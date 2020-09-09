@@ -307,7 +307,7 @@ Route::get('/subzero/{product}/{apres?}/{avant?}', function ($product, $apres = 
 // VEND API
 
 Route::post('/creer-bl', function(Request $request){
-    // return $request->all();
+
     $client = new Client();
     $headers = [
         "Authorization" => "Bearer " . env('VEND_TOKEN'),
@@ -320,7 +320,7 @@ Route::post('/creer-bl', function(Request $request){
             'outlet_id' => '06bf537b-c77f-11e6-ff13-fb602832ccea',
             'name' => $request->nom . ' ' . $request['commande']['name'],
             'type' => 'SUPPLIER',
-            'status' => 'DISPATCHED'
+            'status' => 'OPEN'
         ])
     ]);
     $data = json_decode((string) $response->getBody(), true);
@@ -332,7 +332,7 @@ Route::post('/creer-bl', function(Request $request){
             'body' => json_encode([
                 'consignment_id' => $data['id'],
                 'product_id' => $sect['sectionnable_id'],
-                'count' => $sect['quantite'],
+                'count' => $sect['pivot']['quantite'],
                 'cost' => $sect['pivot']['prix_achat']
             ])
         ]);
