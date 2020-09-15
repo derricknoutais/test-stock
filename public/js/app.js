@@ -2397,20 +2397,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else if (this.sectionnable_type === 'Article') {
         this.found = articles.find(function (art) {
           return _this6.selected_element.id === art.id;
-        });
+        }); // Si on veut ajouter des templates
       } else if (this.sectionnable_type === 'Template') {
-        this.found = [];
+        // Initialise variable found tant tableau vide
+        this.found = []; // Pour chaque produit du template
+
         this.selected_element.products.forEach(function (temp_prod, index) {
+          // Comparons a chaque produit dans la commande
           products.forEach(function (prod) {
+            // Si Les Deux Match
             if (temp_prod.id === prod.id) {
-              _this6.found.push(prod);
+              // Ajoute dans variable found
+              _this6.found.push(prod); // Retire de la liste des produits
+
 
               _this6.selected_element.products.splice(index, 1);
             }
           });
         });
-        console.log(this.found);
-      } // Si le produit existe déjà
+      } // Si le produit existe déjà et qu'il ne s'agit pas de template
 
 
       if (this.found && this.sectionnable_type !== 'Template') {
@@ -2419,9 +2424,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           title: 'Attention Duplicata',
           text: 'Ce produit existe déjà dans une section ' + this.found.section.nom
         });
-      }
+      } //
 
-      this.new_section = section;
+
+      this.new_section = section; //
 
       if (!this.found || this.found && this.sectionnable_type === 'Template') {
         axios.post('/product-section', {
@@ -2429,13 +2435,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           product: this.selected_element,
           type: 'App\\' + this.sectionnable_type
         }).then(function (response) {
-          // console.log(response.data)
-          var found = _this6.commande.sections.find(function (sect, section) {
+          // Grab la section
+          var section = _this6.commande.sections.find(function (sect, section) {
             return sect.id === _this6.new_section;
-          });
+          }); // Ajoute les produits a la section
+
 
           if (_this6.sectionnable_type === 'Article') {
-            found.articles.unshift({
+            section.articles.unshift({
               nom: _this6.selected_element.nom,
               pivot: {
                 id: response.data.id,
@@ -2451,13 +2458,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               console.log(error);
             });
           } else if (_this6.sectionnable_type === 'Template') {
-            console.log(response.data); // response.data.forEach(element => {
-            //     found.products.unshift({
-            //         name: element.name
-            //     })
-            // });
+            _this6.selected_element.products.forEach(function (prod) {
+              section.products.unshift(prod);
+            });
+
+            _this6.$swal({
+              icon: 'success',
+              title: 'Succès',
+              text: 'Votre template a été ajouté avec suuccès'
+            });
           } else {
-            found.products.unshift({
+            section.products.unshift({
               id: _this6.selected_element.id,
               name: _this6.selected_element.name,
               pivot: {
@@ -2465,12 +2476,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 quantite: _this6.selected_element.quantite
               }
             });
+
+            _this6.$swal({
+              icon: 'success',
+              title: 'Succès',
+              text: 'Votre template a été ajouté avec suuccès'
+            });
           }
 
           _this6.new_section = false;
           document.getElementById('select').focus();
           document.getElementById('quantiteInput').value = 0; // this.found = false
           // this.selected_element = null
+
+          _this6.$forceUpdate();
         })["catch"](function (error) {
           console.log(error);
         });

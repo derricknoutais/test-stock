@@ -181,7 +181,8 @@ export default {
             });
 
             // Check le produit/article selectionné contre tous les produits/articles de la commande
-            if(this.sectionnable_type === 'Product'){
+            if(this.sectionnable_type === 'Product')
+            {
                 this.found = products.find( prod => {
                     return this.selected_element.id === prod.id
                 });
@@ -189,22 +190,27 @@ export default {
                 this.found = articles.find( art => {
                     return this.selected_element.id === art.id
                 });
+            // Si on veut ajouter des templates
             } else if( this.sectionnable_type === 'Template') {
-
+                // Initialise variable found tant tableau vide
                 this.found = []
+                // Pour chaque produit du template
                 this.selected_element.products.forEach( (temp_prod, index) => {
+                    // Comparons a chaque produit dans la commande
                     products.forEach( prod => {
+                        // Si Les Deux Match
                         if (temp_prod.id === prod.id)
                         {
+                            // Ajoute dans variable found
                             this.found.push(prod)
+                            // Retire de la liste des produits
                             this.selected_element.products.splice(index, 1)
                         }
                     })
                 })
-                console.log(this.found)
             }
 
-            // Si le produit existe déjà
+            // Si le produit existe déjà et qu'il ne s'agit pas de template
             if(this.found && this.sectionnable_type !== 'Template') {
                 this.$swal({
                     icon: 'error',
@@ -212,17 +218,24 @@ export default {
                     text: 'Ce produit existe déjà dans une section ' + this.found.section.nom
                 });
             }
-
-
+            //
             this.new_section = section
+            //
             if(! this.found || (this.found && this.sectionnable_type === 'Template')){
-                axios.post('/product-section',{ section: section, product: this.selected_element, type: 'App\\' + this.sectionnable_type} ).then(response => {
-                    // console.log(response.data)
-                    var found = this.commande.sections.find( (sect, section) => {
+                axios.post('/product-section', {
+                        section: section,
+                        product: this.selected_element,
+                        type: 'App\\' + this.sectionnable_type
+                    }
+                )
+                .then( response => {
+                    // Grab la section
+                    var section = this.commande.sections.find( (sect, section) => {
                         return sect.id ===  this.new_section
                     })
+                    // Ajoute les produits a la section
                     if(this.sectionnable_type === 'Article'){
-                        found.articles.unshift({
+                        section.articles.unshift({
                             nom : this.selected_element.nom,
                             pivot: {
                                 id: response.data.id,
@@ -241,14 +254,17 @@ export default {
 
                     }
                     else if(this.sectionnable_type === 'Template'){
-                        console.log(response.data)
-                        // response.data.forEach(element => {
-                        //     found.products.unshift({
-                        //         name: element.name
-                        //     })
-                        // });
+                        this.selected_element.products.forEach( prod => {
+                            section.products.unshift(prod)
+                        })
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Succès',
+                            text: 'Votre template a été ajouté avec suuccès'
+                        })
+
                     } else {
-                        found.products.unshift({
+                        section.products.unshift({
                             id: this.selected_element.id,
                             name: this.selected_element.name,
                             pivot: {
@@ -256,7 +272,11 @@ export default {
                                 quantite : this.selected_element.quantite
                             },
                         })
-
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Succès',
+                            text: 'Votre template a été ajouté avec suuccès'
+                        })
                     }
 
                     this.new_section = false
@@ -264,6 +284,7 @@ export default {
                     document.getElementById('quantiteInput').value = 0
                     // this.found = false
                     // this.selected_element = null
+                    this.$forceUpdate()
                 }).catch(error => {
                     console.log(error);
                 });

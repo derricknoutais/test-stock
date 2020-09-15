@@ -338,7 +338,7 @@ Route::post('/creer-bl', function(Request $request){
         ]);
     }
 
-    Facture::find($request->id)->update([
+    Facture::find($request['id'])->update([
         'bon_livraison_id' => $data['id']
     ]);
 });

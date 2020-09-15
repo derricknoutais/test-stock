@@ -73,6 +73,7 @@ class SectionController extends Controller
             }
             // return $products;
 
+            // $commande->loadMissing('products', 'templates', 'templates.products', 'sections', 'sections.products', 'demandes', 'demandes.sectionnables', 'bonsCommandes', 'bonsCommandes.sectionnables', 'factures');
         }
 
     }

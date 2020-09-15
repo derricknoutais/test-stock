@@ -42,7 +42,7 @@ class TemplateController extends Controller
     public function createVend (Request $request) {
         $client = new Client();
         $headers = [
-            "Authorization" => "Bearer CjOC4V9CKof2GyEEdPE0Y_E4t742kylC76bxK7oX",
+            "Authorization" => "Bearer " . env('VEND_TOKEN'),
             'Accept'        => 'application/json',
         ];
 
