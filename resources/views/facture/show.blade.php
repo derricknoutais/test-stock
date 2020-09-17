@@ -115,11 +115,22 @@
                 </tr>
                 {{-- Articles --}}
                 <tr v-for="sectionnable in bc.sectionnables" v-if="sectionnable.article">
-                    <td scope="row">@{{ sectionnable.article.nom }} </td>
-                    <td>@{{ sectionnable.pivot.quantite }}</td>
-                    <td>@{{ sectionnable.pivot.prix_achat }}</td>
-                    <td>AED @{{ sectionnable.pivot.prix_achat / 165 }}</td>
-                    <td>
+                    {{-- Nom du Produit --}}
+                    <td scope="row" class="tw-bg-indigo-300 tw-border tw-border-gray-400">@{{ sectionnable.article.nom }} </td>
+                    {{-- Quantité --}}
+                    <td class="tw-border tw-border-gray-400">@{{ sectionnable.pivot.quantite }}</td>
+                    {{-- Prix Achat XAF --}}
+                    <td class="tw-border tw-bg-orange-300 tw-border-orange-500">XAF @{{ sectionnable.pivot.prix_achat }}</td>
+                    {{-- Prix Achat Total XAF --}}
+                    <td class="tw-border tw-bg-orange-400 tw-border-orange-500">
+                        XAF @{{ sectionnable.pivot.prix_achat * sectionnable.pivot.quantite }}
+                    </td>
+                    {{-- Prix Achat AED --}}
+                    <td class="tw-border tw-bg-gray-500 tw-border-gray-400 tw-text-dark ">
+                        AED @{{ sectionnable.pivot.prix_achat / 165 }}
+                    </td>
+                    {{-- Prix Achat Total XAF --}}
+                    <td class="tw-border tw-bg-gray-600 tw-border-gray-400 tw-text-white">
                         AED
                         <animated-number :value="sectionnable.pivot.quantite * sectionnable.pivot.prix_achat"
                              :duration="500" />
