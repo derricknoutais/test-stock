@@ -112,7 +112,7 @@ class CommandeController extends Controller
         ];
         // Fetch les inventaires de chaque produit
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/inventory?page_size=4000', ['headers' => $headers]);
-        $data = json_decode((string) $response->getBody(), true);
+        return $data = json_decode((string) $response->getBody(), true);
         // return sizeof($data['data']);
 
         //Crée le reorder-point

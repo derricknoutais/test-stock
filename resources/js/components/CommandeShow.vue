@@ -357,14 +357,14 @@ export default {
             }
 
         },
-        addReorderpoint(){
-            axios.post('/reorderpoint-commande', {commande_id : this.commande.id}).then(response => {
-                this.$swal()
-                console.log(response.data);
-            }).catch(error => {
-                console.log(error);
-            });
-        },
+        // addReorderpoint(){
+        //     axios.post('/reorderpoint-commande', {commande_id : this.commande.id}).then(response => {
+        //         this.$swal()
+        //         console.log(response.data);
+        //     }).catch(error => {
+        //         console.log(error);
+        //     });
+        // },
         // Toggle Editing
         toggleEdit(){
             this.editing = ! this.editing

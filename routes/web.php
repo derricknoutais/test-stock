@@ -348,13 +348,15 @@ Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', f
         "Authorization" => "Bearer "  . env('VEND_TOKEN'),
         'Accept'        => 'application/json',
     ];
-    $response = $client->request('GET', 'https://stapog.vendhq.com/api/2.0/consignments/' . $reorderpoint_id . '/products'  , [
+    $response = $client->request('GET', 'https://stapog.vendhq.com/api/consignment_product?consignment_id=' . $reorderpoint_id  . '&page_size=200' , [
         'headers' => $headers
     ]);
 
+
     $data = json_decode((string) $response->getBody(), true);
+
     $totaux = array();
-    $totaux['products'] = sizeof($data['data']);
+    $totaux['products'] = sizeof($data['consignment_products']);
         if( ! $section = Section::where( ['nom' => 'Reorder Point', 'commande_id' => $commande_id ] )->first() )
         {
             $section = Section::create([
@@ -363,7 +365,7 @@ Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', f
             ]);
         }
     $totaux['inserted'] = 0;
-    foreach( $data['data'] as $product )
+    foreach( $data['consignment_products'] as $product )
     {
         if( ! DB::table('sectionnables')->where(['section_id' => $section->id, 'sectionnable_id' => $product['product_id'] ])->first() ){
             DB::table('sectionnables')->insert([

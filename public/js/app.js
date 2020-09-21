@@ -2560,19 +2560,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         alert('Aucun Produit dans la commande. Ajoutez des produits');
       }
     },
-    addReorderpoint: function addReorderpoint() {
-      var _this8 = this;
-
-      axios.post('/reorderpoint-commande', {
-        commande_id: this.commande.id
-      }).then(function (response) {
-        _this8.$swal();
-
-        console.log(response.data);
-      })["catch"](function (error) {
-        console.log(error);
-      });
-    },
+    // addReorderpoint(){
+    //     axios.post('/reorderpoint-commande', {commande_id : this.commande.id}).then(response => {
+    //         this.$swal()
+    //         console.log(response.data);
+    //     }).catch(error => {
+    //         console.log(error);
+    //     });
+    // },
     // Toggle Editing
     toggleEdit: function toggleEdit() {
       this.editing = !this.editing;
@@ -2595,11 +2590,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     mapArrays: function mapArrays() {
-      var _this9 = this;
+      var _this8 = this;
 
       if (this.commande && this.commande.templates[0] && this.commande.templates[0].products) {
         this.commande.templates[0].products.map(function (template_product) {
-          var found = _this9.commande.products.find(function (product) {
+          var found = _this8.commande.products.find(function (product) {
             return product.id === template_product.id;
           });
 
@@ -2608,7 +2603,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     deleteProductSection: function deleteProductSection(section, article, type) {
-      var _this10 = this;
+      var _this9 = this;
 
       axios.get('/section-product/delete/' + article.id + '/' + section.id).then(function (response) {
         console.log(response.data);
@@ -2616,7 +2611,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (response.data === 0) {
           alert('Article Pas Supprimé. Veuillez Reesayé');
         } else {
-          var section_trouvée = _this10.commande.sections.find(function (sect) {
+          var section_trouvée = _this9.commande.sections.find(function (sect) {
             return sect.id === section.id;
           });
 
@@ -2627,7 +2622,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             var index = section_trouvée.articles.indexOf(article_trouvée);
             section_trouvée.articles.splice(index, 1);
 
-            _this10.$forceUpdate();
+            _this9.$forceUpdate();
           } else if (type === 'Product') {
             var article_trouvée = section_trouvée.products.find(function (prod) {
               return prod.id === article.id;
@@ -2635,7 +2630,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             var index = section_trouvée.products.indexOf(article_trouvée);
             section_trouvée.products.splice(index, 1);
 
-            _this10.$forceUpdate();
+            _this9.$forceUpdate();
           } // alert('Article Suprrimé')
 
         }
@@ -2666,18 +2661,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       $('#sectionDelete').modal('show');
     },
     updateSection: function updateSection(section) {
-      var _this11 = this;
+      var _this10 = this;
 
       axios.put('/section/' + this.section_being_updated.id, {
         nom: this.new_section
       }).then(function (response) {
         console.log(response.data);
-        _this11.section_being_updated.nom = _this11.new_section;
-        _this11.isUpdating = false;
-        _this11.section_being_updated = false;
-        _this11.new_section = false;
+        _this10.section_being_updated.nom = _this10.new_section;
+        _this10.isUpdating = false;
+        _this10.section_being_updated = false;
+        _this10.new_section = false;
 
-        _this11.$forceUpdate();
+        _this10.$forceUpdate();
 
         $('#section').modal('hide');
       })["catch"](function (error) {
@@ -2685,16 +2680,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeSection: function removeSection(section) {
-      var _this12 = this;
+      var _this11 = this;
 
       axios["delete"]('/section/' + this.section_being_deleted.id).then(function (response) {
-        var index = _this12.commande.sections.indexOf(section);
+        var index = _this11.commande.sections.indexOf(section);
 
-        _this12.commande.sections.splice(index, 1);
+        _this11.commande.sections.splice(index, 1);
 
         $('#sectionDelete').modal('hide');
 
-        _this12.$forceUpdate();
+        _this11.$forceUpdate();
 
         console.log(response.data);
       })["catch"](function (error) {
@@ -2702,7 +2697,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeProduct: function removeProduct(section, produit, type) {
-      var _this13 = this;
+      var _this12 = this;
 
       axios["delete"]('/sectionnable/' + produit.pivot.id).then(function (response) {
         if (type === 'Product') {
@@ -2718,42 +2713,42 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           });
         }
 
-        _this13.$forceUpdate();
+        _this12.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
       });
     }
   }, _defineProperty(_methods, "majStock", function majStock() {
-    var _this14 = this;
+    var _this13 = this;
 
     this.isLoading.majStock = true;
     axios.get('/vend/update-quantities').then(function (response) {
       console.log(response.data);
-      _this14.isLoading.majStock = false;
+      _this13.isLoading.majStock = false;
     })["catch"](function (error) {
       console.log(error);
     });
   }), _defineProperty(_methods, "addReorderPoint", function addReorderPoint() {
-    var _this15 = this;
+    var _this14 = this;
 
     axios.get('/api/vend/commande/' + this.commande.id + '/reorderpoint/' + this.reorder_point_id).then(function (response) {
       console.log(response.data);
       $('#reorderpoint').modal('hide');
 
       if (response.data.inserted === 0 || response.data.inserted < response.data.products) {
-        _this15.$swal({
+        _this14.$swal({
           icon: 'error',
           title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés.',
           text: 'Il existe ' + (response.data.products - response.data.inserted) + ' Produits déjà enregistrés. Aucun Duplicata n est accepté'
         });
       } else {
-        _this15.$swal({
+        _this14.$swal({
           icon: 'success',
           title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés'
         });
       }
     })["catch"](function (error) {
-      _this15.$swal({
+      _this14.$swal({
         icon: 'error',
         title: 'Oops...',
         text: 'Une erreur est survenue veuillez vous assurer ',
@@ -2871,7 +2866,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   created: function created() {
-    var _this16 = this;
+    var _this15 = this;
 
     this.sectionnable_type = 'Product';
 
@@ -2922,10 +2917,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     // });
 
     axios.post('https://azimuts.ga/article/api/bulk-fetch', article_ids).then(function (response) {
-      _this16.articlesFetched = response.data;
+      _this15.articlesFetched = response.data;
 
-      _this16.articlesFetched.forEach(function (artFetched) {
-        _this16.articles_prop.forEach(function (artProp) {
+      _this15.articlesFetched.forEach(function (artFetched) {
+        _this15.articles_prop.forEach(function (artProp) {
           if (artFetched.id == artProp.sectionnable_id) {
             artFetched.pivot = {
               section_id: artProp.section_id,
@@ -2936,8 +2931,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       });
 
-      _this16.articlesFetched.forEach(function (article, index) {
-        _this16.commande.sections.forEach(function (section) {
+      _this15.articlesFetched.forEach(function (article, index) {
+        _this15.commande.sections.forEach(function (section) {
           if (section.id === article.pivot.section_id) {
             section.articles.push(article);
           }
