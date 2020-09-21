@@ -12,6 +12,7 @@
         <div class="tw-mt-5">
             {{-- <a href="/factures/export/{{ $facture->id }}" class="tw-btn tw-inline-block tw-btn-dark">Export .xlsx</a> --}}
             <button class="tw-btn tw-btn-dark" @click="creerBonLivraison()">Créer B.L dans Vend</button>
+            <a v-if="bc.bon_livraison_id" class="tw-btn tw-btn-dark" :href="'https://stapog.vendhq.com/consignment/' + bc.bon_livraison_id">Voir B.L dans Vend</a>
 
             {{-- <button v-if="! editMode" class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="toggleEditMode()">Modifier</button>
             <button v-else class="tw-btn tw-inline-block tw-btn-dark tw-mt-5" @click="updateAllEdited()">Enregistrer</button> --}}
