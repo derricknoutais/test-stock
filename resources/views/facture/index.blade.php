@@ -23,7 +23,7 @@
                             <td>@{{ total(facture) }}</td>
                             <td v-if="facture.bon_livraison_id">
                                 <a v-if="bc.bon_livraison_id" class="tw-btn tw-btn-dark"
-                                    :href="'https://stapog.vendhq.com/consignment/' + bc.bon_livraison_id">Voir B.L dans Vend</a>
+                                    :href="'https://stapog.vendhq.com/consignment/' + facture.bon_livraison_id" target="_blank">Voir B.L dans Vend</a>
                             </td>
                         </tr>
                         <tr>
