@@ -525,7 +525,7 @@ export default {
                     this.$swal({
                         icon: 'error',
                         title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés.',
-                        text: 'Il existe ' + ( response.data.products - response.data.inserted) + ' Produits déjà enregistrés. Aucun Duplicata n est accepté'
+                        text: 'Il existe ' + ( response.data.products - response.data.inserted) + ' Produits déjà enregistrés. Aucun Duplicata n est accepté',
                     })
                 } else {
                     this.$swal({

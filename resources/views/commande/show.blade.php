@@ -137,7 +137,7 @@
                 <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5" @click="majStock" >Mettre à Jour Vend Stock
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
                 </button>
-                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5">Tableau des différences</button>
+                <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5" data-toggle="modal" data-target="#tableauDesDifférences">Tableau des différences</button>
 
             </div>
 

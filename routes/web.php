@@ -365,9 +365,24 @@ Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', f
             ]);
         }
     $totaux['inserted'] = 0;
+    $totaux['duplicatas'] = array();
+    // Pour chaque produit de la commande
+    $sections = Section::where('commande_id', $commande_id)->with('sectionnables')->get();
     foreach( $data['consignment_products'] as $product )
     {
-        if( ! DB::table('sectionnables')->where(['section_id' => $section->id, 'sectionnable_id' => $product['product_id'] ])->first() ){
+        $found = false;
+        // Je dois avoir toutes les sections
+        foreach($sections as $section){
+            foreach($section->sectionnables as $sectionnable){
+                if($sectionnable->sectionnable_id === $product['product_id']){
+                    $found = true;
+                }
+            }
+        }
+
+        // Vérifier que ca n'existe dans aucune section
+
+        if( !$found ){
             DB::table('sectionnables')->insert([
                 'section_id' => $section->id,
                 'sectionnable_id' => $product['product_id'],
@@ -375,6 +390,8 @@ Route::get('/api/vend/commande/{commande_id}/reorderpoint/{reorderpoint_id}/', f
                 'quantite' => $product['count']
             ]);
             $totaux['inserted'] += 1;
+        } else {
+            array_push($totaux['duplicatas'], $product);
         }
     }
     return $totaux;
