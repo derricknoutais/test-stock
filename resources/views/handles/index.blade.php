@@ -19,11 +19,11 @@
                             @{{ handle.name }}
                         </td>
                         <td>
-                            @{{ handle.translation }}
+                            <input type="text" v-model="handle.translation" class="form-control tw-ml-2" @change="updateDisplay(handle, 'translation')">
+
                         </td>
                         <td class="tw-flex">
                             <select v-model="handle.display1" class="form-control tw-ml-2" @change="updateDisplay(handle, 'display1')">
-
                                 <option value="">Vide</option>
                                 <option value="variant_option_one_value">Option 1</option>
                                 <option value="variant_option_two_value">Option 2</option>

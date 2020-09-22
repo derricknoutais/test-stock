@@ -124,7 +124,6 @@
 
             <!-- Modal -->
         </header>
-
         {{-- Mes Sections --}}
         <main class="tw-flex tw-flex-col tw-justify-center tw-items-center tw-w-screen tw-bg-gray-400 ">
 
