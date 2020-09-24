@@ -110,7 +110,9 @@ class DemandeController extends Controller
             'demande_id' => $request['demandes']['id'],
             'sectionnable_id' => $request['products']['pivot']['id'],
             'offre' => 0,
-            'quantite_offerte' => 0
+            'quantite_offerte' => 0,
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
     }
 
@@ -130,7 +132,8 @@ class DemandeController extends Controller
 
         DB::table('demande_sectionnable')->where('id', $request['pivot']['id'])->update([
             'offre' => $request['pivot']['offre'],
-            'quantite_offerte' => $request['pivot']['quantite_offerte']
+            'quantite_offerte' => $request['pivot']['quantite_offerte'],
+            'updated_at' => now()
         ]);
 
     }
