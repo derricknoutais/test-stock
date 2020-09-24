@@ -29,7 +29,12 @@ class HandleController extends Controller
      */
     public function create()
     {
-        //
+        $products = Product::all();
+        foreach ($products as $product ) {
+            $product->update([
+                'handle_id' => Handle::where('name', $product->handle)->first()->id
+            ]);
+        }
     }
 
     /**

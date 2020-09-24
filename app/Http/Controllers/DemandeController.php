@@ -35,30 +35,36 @@ class DemandeController extends Controller
             */
             foreach($section->sectionnables as $sectionnable){
                 if($sectionnable->sectionnable_type === 'App\\Product'){
-                    foreach($sectionnable->product->fournisseurs as $fournisseur){
-                        if($demande = Demande::where( ['fournisseur_id' => $fournisseur->id, 'commande_id' => $commande->id])->first() ){
-                            DB::table('demande_sectionnable')->insert([
-                                'sectionnable_id' => $sectionnable->id,
-                                'demande_id' => $demande->id,
-                                'offre' => 0,
-                                'quantite_offerte' => 0
-                                // 'offre' => rand(1, 9) * 1000,
-                                // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
-                            ]);
-                        } else {
-                            $demande = Demande::create([
-                                'nom' => $fournisseur->nom,
-                                'commande_id' => $commande->id,
-                                'fournisseur_id' => $fournisseur->id
-                            ]);
-                            DB::table('demande_sectionnable')->insert([
-                                'sectionnable_id' => $sectionnable->id,
-                                'demande_id' => $demande->id,
-                                'offre' => 0,
-                                'quantite_offerte' => 0
-                                // 'offre' => rand(1, 9) * 1000,
-                                // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
-                            ]);
+                    if(isset($sectionnable->product->fournisseurs)){
+                        foreach($sectionnable->product->fournisseurs as $fournisseur){
+                            if($demande = Demande::where( ['fournisseur_id' => $fournisseur->id, 'commande_id' => $commande->id])->first() ){
+                                DB::table('demande_sectionnable')->insert([
+                                    'sectionnable_id' => $sectionnable->id,
+                                    'demande_id' => $demande->id,
+                                    'offre' => 0,
+                                    'quantite_offerte' => 0,
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                    // 'offre' => rand(1, 9) * 1000,
+                                    // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
+                                ]);
+                            } else {
+                                $demande = Demande::create([
+                                    'nom' => $fournisseur->nom,
+                                    'commande_id' => $commande->id,
+                                    'fournisseur_id' => $fournisseur->id
+                                ]);
+                                DB::table('demande_sectionnable')->insert([
+                                    'sectionnable_id' => $sectionnable->id,
+                                    'demande_id' => $demande->id,
+                                    'offre' => 0,
+                                    'quantite_offerte' => 0,
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                    // 'offre' => rand(1, 9) * 1000,
+                                    // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
+                                ]);
+                            }
                         }
                     }
                 }

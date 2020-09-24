@@ -5,7 +5,7 @@
 <p>E-Mail: servicesazimuts@gmail.com</p>
 <p>Address: Rue Fréderic Dioni, Case d'Écoute Port-Gentil</p>
 
-<h1>Demande {{$demande->nom}}</h1>
+{{-- <h1>Demande {{$demande->nom}}</h1> --}}
 <table>
     <thead>
         <tr>
@@ -14,7 +14,6 @@
     </thead>
     <tbody>
             <tr>
-                <td>{{ $demande->nom }}</td>
             </tr>
             <tr></tr>
             <tr>
@@ -29,6 +28,22 @@
                     <tr>
                         <td>{{ $sectionnable->pivot->id }}</td>
                         <td>{{ $sectionnable->product->name }}</td>
+
+                        <td>{{ $sectionnable->product->handle->translation }}
+                            @if ($sectionnable->product->handle->display1)
+                                <span>/ {{ $sectionnable->product[$sectionnable->product->handle->display1] }}</span>
+                            @endif
+                            @if ($sectionnable->product->handle->display2)
+                                <span>/ {{ $sectionnable->product[$sectionnable->product->handle->display2] }}</span>
+                            @endif
+                            @if ($sectionnable->product->handle->display3)
+                                <span>/ {{ $sectionnable->product[$sectionnable->product->handle->display3] }}</span>
+                            @endif
+
+                        </td>
+
+
+
                         <td>{{ $sectionnable->quantite}}</td>
                     </tr>
                 @else
@@ -38,7 +53,7 @@
                         <td>{{ $sectionnable->quantite}}</td>
                     </tr>
                 @endif
-                @endforeach
-            <tr></tr>
+            @endforeach
+
     </tbody>
 </table>

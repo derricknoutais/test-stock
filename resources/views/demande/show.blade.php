@@ -37,12 +37,13 @@
                         @{{ sectionnable.product.name }}
                     </td>
 
-                    <td scope="row">
+                    <td scope="row" v-if="sectionnable.product.handle">
                         @{{ sectionnable.product.handle.translation }}
                         <span v-if="sectionnable.product.handle.display1">/ @{{ sectionnable.product[sectionnable.product.handle.display1] }}</span>
                         <span v-if="sectionnable.product.handle.display2">/ @{{ sectionnable.product[sectionnable.product.handle.display2] }}</span>
                         <span v-if="sectionnable.product.handle.display3">/ @{{ sectionnable.product[sectionnable.product.handle.display3] }}</span>
                     </td>
+                    <td v-else></td>
 
                     <td>@{{ sectionnable.quantite }} </td>
 
@@ -67,6 +68,9 @@
                 <tr v-for="sectionnable in demande.sectionnables" v-if="sectionnable.article">
                     <td>@{{ sectionnable.pivot.id }}</td>
                     <td scope="row">@{{ sectionnable.article.nom }}</td>
+                    <td>
+
+                    </td>
                     <td>@{{ sectionnable.quantite }} </td>
                     <td class="tw-flex tw-items-center">
                         <i class="fas fa-arrow-down  tw-text-red-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte < sectionnable.quantite"></i>
@@ -95,6 +99,7 @@
                     <td class="tw-text-right">Total</td>
                     <td>@{{totalDemande | currency }}</td>
                 </tr>
+
             </tbody>
 
         </table>
