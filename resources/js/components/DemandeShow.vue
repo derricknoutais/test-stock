@@ -58,10 +58,44 @@ export default {
                 sectionnable.pivot.quantite_offerte = sectionnable.quantite
             })
             this.$forceUpdate()
+        },
+        editTraduction(sectionnable){
+
+            if (! sectionnable.pivot.traduction) {
+
+                axios.put('/demande-sectionnable', sectionnable ).then(response => {
+
+                    sectionnable.pivot.traduction = [
+                        sectionnable.product.handle.translation, sectionnable.product[sectionnable.product.handle.display1],
+                        sectionnable.product[sectionnable.product.handle.display2], sectionnable.product[sectionnable.product.handle.display3]
+                    ].filter(Boolean).join(' / ', '');
+
+                    this.$forceUpdate()
+
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+            sectionnable.editing = true
+            this.$forceUpdate()
+        },
+        saveTraduction(sectionnable){
+
+            axios.patch('/demande-sectionnable-traduction', sectionnable)
+            .then(response => {
+                sectionnable.editing= false
+                this.$forceUpdate()
+            })
+            .catch(error => {
+                console.log(error);
+            });
         }
     },
     created(){
         this.demande = this.demande_prop
+        this.demande.sectionnables.map( sect => {
+            sect.editing = false
+        })
     }
 }
 </script>

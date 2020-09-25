@@ -137,4 +137,31 @@ class DemandeController extends Controller
         ]);
 
     }
+    public function updateSectionnable(Request $request){
+        $translation = '';
+
+        if(isset($request['product']['handle']['translation'])){
+            $translation = $request['product']['handle']['translation'];
+        }
+        if(isset($request['product']['handle']['display1']) && isset($request['product'])){
+            $translation .=  ' / ' . $request['product'][$request['product']['handle']['display1']];
+        }
+        if(isset($request['product']['handle']['display2']) && isset($request['product'])){
+            $translation .=  ' / ' . $request['product'][$request['product']['handle']['display2']];
+        }
+        if(isset($request['product']['handle']['display3']) && isset($request['product'])){
+            $translation .=  ' / ' . $request['product'][$request['product']['handle']['display3']];
+        }
+
+
+        DB::table('demande_sectionnable')->where('id', $request['pivot']['id'])->update([
+            'traduction' => $translation
+        ]);
+    }
+    public function updateTraduction(Request $request){
+
+        DB::table('demande_sectionnable')->where('id', $request['pivot']['id'])->update([
+            'traduction' => $request['pivot']['traduction']
+        ]);
+    }
 }

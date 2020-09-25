@@ -3022,10 +3022,40 @@ __webpack_require__.r(__webpack_exports__);
         sectionnable.pivot.quantite_offerte = sectionnable.quantite;
       });
       this.$forceUpdate();
+    },
+    editTraduction: function editTraduction(sectionnable) {
+      var _this3 = this;
+
+      if (!sectionnable.pivot.traduction) {
+        axios.put('/demande-sectionnable', sectionnable).then(function (response) {
+          sectionnable.pivot.traduction = [sectionnable.product.handle.translation, sectionnable.product[sectionnable.product.handle.display1], sectionnable.product[sectionnable.product.handle.display2], sectionnable.product[sectionnable.product.handle.display3]].filter(Boolean).join(' / ', '');
+
+          _this3.$forceUpdate();
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
+
+      sectionnable.editing = true;
+      this.$forceUpdate();
+    },
+    saveTraduction: function saveTraduction(sectionnable) {
+      var _this4 = this;
+
+      axios.patch('/demande-sectionnable-traduction', sectionnable).then(function (response) {
+        sectionnable.editing = false;
+
+        _this4.$forceUpdate();
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   created: function created() {
     this.demande = this.demande_prop;
+    this.demande.sectionnables.map(function (sect) {
+      sect.editing = false;
+    });
   }
 });
 

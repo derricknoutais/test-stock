@@ -17,10 +17,11 @@ class CreateDemandeSectionnableTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('sectionnable_id');
             $table->unsignedBigInteger('demande_id');
+            $table->string('traduction');
+            $table->unsignedBigInteger('marque_id');
             $table->unsignedBigInteger('quantite_offerte')->default(0);
             $table->unsignedBigInteger('offre')->default(0);
             $table->boolean('checked')->default(0);
-
             $table->unique(['sectionnable_id', 'demande_id']);
             $table->timestamps();
         });

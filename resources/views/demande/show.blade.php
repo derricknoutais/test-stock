@@ -36,12 +36,34 @@
                     <td>
                         @{{ sectionnable.product.name }}
                     </td>
+                    <td v-if="sectionnable.pivot.traduction">
+                        <template class="tw-flex tw-items-center tw-justify-between">
+                            <span>
+                                <span v-if="! sectionnable.editing">
+                                    @{{ sectionnable.pivot.traduction }}
+                                </span>
+                                <input v-else type="text" class="form-control tw-w-3/4 tw-inline-block" v-model="sectionnable.pivot.traduction">
+                            </span>
+                            <span>
+                                <i v-if="! sectionnable.editing" class="fas fa-pen tw-ml-3 tw-cursor-pointer tw-text-blue-600" @click="editTraduction(sectionnable)"></i>
+                                <i v-else class="fas fa-save tw-ml-3 tw-cursor-pointer tw-text-blue-600" @click="saveTraduction(sectionnable)"></i>
+                            </span>
 
-                    <td scope="row" v-if="sectionnable.product.handle">
-                        @{{ sectionnable.product.handle.translation }}
-                        <span v-if="sectionnable.product.handle.display1">/ @{{ sectionnable.product[sectionnable.product.handle.display1] }}</span>
-                        <span v-if="sectionnable.product.handle.display2">/ @{{ sectionnable.product[sectionnable.product.handle.display2] }}</span>
-                        <span v-if="sectionnable.product.handle.display3">/ @{{ sectionnable.product[sectionnable.product.handle.display3] }}</span>
+                        </template>
+                    </td>
+                    <td scope="row" v-else-if="sectionnable.product.handle" >
+
+                        <span class="tw-flex tw-items-center tw-justify-between">
+                            <span>
+                                @{{ sectionnable.product.handle.translation }}
+                                <span v-if="sectionnable.product.handle.display1">/ @{{ sectionnable.product[sectionnable.product.handle.display1] }}</span>
+                                <span v-if="sectionnable.product.handle.display2">/ @{{ sectionnable.product[sectionnable.product.handle.display2] }}</span>
+                                <span v-if="sectionnable.product.handle.display3">/ @{{ sectionnable.product[sectionnable.product.handle.display3] }}</span>
+                            </span>
+                            <i class="fas fa-pen tw-ml-3 tw-cursor-pointer tw-text-blue-600" @click="editTraduction(sectionnable)" ></i>
+                        </span>
+
+
                     </td>
                     <td v-else></td>
 

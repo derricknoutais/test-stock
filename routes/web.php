@@ -104,6 +104,8 @@ Route::post('/product-section', 'SectionController@addProduct');
 // Prépa-Demande
 Route::get('/commande/{commande}/prepa-demande', 'DemandeController@showPrepaDemande');
 Route::post('/demande-sectionnable', 'DemandeController@addSectionnable');
+Route::put('/demande-sectionnable', 'DemandeController@updateSectionnable');
+Route::patch('/demande-sectionnable-traduction', 'DemandeController@updateTraduction');
 Route::get('/commande/{commande}/dispatch-produits-dans-demandes', 'DemandeController@dispatchSectionnables');
 
 
