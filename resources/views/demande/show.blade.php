@@ -4,7 +4,7 @@
 @section('content')
 
 <demande-show :demande_prop="{{$demande}}" inline-template>
-    <div class="tw-container tw-mx-auto">
+    <div class="tw-container-fluid tw-mx-10">
         <en-tete bg-color="tw-bg-green-500"></en-tete>
 
         <h1 class="tw-text-5xl tw-text-center tw-mt-20 tw-uppercase">Demande @{{ demande.nom }}</h1>
@@ -37,7 +37,7 @@
                         @{{ sectionnable.product.name }}
                     </td>
                     <td v-if="sectionnable.pivot.traduction">
-                        <template class="tw-flex tw-items-center tw-justify-between">
+                        <span class="tw-flex tw-items-center tw-justify-between">
                             <span>
                                 <span v-if="! sectionnable.editing">
                                     @{{ sectionnable.pivot.traduction }}
@@ -49,7 +49,7 @@
                                 <i v-else class="fas fa-save tw-ml-3 tw-cursor-pointer tw-text-blue-600" @click="saveTraduction(sectionnable)"></i>
                             </span>
 
-                        </template>
+                        </span>
                     </td>
                     <td scope="row" v-else-if="sectionnable.product.handle" >
 
