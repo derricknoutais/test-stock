@@ -59,6 +59,11 @@ export default {
             })
             this.$forceUpdate()
         },
+
+        editMode(sectionnable){
+            sectionnable.editing = true
+            this.$forceUpdate()
+        },
         editTraduction(sectionnable){
 
             if (! sectionnable.pivot.traduction) {
@@ -89,12 +94,27 @@ export default {
             .catch(error => {
                 console.log(error);
             });
+        },
+        toggleDetails(sectionnable){
+            sectionnable.displayDetails = ! sectionnable.displayDetails;
+            this.$forceUpdate()
+        },
+        updateSectionnable(sectionnable, field, value){
+            axios.patch('/demande-sectionnable', {id: sectionnable.pivot.id, field: field, value: value}).then(response => {
+                console.log(response.data);
+                sectionnable.editing = false
+                this.$forceUpdate()
+
+            }).catch(error => {
+                console.log(error);
+            });
         }
     },
     created(){
         this.demande = this.demande_prop
         this.demande.sectionnables.map( sect => {
             sect.editing = false
+            sect.displayDetails = true;
         })
     }
 }

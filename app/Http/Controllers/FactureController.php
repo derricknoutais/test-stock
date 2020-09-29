@@ -49,15 +49,17 @@ class FactureController extends Controller
 
         if($section){
             // Crée le Sectionnable
-            $sectionnable = Sectionnable::create([
-                'section_id' => $section->id,
-                'sectionnable_id' => $request['product']['id'],
-                'sectionnable_type' => 'App\Product',
-                'quantite' => $request['product']['quantite'],
-                'created_at' => now(),
-                'updated_at' => now(),
-                'conflit' => 0
-            ]);
+            if( ! Sectionnable::where(['sectionnable' => $request['product']['id'],'section_id' => $section->id ]) ){
+                $sectionnable = Sectionnable::create([
+                    'section_id' => $section->id,
+                    'sectionnable_id' => $request['product']['id'],
+                    'sectionnable_type' => 'App\Product',
+                    'quantite' => $request['product']['quantite'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'conflit' => 0
+                ]);
+            }
 
             // Insère le sectionnable au bon de commande
             DB::table('facture_sectionnable')->insert([

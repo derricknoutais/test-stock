@@ -17,7 +17,7 @@
                     placeholder="Pick a value" label="name" @input="addProduct()"></multiselect> --}}
                     <multiselect v-model="selected_product" :options="{{ $products }}" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Pick some" label="name" track-by="name" :preselect-first="true"></multiselect>
 
-                    
+
 
                 </div>
                 <input type="number" v-model.number="quantite" class="form-control tw-w-1/12" v-if="selected_product.length < 2">
@@ -27,7 +27,7 @@
 
 
             <p class="tw-text-lg my-4">
-                @{{ template.products.length }} 
+                @{{ template.products.length }}
                 @{{ template.products.length <= 1 ? 'Produit' : 'Produits' }}
             </p>
             {{-- <button class="tw-btn" data-toggle="modal" data-target="#modelId">Créer Template</button> --}}
@@ -64,9 +64,9 @@
                 <button type="button" class="btn tw-bg-gray-800 tw-text-white tw-ml-5 hover:tw-bg-gray-700" @click="enregistrer">Enregistrer</button>
             </div>
         </main>
-        
+
     </section>
-    
+
 
 </template-show>
 @endsection

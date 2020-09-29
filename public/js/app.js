@@ -3023,6 +3023,10 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.$forceUpdate();
     },
+    editMode: function editMode(sectionnable) {
+      sectionnable.editing = true;
+      this.$forceUpdate();
+    },
     editTraduction: function editTraduction(sectionnable) {
       var _this3 = this;
 
@@ -3049,12 +3053,33 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    toggleDetails: function toggleDetails(sectionnable) {
+      sectionnable.displayDetails = !sectionnable.displayDetails;
+      this.$forceUpdate();
+    },
+    updateSectionnable: function updateSectionnable(sectionnable, field, value) {
+      var _this5 = this;
+
+      axios.patch('/demande-sectionnable', {
+        id: sectionnable.pivot.id,
+        field: field,
+        value: value
+      }).then(function (response) {
+        console.log(response.data);
+        sectionnable.editing = false;
+
+        _this5.$forceUpdate();
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   created: function created() {
     this.demande = this.demande_prop;
     this.demande.sectionnables.map(function (sect) {
       sect.editing = false;
+      sect.displayDetails = true;
     });
   }
 });

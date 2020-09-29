@@ -49,7 +49,7 @@ class BonCommandeController extends Controller
         // Pour Chaque Demande d'Offre de Cette Commande...
         for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
 
-            // Pour Chaque Section de Chaque Demande
+            // Pour Chaque Sectionnable de Chaque Demande
             foreach($commande->demandes[$i]->sectionnables as $sectionnable){
 
                 $commande->load('demandes', 'bonsCommandes');
@@ -83,9 +83,6 @@ class BonCommandeController extends Controller
                     usort($toCompare, function( $a, $b) {
                         // Pour deux produits au prix identiques
                         if($a->pivot->offre == $b->pivot->offre){
-
-
-
                             $a->pivot->checked = -1;
                             $b->pivot->checked = -1;
                             DB::table('demande_sectionnable')
@@ -201,13 +198,8 @@ class BonCommandeController extends Controller
                             $toCompare[$y]->pivot->checked = 1;
                         }
                     }
-
                 }
-
-
             }
-
-
         }
     }
 

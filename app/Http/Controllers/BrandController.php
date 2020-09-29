@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Handle;
-use App\Product;
+use App\Brand;
 use Illuminate\Http\Request;
 
-class HandleController extends Controller
+class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,11 +14,7 @@ class HandleController extends Controller
      */
     public function index()
     {
-        $handles = Handle::orderBy('name')->get();
-        foreach ($handles as $handle ) {
-            $handle->product_example = Product::where('handle_id', $handle->id)->first();
-        }
-        return view('handles.index', compact('handles'));
+        //
     }
 
     /**
@@ -29,12 +24,7 @@ class HandleController extends Controller
      */
     public function create()
     {
-        $products = Product::all();
-        foreach ($products as $product ) {
-            $product->update([
-                'handle_id' => Handle::where('name', $product->handle)->first()->id
-            ]);
-        }
+        //
     }
 
     /**
@@ -51,22 +41,21 @@ class HandleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Handle  $handle
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function show(Handle $handle)
+    public function show(Brand $brand)
     {
-        $handle->loadMissing('brands');
-        return $handle;
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Handle  $handle
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function edit(Handle $handle)
+    public function edit(Brand $brand)
     {
         //
     }
@@ -75,26 +64,21 @@ class HandleController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Handle  $handle
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Handle $handle)
+    public function update(Request $request, Brand $brand)
     {
-        // return $request['handle'][$request['field']];
-
-        $handle->update([
-            $request['field'] => $request['handle'][$request['field']]
-        ]);
-
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Handle  $handle
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Handle $handle)
+    public function destroy(Brand $brand)
     {
         //
     }
