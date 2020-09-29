@@ -49,7 +49,7 @@ class FactureController extends Controller
 
         if($section){
             // Crée le Sectionnable
-            if( ! ($sectionnable =  Sectionnable::where(['sectionnable' => $request['product']['id'],'section_id' => $section->id ])) ){
+            if( ! ($sectionnable =  Sectionnable::where(['sectionnable' => $request['product']['id'],'section_id' => $section->id ])->first() ) ){
                 $sectionnable = Sectionnable::create([
                     'section_id' => $section->id,
                     'sectionnable_id' => $request['product']['id'],
