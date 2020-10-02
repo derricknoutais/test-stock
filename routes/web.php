@@ -453,7 +453,7 @@ Route::get('/api/produits', function () {
 
     $pages = array();
 
-    for ($j = 1; $j <= 11; $j++) {
+    for ($j = 1; $j <= 18; $j++) {
 
         $response = $client->request('GET', 'https://stapog.vendhq.com/api/products?page_size=200&page=' . $j, ['headers' => $headers]);
         $data = json_decode((string) $response->getBody(), true);
