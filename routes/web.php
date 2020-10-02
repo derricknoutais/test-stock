@@ -463,29 +463,7 @@ Route::get('/api/produits', function () {
     }
     foreach ($pages as $products) {
         foreach ($products as $product) {
-            if (! Product::where('id', $product['id'])->first()) {
-
-                $prod = Product::create([
-                    'id' => $product['id'],
-                    'handle' => $product['handle'],
-                    'name' => $product['name'],
-                    'sku' => $product['sku'],
-                    'price' => $product['price'],
-                    'supply_price' => $product['supply_price'],
-                    'variant_option_one_name' => $product['variant_option_one_name'],
-                    'variant_option_one_value' => $product['variant_option_one_value'],
-                    'variant_option_two_name' => $product['variant_option_two_name'],
-                    'variant_option_two_value' => $product['variant_option_two_value'],
-                    'variant_option_three_name' => $product['variant_option_three_name'],
-                    'variant_option_three_value' => $product['variant_option_three_value']
-                ]);
-
-                if( isset($product['inventory']) && isset($product['inventory'][0]['count'])){
-                    Product::find($product['id'])->update([
-                        'quantity' => ( (int) $product['inventory'][0]['count'] )
-                    ]) ;
-                }
-            } else {
+            if($product['handle'] == 'filtreahuilebosch'){
                 Product::find($product['id'])->update([
                     'variant_option_one_name' => $product['variant_option_one_name'],
                     'variant_option_one_value' => $product['variant_option_one_value'],
@@ -495,6 +473,38 @@ Route::get('/api/produits', function () {
                     'variant_option_three_value' => $product['variant_option_three_value']
                 ]) ;
             }
+            // if (! Product::where('id', $product['id'])->first()) {
+
+            //     $prod = Product::create([
+            //         'id' => $product['id'],
+            //         'handle' => $product['handle'],
+            //         'name' => $product['name'],
+            //         'sku' => $product['sku'],
+            //         'price' => $product['price'],
+            //         'supply_price' => $product['supply_price'],
+            //         'variant_option_one_name' => $product['variant_option_one_name'],
+            //         'variant_option_one_value' => $product['variant_option_one_value'],
+            //         'variant_option_two_name' => $product['variant_option_two_name'],
+            //         'variant_option_two_value' => $product['variant_option_two_value'],
+            //         'variant_option_three_name' => $product['variant_option_three_name'],
+            //         'variant_option_three_value' => $product['variant_option_three_value']
+            //     ]);
+
+            //     if( isset($product['inventory']) && isset($product['inventory'][0]['count'])){
+            //         Product::find($product['id'])->update([
+            //             'quantity' => ( (int) $product['inventory'][0]['count'] )
+            //         ]) ;
+            //     }
+            // } else {
+            //     Product::find($product['id'])->update([
+            //         'variant_option_one_name' => $product['variant_option_one_name'],
+            //         'variant_option_one_value' => $product['variant_option_one_value'],
+            //         'variant_option_two_name' => $product['variant_option_two_name'],
+            //         'variant_option_two_value' => $product['variant_option_two_value'],
+            //         'variant_option_three_name' => $product['variant_option_three_name'],
+            //         'variant_option_three_value' => $product['variant_option_three_value']
+            //     ]) ;
+            // }
         }
     }
 
