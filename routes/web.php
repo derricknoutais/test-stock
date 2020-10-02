@@ -463,7 +463,7 @@ Route::get('/api/produits', function () {
     }
     foreach ($pages as $products) {
         foreach ($products as $product) {
-            if($product['handle'] == 'filtreahuilebosch'){
+            if($product['handle'] == 'filtreahuilebosch' || $product['handle'] == 'bougiesallumagetoyota'){
                 Product::find($product['id'])->update([
                     'variant_option_one_name' => $product['variant_option_one_name'],
                     'variant_option_one_value' => $product['variant_option_one_value'],
