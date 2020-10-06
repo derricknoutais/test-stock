@@ -42,7 +42,7 @@
 
 
 
-<h1>Request for Quotation {{ $demande->nom }} {{$demande->id}} /10/2020</h1>
+<h1>Request for Quotation {{ $demande->nom }} {{$demande->id}}-10/2020</h1>
 <table>
     <thead>
         <tr>
