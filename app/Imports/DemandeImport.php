@@ -29,10 +29,10 @@ class DemandeImport implements ToCollection
                                 ]);
                             }
                         } else {
-                            DB::table('demande_sectionnable')->where('id', $row[0])->delete();
+                            // DB::table('demande_sectionnable')->where('id', $row[0])->delete();
                         }
                     } else {
-                        DB::table('demande_sectionnable')->where('id', $row[0])->delete();
+                        // DB::table('demande_sectionnable')->where('id', $row[0])->delete();
                     }
                 }
             }
