@@ -3190,6 +3190,7 @@ __webpack_require__.r(__webpack_exports__);
 
       // this.sectionnable_being_moved = sectionnable
       // $('#demande-move-modal').modal('show')
+      sectionnable.transfer_state = 'Le Produit est en cours de déplacement...';
       axios.patch('/demande-sectionnable', {
         id: sectionnable.pivot.id,
         field: 'demande_id',
@@ -3203,6 +3204,8 @@ __webpack_require__.r(__webpack_exports__);
 
         setTimeout(function () {
           _this6.demande.sectionnables.splice(index, 1);
+
+          _this6.$forceUpdate();
         }, 2000);
       })["catch"](function (error) {
         console.log(error);
