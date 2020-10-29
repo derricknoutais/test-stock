@@ -3078,7 +3078,7 @@ __webpack_require__.r(__webpack_exports__);
       sectionnable_being_deleted: null,
       sectionnable_being_moved: null,
       demande_to_move_to: null,
-      detailsState: false
+      detailsState: true
     };
   },
   computed: {
