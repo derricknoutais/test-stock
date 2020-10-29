@@ -3190,7 +3190,7 @@ __webpack_require__.r(__webpack_exports__);
 
       // this.sectionnable_being_moved = sectionnable
       // $('#demande-move-modal').modal('show')
-      sectionnable.transfer_state = 'Le Produit est en cours de déplacement...';
+      sectionnable.transfer_state = 'Déplacement En Cours ...';
       this.$forceUpdate();
       axios.patch('/demande-sectionnable', {
         id: sectionnable.pivot.id,
@@ -3199,7 +3199,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         console.log(response.data);
         sectionnable.editing = false;
-        sectionnable.transfer_state = 'Le Produit a été déplacé vers la Commande Southland Genuine...';
+        sectionnable.transfer_state = 'Produit Déplacé ...';
 
         _this6.$forceUpdate();
 
