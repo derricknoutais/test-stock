@@ -3182,8 +3182,9 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     openMoveModal: function openMoveModal(sectionnable) {
-      this.sectionnable_being_moved = sectionnable;
-      $('#demande-move-modal').modal('show');
+      this.sectionnable_being_moved = sectionnable; // $('#demande-move-modal').modal('show')
+
+      this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', 190);
     },
     toggleAllDetails: function toggleAllDetails() {
       var _this5 = this;
