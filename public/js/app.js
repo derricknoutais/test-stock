@@ -3092,44 +3092,48 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     enregisterOffre: function enregisterOffre(sectionnable) {
-      if (sectionnable.pivot.offre <= 0) {
-        sectionnable.hasError = true;
-        this.$forceUpdate();
-      } else {
-        sectionnable.hasError = false;
-        this.$forceUpdate();
-        axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(function (response) {
-          console.log(response.data);
-        })["catch"](function (error) {
-          console.log(error);
-        });
-      }
+      var _this = this;
+
+      sectionnable.hasError = false;
+      sectionnable.transfer_state = 'Sauvegarde en Cours ...';
+      this.$forceUpdate();
+      axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(function (response) {
+        sectionnable.transfer_state = 'Sauvegarde Réussie';
+
+        _this.$forceUpdate();
+      })["catch"](function (error) {
+        sectionnable.transfer_state = 'Sauvegarde Échouée. Veuillez verifier votre connexion';
+
+        _this.$forceUpdate();
+
+        console.log(error);
+      });
     },
     openDeleteModal: function openDeleteModal(sectionnable) {
       this.sectionnable_being_deleted = sectionnable;
       $('#delete-modal').modal('show');
     },
     removeSectionnable: function removeSectionnable() {
-      var _this = this;
+      var _this2 = this;
 
       axios["delete"]('/demande-sectionnable/' + this.sectionnable_being_deleted.pivot.id).then(function (response) {
         console.log(response.data);
 
-        var index = _this.demande.sectionnables.indexOf(_this.sectionnable_being_deleted);
+        var index = _this2.demande.sectionnables.indexOf(_this2.sectionnable_being_deleted);
 
-        _this.demande.sectionnables.splice(index, 1);
+        _this2.demande.sectionnables.splice(index, 1);
 
-        _this.sectionnable_being_deleted = null;
+        _this2.sectionnable_being_deleted = null;
         $('#delete-modal').modal('hide');
       })["catch"](function (error) {
         console.log(error);
       });
     },
     normaliserQuantités: function normaliserQuantitS() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.demande.sectionnables.forEach(function (sectionnable) {
-        _this2.enregisterOffre(sectionnable);
+        _this3.enregisterOffre(sectionnable);
 
         sectionnable.pivot.quantite_offerte = sectionnable.quantite;
       });
@@ -3140,13 +3144,13 @@ __webpack_require__.r(__webpack_exports__);
       this.$forceUpdate();
     },
     editTraduction: function editTraduction(sectionnable) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (!sectionnable.pivot.traduction) {
         axios.put('/demande-sectionnable', sectionnable).then(function (response) {
           sectionnable.pivot.traduction = [sectionnable.product.handle.translation, sectionnable.product[sectionnable.product.handle.display1], sectionnable.product[sectionnable.product.handle.display2], sectionnable.product[sectionnable.product.handle.display3]].filter(Boolean).join(' / ', '');
 
-          _this3.$forceUpdate();
+          _this4.$forceUpdate();
         })["catch"](function (error) {
           console.log(error);
         });
@@ -3156,12 +3160,12 @@ __webpack_require__.r(__webpack_exports__);
       this.$forceUpdate();
     },
     saveTraduction: function saveTraduction(sectionnable) {
-      var _this4 = this;
+      var _this5 = this;
 
       axios.patch('/demande-sectionnable-traduction', sectionnable).then(function (response) {
         sectionnable.editing = false;
 
-        _this4.$forceUpdate();
+        _this5.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3181,19 +3185,37 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
-    openMoveModal: function openMoveModal(sectionnable) {
-      this.sectionnable_being_moved = sectionnable; // $('#demande-move-modal').modal('show')
+    openMoveModal: function openMoveModal(sectionnable, index) {
+      var _this6 = this;
 
-      this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', 190);
+      // this.sectionnable_being_moved = sectionnable
+      // $('#demande-move-modal').modal('show')
+      axios.patch('/demande-sectionnable', {
+        id: sectionnable.pivot.id,
+        field: 'demande_id',
+        value: 190
+      }).then(function (response) {
+        console.log(response.data);
+        sectionnable.editing = false;
+        sectionnable.transfer_state = 'Le Produit a été déplacé vers la Commande Southland Genuine...';
+
+        _this6.$forceUpdate();
+
+        setTimeout(function () {
+          _this6.demande.sectionnables.splice(index, 1);
+        }, 2000);
+      })["catch"](function (error) {
+        console.log(error);
+      });
     },
     toggleAllDetails: function toggleAllDetails() {
-      var _this5 = this;
+      var _this7 = this;
 
       this.detailsState = !this.detailsState;
       this.demande.sectionnables.map(function (sect) {
-        sect.displayDetails = _this5.detailsState;
+        sect.displayDetails = _this7.detailsState;
 
-        _this5.$forceUpdate();
+        _this7.$forceUpdate();
       });
       this.$forceUpdate();
     },
@@ -3201,7 +3223,7 @@ __webpack_require__.r(__webpack_exports__);
       this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', this.demande_to_move_to.id);
     },
     updateSectionnable: function updateSectionnable(sectionnable, field, value) {
-      var _this6 = this;
+      var _this8 = this;
 
       axios.patch('/demande-sectionnable', {
         id: sectionnable.pivot.id,
@@ -3212,7 +3234,7 @@ __webpack_require__.r(__webpack_exports__);
         sectionnable[field] = value;
         sectionnable.editing = false;
 
-        _this6.$forceUpdate();
+        _this8.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3221,6 +3243,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.demande = this.demande_prop;
     this.demande.sectionnables.map(function (sect) {
+      sect.transfer_state = '';
       sect.editing = false;
       sect.displayDetails = true;
     });

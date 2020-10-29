@@ -83,14 +83,19 @@
                         </td>
                         <td>@{{ sectionnable.quantite }} </td>
 
-                        <td class="tw-flex tw-items-center">
-                            <i class="fas fa-arrow-down tw-text-red-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte < sectionnable.quantite"></i>
-                            <i class="fas fa-arrow-up tw-text-yellow-600 tw-px-5" v-if="sectionnable.pivot.quantite_offerte > sectionnable.quantite"></i>
-                            <i class="fas fa-thumbs-up tw-text-green-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte === sectionnable.quantite"></i>
-                            <input type="number" class="form-control" min="0" step="1" v-model.number="sectionnable.pivot.quantite_offerte" @input="enregisterOffre(sectionnable)">
+                        <td class="tw-flex-col tw-items-center">
+                            <div class="tw-flex">
+                                <i class="fas fa-arrow-down tw-text-red-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte < sectionnable.quantite"></i>
+                                <i class="fas fa-arrow-up tw-text-yellow-600 tw-px-5" v-if="sectionnable.pivot.quantite_offerte > sectionnable.quantite"></i>
+                                <i class="fas fa-thumbs-up tw-text-green-500 tw-px-5" v-if="sectionnable.pivot.quantite_offerte === sectionnable.quantite"></i>
+                                <input type="number" class="form-control" min="0" step="1" v-model.number="sectionnable.pivot.quantite_offerte" @input="enregisterOffre(sectionnable)">
+                            </div>
+                            <div class="tw-text-center tw-mt-5">
+                                <span :class="sectionnable.transfer_state === 'Sauvegarde Réussie' ? 'tw-text-green-500':'tw-text-red-500'">@{{ sectionnable.transfer_state }}</span>
+                            </div>
                         </td>
                         <td>
-                            <input type="number" class="form-control" :class="{'tw-border-red-500': sectionnable.hasError, 'focus:tw-border-red-500' : sectionnable.hasError }" min="0" step="1" v-model.number="sectionnable.pivot.offre" @input="enregisterOffre(sectionnable)" onkeyup="">
+                            <input type="number" class="form-control" :class="{'tw-border-red-500': sectionnable.hasError, 'focus:tw-border-red-500' : sectionnable.hasError }" min="0" step="1" v-model.number="sectionnable.pivot.offre" @input="enregisterOffre(sectionnable)">
                         </td>
                         <td >
                             <span v-if="sectionnable.hasError" class="tw-text-red-500"> Erreur! Vérifiez vos entrées!!!</span>
@@ -98,7 +103,7 @@
                         </td>
                         <td>
                             <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(sectionnable)"></i>
-                            <i class="fa fa-share-square tw-cursor-pointer tw-text-green-500 tw-ml-2" aria-hidden="true" @click="openMoveModal(sectionnable)"></i>
+                            <i class="fa fa-share-square tw-cursor-pointer tw-text-green-500 tw-ml-2" aria-hidden="true" @click="openMoveModal(sectionnable, index)"></i>
                             <i class="fas fa-exclamation-triangle tw-text-yellow-600 tw-cursor-pointer tw-ml-2" v-if="sectionnable.pivot.checked === -1"></i>
                         </td>
                     </tr>

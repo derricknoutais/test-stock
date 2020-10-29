@@ -27,19 +27,19 @@ export default {
     },
     methods:{
         enregisterOffre(sectionnable){
-            if(sectionnable.pivot.offre <= 0){
-                sectionnable.hasError = true
-                this.$forceUpdate()
-            } else {
+
                 sectionnable.hasError = false
+                sectionnable.transfer_state = 'Sauvegarde en Cours ...'
                 this.$forceUpdate()
                 axios.put('/demande/' + this.demande.id + '/update-product', sectionnable).then(response => {
-                    console.log(response.data);
-
+                    sectionnable.transfer_state = 'Sauvegarde Réussie'
+                    this.$forceUpdate()
                 }).catch(error => {
+                    sectionnable.transfer_state = 'Sauvegarde Échouée. Veuillez verifier votre connexion'
+                    this.$forceUpdate()
                     console.log(error);
                 });
-            }
+
         },
         openDeleteModal(sectionnable){
             this.sectionnable_being_deleted = sectionnable
@@ -117,10 +117,21 @@ export default {
                 console.log(error);
             });
         },
-        openMoveModal(sectionnable){
-            this.sectionnable_being_moved = sectionnable
+        openMoveModal(sectionnable, index){
+            // this.sectionnable_being_moved = sectionnable
             // $('#demande-move-modal').modal('show')
-            this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', 190)
+            axios.patch('/demande-sectionnable', {id: sectionnable.pivot.id, field: 'demande_id', value: 190}).then(response => {
+                console.log(response.data);
+                sectionnable.editing = false
+                sectionnable.transfer_state = 'Le Produit a été déplacé vers la Commande Southland Genuine...'
+                this.$forceUpdate()
+                setTimeout(() => {
+                    this.demande.sectionnables.splice(index, 1);
+                }, 2000);
+
+            }).catch(error => {
+                console.log(error);
+            });
         },
         toggleAllDetails(){
             this.detailsState = ! this.detailsState
@@ -148,6 +159,7 @@ export default {
     created(){
         this.demande = this.demande_prop
         this.demande.sectionnables.map( sect => {
+            sect.transfer_state = ''
             sect.editing = false
             sect.displayDetails = true;
         })
