@@ -17,7 +17,10 @@
 
             <thead>
                 <tr>
-                    <th></th>
+                    <th>
+                        <i class="fas fa-chevron-right tw-cursor-pointer" @click="toggleAllDetails()" v-if="! detailsState"></i>
+                        <i class="fas fa-chevron-down tw-cursor-pointer" @click="toggleAllDetails()" v-else></i>
+                    </th>
                     <th>Id</th>
                     <th>Produit (Français)</th>
                     <th>Product (English)</th>

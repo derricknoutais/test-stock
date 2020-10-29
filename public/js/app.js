@@ -3077,7 +3077,8 @@ __webpack_require__.r(__webpack_exports__);
       },
       sectionnable_being_deleted: null,
       sectionnable_being_moved: null,
-      demande_to_move_to: null
+      demande_to_move_to: null,
+      detailsState: false
     };
   },
   computed: {
@@ -3184,11 +3185,22 @@ __webpack_require__.r(__webpack_exports__);
       this.sectionnable_being_moved = sectionnable;
       $('#demande-move-modal').modal('show');
     },
+    toggleAllDetails: function toggleAllDetails() {
+      var _this5 = this;
+
+      this.detailsState = !this.detailsState;
+      this.demande.sectionnables.map(function (sect) {
+        sect.displayDetails = _this5.detailsState;
+
+        _this5.$forceUpdate();
+      });
+      this.$forceUpdate();
+    },
     deplacerSectionnable: function deplacerSectionnable() {
       this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', this.demande_to_move_to.id);
     },
     updateSectionnable: function updateSectionnable(sectionnable, field, value) {
-      var _this5 = this;
+      var _this6 = this;
 
       axios.patch('/demande-sectionnable', {
         id: sectionnable.pivot.id,
@@ -3199,7 +3211,7 @@ __webpack_require__.r(__webpack_exports__);
         sectionnable[field] = value;
         sectionnable.editing = false;
 
-        _this5.$forceUpdate();
+        _this6.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
       });

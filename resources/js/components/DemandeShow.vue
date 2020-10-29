@@ -12,7 +12,8 @@ export default {
             },
             sectionnable_being_deleted: null,
             sectionnable_being_moved: null,
-            demande_to_move_to: null
+            demande_to_move_to: null,
+            detailsState: false
         }
     },
     computed: {
@@ -119,6 +120,14 @@ export default {
         openMoveModal(sectionnable){
             this.sectionnable_being_moved = sectionnable
             $('#demande-move-modal').modal('show')
+        },
+        toggleAllDetails(){
+            this.detailsState = ! this.detailsState
+            this.demande.sectionnables.map( sect => {
+                sect.displayDetails = this.detailsState;
+                this.$forceUpdate()
+            })
+            this.$forceUpdate()
         },
         deplacerSectionnable(){
             this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', this.demande_to_move_to.id )
