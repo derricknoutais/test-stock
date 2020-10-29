@@ -13,7 +13,7 @@ export default {
             sectionnable_being_deleted: null,
             sectionnable_being_moved: null,
             demande_to_move_to: null,
-            detailsState: true
+            detailsState: false
         }
     },
     computed: {
@@ -163,7 +163,7 @@ export default {
         this.demande.sectionnables.map( sect => {
             sect.transfer_state = ''
             sect.editing = false
-            sect.displayDetails = true;
+            sect.displayDetails = false;
         })
     }
 }
