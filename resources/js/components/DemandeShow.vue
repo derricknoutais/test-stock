@@ -120,7 +120,7 @@ export default {
         openMoveModal(sectionnable){
             this.sectionnable_being_moved = sectionnable
             // $('#demande-move-modal').modal('show')
-            this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', 190 )
+            this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', 190)
         },
         toggleAllDetails(){
             this.detailsState = ! this.detailsState
