@@ -1,15 +1,18 @@
 <script>
 export default {
-    props : ['demande_prop'],
+    props : ['demande_prop', 'demandes_prop'],
     data(){
         return {
             demande: null,
+            demandes: this.demandes_prop,
             cardNumber: null,
             options: {
               creditCard: true,
               delimiter: '-',
             },
-            sectionnable_being_deleted: null
+            sectionnable_being_deleted: null,
+            sectionnable_being_moved: null,
+            demande_to_move_to: null
         }
     },
     computed: {
@@ -99,9 +102,31 @@ export default {
             sectionnable.displayDetails = ! sectionnable.displayDetails;
             this.$forceUpdate()
         },
+        ajouterSectionnableABonCommande(element, index){
+            element.demande_id = element.pivot.demande_id
+            element.offre = element.pivot.offre
+            element.quantite_offerte = element.pivot.quantite_offerte
+            element.sectionnable_id = element.pivot.sectionnable_id
+
+            axios.post('/commande/' + this.demande.commande_id + '/résoudre-conflit',
+                {element : element}
+            ).then(response => {
+
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        openMoveModal(sectionnable){
+            this.sectionnable_being_moved = sectionnable
+            $('#demande-move-modal').modal('show')
+        },
+        deplacerSectionnable(){
+            this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', this.demande_to_move_to.id )
+        },
         updateSectionnable(sectionnable, field, value){
             axios.patch('/demande-sectionnable', {id: sectionnable.pivot.id, field: field, value: value}).then(response => {
                 console.log(response.data);
+                sectionnable[field] = value;
                 sectionnable.editing = false
                 this.$forceUpdate()
 

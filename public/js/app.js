@@ -2100,31 +2100,139 @@ __webpack_require__.r(__webpack_exports__);
   props: ['commande_prop'],
   data: function data() {
     return {
-      commande: null
+      commande: null,
+      isLoading: {
+        non_disponible: false
+      },
+      displayNotAvailable: false,
+      sectionnablesNotAvailable: []
     };
   },
   methods: {
-    selectionnerElementConflictuel: function selectionnerElementConflictuel(element, elements_conflictuels) {
-      console.log(element);
-      console.log(elements_conflictuels);
+    toggleNotAvailable: function toggleNotAvailable() {
+      this.displayNotAvailable != this.displayNotAvailable;
+    },
+    showNotAvailable: function showNotAvailable() {
+      this.toggleNotAvailable = true;
+    },
+    selectionnerElementConflictuel: function selectionnerElementConflictuel(element, index, elements_conflictuels) {
+      var _this = this;
+
       axios.post('/commande/' + this.commande.id + '/résoudre-conflit', {
         element: element,
         elements_conflictuels: elements_conflictuels
-      }).then(function (response) {})["catch"](function (error) {
+      }).then(function (response) {
+        _this.commande.conflits.splice(index, 1);
+
+        _this.$forceUpdate();
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    selectionnerPrixBas: function selectionnerPrixBas() {
+      var _this2 = this;
+
+      console.log('selecting');
+      this.commande.conflits.forEach(function (conflit, i) {
+        if (conflit.pivot.conflit !== 0) {
+          var index = -1;
+          var moinsCher = 9999999999999999999999999999999999;
+          conflit.elements_conflictuels.forEach(function (element, idx) {
+            if (element.offre !== 0 && element.offre < moinsCher) {
+              moinsCher = element.offre;
+              index = idx;
+            }
+          });
+        }
+
+        if (index !== -1 && moinsCher !== 9999999999999999999999999999999999) _this2.selectionnerElementConflictuel(conflit.elements_conflictuels[index], index, conflit.elements_conflictuels);
+      });
+    },
+    selectionnerChoixUnique: function selectionnerChoixUnique() {
+      var _this3 = this;
+
+      this.commande.conflits.forEach(function (conflit, i) {
+        if (conflit.pivot.conflit !== 2) {
+          var nb_elements_conflictuels = conflit.elements_conflictuels.length;
+          var idx = null;
+          conflit.elements_conflictuels.forEach(function (element, index) {
+            if (element.offre === 0 && element.quantite_offerte === 0) {
+              nb_elements_conflictuels -= 1;
+            } else {
+              idx = index;
+            }
+          });
+
+          if (nb_elements_conflictuels === 1) {
+            _this3.selectionnerElementConflictuel(conflit.elements_conflictuels[idx], i, conflit.elements_conflictuels);
+          }
+        }
+      });
+    },
+    definirNonDisponible: function definirNonDisponible() {
+      var _this4 = this;
+
+      this.isLoading.non_disponible = true;
+      var conflits_length = this.commande.conflits.length;
+      this.commande.conflits.forEach(function (conflit) {
+        var non_disponible = conflit.elements_conflictuels.length;
+        conflit.elements_conflictuels.forEach(function (element) {
+          if (element.offre === 0 && element.quantite_offerte === 0) {
+            non_disponible -= 1;
+          }
+        });
+
+        if (non_disponible === 0) {
+          _this4.updateSectionnable(conflit, 'conflit', 2);
+        }
+
+        conflits_length -= 1; // if( conflits_length === 0 ){
+        //     this.isLoading.non_disponible = false
+        //     this.$swal({
+        //         text: 'Good Job'
+        //     })
+        // }
+      });
+    },
+    updateSectionnable: function updateSectionnable(sectionnable, field, value) {
+      var _this5 = this;
+
+      axios.patch('/sectionnable', {
+        id: sectionnable.pivot.id,
+        field: field,
+        value: value
+      }).then(function (response) {
+        console.log(response.data);
+        sectionnable.editing = false;
+
+        _this5.$forceUpdate();
+      })["catch"](function (error) {
         console.log(error);
       });
     }
   },
   created: function created() {
-    var _this = this;
+    var _this6 = this;
 
     //
-    this.commande = this.commande_prop; // Pour chaque Conflit
+    this.commande = this.commande_prop;
+    this.commande.sections.forEach(function (section) {
+      var filtres = section.products.filter(function (product) {
+        if (product.pivot.conflit === 2) {
+          _this6.sectionnablesNotAvailable.push(product);
+        }
+      });
+      section.articles.filter(function (article) {
+        if (article.pivot.conflit === 2) {
+          _this6.sectionnablesNotAvailable.push(article);
+        }
+      });
+    }); // Pour chaque Conflit
 
     this.commande.conflits.forEach(function (conflit) {
       // Map tous les éléments conflictuels
       conflit.elements_conflictuels.map(function (element) {
-        var found = _this.commande.demandes.find(function (demande) {
+        var found = _this6.commande.demandes.find(function (demande) {
           return element.demande_id === demande.id;
         });
 
@@ -2957,16 +3065,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['demande_prop'],
+  props: ['demande_prop', 'demandes_prop'],
   data: function data() {
     return {
       demande: null,
+      demandes: this.demandes_prop,
       cardNumber: null,
       options: {
         creditCard: true,
         delimiter: '-'
       },
-      sectionnable_being_deleted: null
+      sectionnable_being_deleted: null,
+      sectionnable_being_moved: null,
+      demande_to_move_to: null
     };
   },
   computed: {
@@ -3058,6 +3169,24 @@ __webpack_require__.r(__webpack_exports__);
       sectionnable.displayDetails = !sectionnable.displayDetails;
       this.$forceUpdate();
     },
+    ajouterSectionnableABonCommande: function ajouterSectionnableABonCommande(element, index) {
+      element.demande_id = element.pivot.demande_id;
+      element.offre = element.pivot.offre;
+      element.quantite_offerte = element.pivot.quantite_offerte;
+      element.sectionnable_id = element.pivot.sectionnable_id;
+      axios.post('/commande/' + this.demande.commande_id + '/résoudre-conflit', {
+        element: element
+      }).then(function (response) {})["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    openMoveModal: function openMoveModal(sectionnable) {
+      this.sectionnable_being_moved = sectionnable;
+      $('#demande-move-modal').modal('show');
+    },
+    deplacerSectionnable: function deplacerSectionnable() {
+      this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', this.demande_to_move_to.id);
+    },
     updateSectionnable: function updateSectionnable(sectionnable, field, value) {
       var _this5 = this;
 
@@ -3067,6 +3196,7 @@ __webpack_require__.r(__webpack_exports__);
         value: value
       }).then(function (response) {
         console.log(response.data);
+        sectionnable[field] = value;
         sectionnable.editing = false;
 
         _this5.$forceUpdate();

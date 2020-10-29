@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use DB;
 use App\BonCommande;
+use App\Demande;
 use App\Commande;
 use App\Product;
 use App\Section;
@@ -47,9 +48,9 @@ class BonCommandeController extends Controller
 
         $all = array();
         // Pour Chaque Demande d'Offre de Cette Commande...
-        for ( $i = 0; $i < sizeof($commande->demandes); $i++ ) {
+        for ( $i = 50; $i < 52; $i++ ) {
 
-            // Pour Chaque Sectionnable de Chaque Demande
+            // Pour Chaque Sectionnable de Chaque Demande d'offre
             foreach($commande->demandes[$i]->sectionnables as $sectionnable){
 
                 $commande->load('demandes', 'bonsCommandes');
@@ -79,10 +80,11 @@ class BonCommandeController extends Controller
                         }
                     }
 
+
                     // Classe les produits dans notre liste à comparer du moins cher au plus
                     usort($toCompare, function( $a, $b) {
                         // Pour deux produits au prix identiques
-                        if($a->pivot->offre == $b->pivot->offre){
+                        if($a->pivot->offre == $b->pivot->offre ){
                             $a->pivot->checked = -1;
                             $b->pivot->checked = -1;
                             DB::table('demande_sectionnable')
@@ -90,11 +92,9 @@ class BonCommandeController extends Controller
                                 ->update([
                                     'checked' => -1
                                 ]);
-
                             DB::table('sectionnables')->where([ 'section_id' => $a->section_id, 'sectionnable_id' => $a->sectionnable_id ])->update([
                                 'conflit' => 1
                             ]);
-
                         // Pour deux produits de prix inférieurs
                         } else {
                             $a->pivot->checked = 1;
@@ -109,7 +109,7 @@ class BonCommandeController extends Controller
                     });
 
                     foreach ($toCompare as $comp) {
-                        if($comp->pivot->offre <= 0){
+                        if($comp->pivot->offre <= 0 ){
                             DB::table('demande_sectionnable')
                             ->where('id', $comp->pivot->id)
                             ->update([
@@ -120,7 +120,6 @@ class BonCommandeController extends Controller
                                 'conflit' => 1
                             ]);
                         }
-
                     }
                     // return $toCompare;
                     $qte_recevable = $toCompare[0]->quantite;
@@ -201,6 +200,7 @@ class BonCommandeController extends Controller
                 }
             }
         }
+        return 'Done';
     }
 
     public function showConflit(Commande $commande){

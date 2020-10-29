@@ -90,9 +90,10 @@ class DemandeController extends Controller
 
     public function show(Demande $demande)
     {
-        $demande->loadMissing(['sectionnables', 'sectionnables.product', 'sectionnables.product.handle', 'sectionnables.product.handle.brands' , 'sectionnables.article']);
+        $demande->loadMissing(['sectionnables', 'sectionnables.product', 'sectionnables.product.handle', 'sectionnables.product.handle.brands' , 'sectionnables.article', 'sectionnables.bon_commande', 'sectionnables.demandes']);
         // return $demande->loadMissing(['sectionnables', 'sectionnables.product']);
-        return view('demande.show', compact('demande'));
+        $demandes = Demande::all();
+        return view('demande.show', compact('demande', 'demandes'));
     }
 
     public function showPrepaDemande(Commande $commande){
@@ -164,6 +165,7 @@ class DemandeController extends Controller
             'traduction' => $request['pivot']['traduction']
         ]);
     }
+
     public function patchSectionnable(Request $request){
         DB::table('demande_sectionnable')->where('id', $request['id'])->update([
             $request['field'] => $request['value']

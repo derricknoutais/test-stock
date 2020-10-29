@@ -132,4 +132,10 @@ class SectionController extends Controller
     public function destroyArticle(Sectionnable $article){
         $article->delete();
     }
+    public function patchSectionnable(Request $request){
+        DB::table('sectionnables')->where('id', $request['id'])->update([
+            $request['field'] => $request['value']
+        ]);
+        return 1;
+    }
 }

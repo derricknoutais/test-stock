@@ -26,6 +26,11 @@ class Sectionnable extends Pivot
     }
     public function demandes()
     {
-        return $this->belongsToMany('App\Demande', 'demande_sectionnable', 'sectionnable_id', 'demande_id');
+        return $this->belongsToMany('App\Demande', 'demande_sectionnable', 'sectionnable_id', 'demande_id')->withPivot('offre', 'quantite_offerte');
     }
+
+    public function bon_commande(){
+        return $this->belongsToMany('App\BonCommande', 'bon_commande_sectionnable', 'sectionnable_id');
+    }
+
 }

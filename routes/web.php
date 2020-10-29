@@ -93,7 +93,7 @@ Route::post('/product-section', 'SectionController@addProduct');
     // Supprimer des sectionnables
     Route::delete('/sectionnable/{product}', 'SectionController@destroyProduct');
     Route::delete('/sectionnable/{article}', 'SectionController@destroyArticle');
-
+    Route::patch('/sectionnable', 'SectionController@patchSectionnable');
     Route::get('/section-product/delete/{article}/{section}', function($article, $section){
         $var = DB::table('sectionnables')->where(['section_id' => $section, 'sectionnable_id' => $article])->delete();
         return $var;
@@ -182,7 +182,7 @@ Route::get('/erase-conflits', function(){
 // Bons de Commandes
 Route::get('/commande/{commande}/bons-commandes', 'BonCommandeController@index');
 Route::get('/commande/{commande}/bons-commandes/{bc}', 'BonCommandeController@show');
-Route::get('/commande/{commande}/générer-bons', 'BonCommandeController@générerBonsCommandes');
+Route::get('/commande/{commande}/générer-bons', 'BonCommandeController@générerBons');
 Route::get('/bons-commandes/export/{bon_commande}', 'BonCommandeController@export');
 Route::get('/commande/{commande}/export-all-bons-commandes', 'BonCommandeController@exportall');
 

@@ -18,6 +18,7 @@
                 <div class="tw-mt-24 tw-bg-gray-500 tw-py-10 tw-w-full">
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="filter_demandé()" >Déja Demandé</button>
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="filter_non_demandé()" >Pas encore Demandé</button>
+
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="réinitialiser()" >Réinitialiser</button>
                 </div>
                 {{-- Sections --}}
