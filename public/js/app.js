@@ -3191,6 +3191,7 @@ __webpack_require__.r(__webpack_exports__);
       // this.sectionnable_being_moved = sectionnable
       // $('#demande-move-modal').modal('show')
       sectionnable.transfer_state = 'Le Produit est en cours de déplacement...';
+      this.$forceUpdate();
       axios.patch('/demande-sectionnable', {
         id: sectionnable.pivot.id,
         field: 'demande_id',
