@@ -187,7 +187,9 @@ Route::patch('/transfer-sectionnable-to-bon-commandes', function(Request $reques
         ])->first()
     ){
         DB::table('bon_commande_sectionnable')->where('id', $request['sectionnable']['bon_commande'][0]['pivot']['id'])->update([
-            'bon_commande_id' => $bc->id
+            'bon_commande_id' => $bc->id,
+            'quantite' => $request['dem']['pivot']['quantite_offerte'],
+            'prix_achat' => $request['dem']['pivot']['offre']
         ]);
     } else {
         $bc = BonCommande::create([
