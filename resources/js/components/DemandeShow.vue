@@ -103,17 +103,22 @@ export default {
             sectionnable.displayDetails = ! sectionnable.displayDetails;
             this.$forceUpdate()
         },
-        ajouterSectionnableABonCommande(element, index){
-            element.demande_id = element.pivot.demande_id
-            element.offre = element.pivot.offre
-            element.quantite_offerte = element.pivot.quantite_offerte
+        ajouterSectionnableABonCommande(element, index, dem){
+            dem.transfer_state = 'Enregistrement en Cours ...'
+            this.$forceUpdate()
+            console.log(element.demandes[index])
+            element.demande_id = dem.id
+            element.offre = dem.pivot.offre
+            element.quantite_offerte = dem.pivot.quantite_offerte
             element.sectionnable_id = element.pivot.sectionnable_id
 
             axios.post('/commande/' + this.demande.commande_id + '/résoudre-conflit',
                 {element : element}
             ).then(response => {
-
+                dem.transfer_state = 'Fournisseur Sélectionné'
+                this.$forceUpdate()
             }).catch(error => {
+                sectionnable.transfer_state = 'Sauvegarde Échouée. Veuillez verifier votre connexion'
                 console.log(error);
             });
         },
@@ -158,7 +163,21 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
+        },
+        transfererSectionnableABonCommande(sectionnable, index, dem){
+            dem.transfer_state = 'Enregistrement en Cours ...'
+            this.$forceUpdate()
+            axios.patch('/transfer-sectionnable-to-bon-commandes', { sectionnable : sectionnable , dem: dem, index: index} ).then(response => {
+                console.log(response.data);
+                dem.transfer_state = 'Fournisseur Sélectionné'
+                this.$forceUpdate()
+            }).catch(error => {
+                console.log(error);
+                sectionnable.transfer_state = 'Sauvegarde Échouée. Veuillez verifier votre connexion'
+                this.$forceUpdate()
+            });
         }
+
     },
     created(){
         this.demande = this.demande_prop

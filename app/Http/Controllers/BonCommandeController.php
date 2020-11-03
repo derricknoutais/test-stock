@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+ini_set('max_execution_time', 1800);
 use DB;
 use App\BonCommande;
 use App\Demande;
@@ -48,7 +49,7 @@ class BonCommandeController extends Controller
 
         $all = array();
         // Pour Chaque Demande d'Offre de Cette Commande...
-        for ( $i = 50; $i < 52; $i++ ) {
+        for ( $i = 45; $i < 54; $i++ ) {
 
             // Pour Chaque Sectionnable de Chaque Demande d'offre
             foreach($commande->demandes[$i]->sectionnables as $sectionnable){
@@ -109,7 +110,7 @@ class BonCommandeController extends Controller
                     });
 
                     foreach ($toCompare as $comp) {
-                        if($comp->pivot->offre <= 0 ){
+                        if($comp->pivot->offre <= 0 || $comp->pivot->differente_offre){
                             DB::table('demande_sectionnable')
                             ->where('id', $comp->pivot->id)
                             ->update([

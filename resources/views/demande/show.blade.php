@@ -101,20 +101,19 @@
                             <span v-if="sectionnable.hasError" class="tw-text-red-500"> Erreur! Vérifiez vos entrées!!!</span>
                             <span v-else>@{{ sectionnable.pivot.quantite_offerte * sectionnable.pivot.offre | currency }}</span>
                         </td>
+                        {{-- Actions --}}
                         <td>
                             <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(sectionnable)"></i>
                             <i class="fa fa-share-square tw-cursor-pointer tw-text-green-500 tw-ml-2" aria-hidden="true" @click="openMoveModal(sectionnable, index)"></i>
                             <i class="fas fa-exclamation-triangle tw-text-yellow-600 tw-cursor-pointer tw-ml-2" v-if="sectionnable.pivot.checked === -1"></i>
                         </td>
                     </tr>
+                    {{-- Ligne des Détails --}}
                     <tr v-show="sectionnable.displayDetails" class=" tw-bg-gray-700 tw-text-white">
                         <td colspan=10>
                             <div class="tw-w-1/4" :class="sectionnable.bon_commande.length < 1 ? 'tw-bg-red-500' : 'tw-bg-green-500'">
                                 <span v-if="sectionnable.bon_commande.length > 0">
                                     Bon Commande Correspondants :
-                                </span>
-                                <span v-if="sectionnable.bon_commande.length <= 0">
-                                    Demandes Correspondantes :
                                 </span>
                             </div>
 
@@ -124,16 +123,34 @@
                                 </a>
                             </div>
 
-                            <div class="tw-mt-3" v-if="sectionnable.bon_commande.length === 0 && sectionnable.demandes.length > 0" v-for="dem in sectionnable.demandes">
+                            <div class="tw-w-1/4 tw-mt-5 tw-bg-red-500">
+                               <span v-if="sectionnable.demandes.length > 0">
+                                   Demandes Correspondantes :
+                               </span>
+                            </div>
+
+                            <div class="tw-mt-3" v-if="sectionnable.demandes.length > 0" v-for="(dem, idx) in sectionnable.demandes">
+
+                                <i class="fas fa-exclamation-triangle tw-orange-500" v-if="dem.pivot.differente_offre"></i>
                                 <a :href="'/demande/' + dem.id">
                                     @{{ dem.nom }}
                                 </a>
                                 <span>@{{ dem.pivot.quantite_offerte }} x @{{ dem.pivot.offre }}</span>
+                                <span v-if="dem.pivot.differente_offre && dem.pivot.reference_differente_offre"
+                                    class="tw-ml-5">@{{ dem.pivot.reference_differente_offre }}</span>
                                 <button
                                     class="tw-px-5 tw-bg-gray-500 tw-ml-5 tw-rounded"
-                                    v-if="dem.pivot.quantite_offerte !== 0 && dem.pivot.offre !== 0"
-                                    @click="ajouterSectionnableABonCommande(sectionnable, index)"
+                                    v-if="dem.pivot.quantite_offerte !== 0 && dem.pivot.offre !== 0 && sectionnable.bon_commande.length  === 0"
+                                    @click="ajouterSectionnableABonCommande(sectionnable, idx, dem)"
                                 >Ajouter</button>
+
+                                <button
+                                    class="tw-px-5 tw-bg-gray-500 tw-ml-5 tw-rounded"
+                                    v-if="dem.pivot.quantite_offerte !== 0 && dem.pivot.offre !== 0 && sectionnable.bon_commande.length  !== 0 && dem.id !== sectionnable.bon_commande[0].demande_id"
+                                    @click="transfererSectionnableABonCommande(sectionnable, idx, dem)"
+                                >Transférer</button>
+
+                                <span class="tw-ml-5" v-if="dem.transfer_state">@{{ dem.transfer_state }}</span>
                             </div>
 
                         </td>
@@ -208,7 +225,7 @@
                             <i class="fas fa-exclamation-triangle tw-text-red-500 tw-cursor-pointer" v-if="sectionnable.pivot.checked === -1"></i>
                         </td>
                     </tr>
-                    <tr v-show="sectionnable.displayDetails" class=" tw-bg-gray-700 tw-text-white">
+                    {{-- <tr v-show="sectionnable.displayDetails" class=" tw-bg-gray-700 tw-text-white">
                         <td colspan=10>
                             <div class="tw-w-1/4" :class="sectionnable.bon_commande.length < 1 ? 'tw-bg-red-500' : 'tw-bg-green-500'">
                                 <span v-if="sectionnable.bon_commande.length > 0">
@@ -223,21 +240,67 @@
                                 <a :href="'/commande/' + demande.commande_id + '/bons-commandes/' + bc.id" v-if="sectionnable.bon_commande" v-for="bc in sectionnable.bon_commande">
                                     @{{ bc.nom }}
                                 </a>
-                                <div class="tw-mt-3" v-if="sectionnable.bon_commande.length === 0 && sectionnable.demandes.length > 0" v-for="dem in sectionnable.demandes">
-
+                                <div class="tw-mt-3" v-if="sectionnable.bon_commande.length === 0 && sectionnable.demandes.length > 0" v-for="(dem, idx) in sectionnable.demandes">
+                                    <i class="fas fa-exclamation-triangle tw-orange-500" v-if="dem.pivot.differente_offre"></i>
                                     <a :href="'/demande/' + dem.id">
                                         @{{ dem.nom }}
                                     </a>
                                     <span>@{{ dem.pivot.quantite_offerte }} x @{{ dem.pivot.offre }}</span>
+                                    <span v-if="dem.pivot.differente_offre && dem.pivot.reference_differente_offre" class="tw-ml-5">@{{ dem.pivot.reference_differente_offre }}</span>
                                     <button
                                         class="tw-px-5 tw-bg-gray-500 tw-ml-5 tw-rounded"
                                         v-if="dem.pivot.quantite_offerte !== 0 && dem.pivot.offre !== 0"
-                                        @click="ajouterSectionnableABonCommande(sectionnable, index)"
+                                        @click="ajouterSectionnableABonCommande(sectionnable, idx, dem)"
                                     >Ajouter</button>
+                                    <span class="tw-ml-5" v-if="dem.transfer_state">@{{ dem.transfer_state }}</span>
                                 </div>
                             </div>
+                        </td>
+                    </tr> --}}
+                    {{-- Ligne des Détails --}}
+                    <tr v-show="sectionnable.displayDetails" class=" tw-bg-gray-700 tw-text-white">
+                        <td colspan=10>
+                            <div class="tw-w-1/4" :class="sectionnable.bon_commande.length < 1 ? 'tw-bg-red-500' : 'tw-bg-green-500'">
+                                <span v-if="sectionnable.bon_commande.length > 0">
+                                    Bon Commande Correspondants :
+                                </span>
+                            </div>
 
+                            <div v-if="sectionnable.bon_commande" v-for="bc in sectionnable.bon_commande">
+                                <a :href="'/commande/' + demande.commande_id + '/bons-commandes/' + bc.id">
+                                    @{{ bc.nom }}
+                                </a>
+                            </div>
 
+                            <div class="tw-w-1/4 tw-mt-5 tw-bg-red-500">
+                               <span v-if="sectionnable.demandes.length > 0">
+                                   Demandes Correspondantes :
+                               </span>
+                            </div>
+
+                            <div class="tw-mt-3" v-if="sectionnable.demandes.length > 0" v-for="(dem, idx) in sectionnable.demandes">
+
+                                <i class="fas fa-exclamation-triangle tw-orange-500" v-if="dem.pivot.differente_offre"></i>
+                                <a :href="'/demande/' + dem.id">
+                                    @{{ dem.nom }}
+                                </a>
+                                <span>@{{ dem.pivot.quantite_offerte }} x @{{ dem.pivot.offre }}</span>
+                                <span v-if="dem.pivot.differente_offre && dem.pivot.reference_differente_offre"
+                                    class="tw-ml-5">@{{ dem.pivot.reference_differente_offre }}</span>
+                                <button
+                                    class="tw-px-5 tw-bg-gray-500 tw-ml-5 tw-rounded"
+                                    v-if="dem.pivot.quantite_offerte !== 0 && dem.pivot.offre !== 0 && sectionnable.bon_commande.length  === 0"
+                                    @click="ajouterSectionnableABonCommande(sectionnable, idx, dem)"
+                                >Ajouter</button>
+
+                                <button
+                                    class="tw-px-5 tw-bg-gray-500 tw-ml-5 tw-rounded"
+                                    v-if="dem.pivot.quantite_offerte !== 0 && dem.pivot.offre !== 0 && sectionnable.bon_commande.length  !== 0 && dem.id !== sectionnable.bon_commande[0].demande_id"
+                                    @click="transfererSectionnableABonCommande(sectionnable, idx, dem)"
+                                >Transférer</button>
+
+                                <span class="tw-ml-5" v-if="dem.transfer_state">@{{ dem.transfer_state }}</span>
+                            </div>
 
                         </td>
 

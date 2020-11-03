@@ -180,6 +180,26 @@ Route::get('/erase-conflits', function(){
 
 
 // Bons de Commandes
+Route::patch('/transfer-sectionnable-to-bon-commandes', function(Request $request){
+    if(
+        $bc = BonCommande::where([
+        'demande_id' => $request['dem']['pivot']['demande_id']
+        ])->first()
+    ){
+        DB::table('bon_commande_sectionnable')->where('id', $request['sectionnable']['bon_commande'][0]['pivot']['id'])->update([
+            'bon_commande_id' => $bc->id
+        ]);
+    } else {
+        $bc = BonCommande::create([
+            'nom' => $request['dem']['nom'],
+            'fournisseur_id' => $request['dem']['fournisseur_id'],
+            'commande_id' => $request['dem']['commande_id']
+        ]);
+        DB::table('bon_commande_sectionnable')->where('id', $request['sectionnable']['bon_commande'][0]['pivot']['sectionnable_id'])->first()->update([
+            'bon_commande_id' => $bc->id
+        ]);
+    }
+});
 Route::get('/commande/{commande}/bons-commandes', 'BonCommandeController@index');
 Route::get('/commande/{commande}/bons-commandes/{bc}', 'BonCommandeController@show');
 Route::get('/commande/{commande}/générer-bons', 'BonCommandeController@générerBons');

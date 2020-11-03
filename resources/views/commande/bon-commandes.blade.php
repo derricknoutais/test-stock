@@ -23,7 +23,7 @@
                             </a>
 
                         </td>
-                        <td>@{{ totalBC(bc) }}</td>
+                        <td>@{{ totalBC(bc) | currency }}</td>
                         <td>@{{ bc.created_at }}</td>
                         <td>
                             <a :href="'/bons-commandes/export/' + bc.id" class="tw-text-green-500">
@@ -33,7 +33,7 @@
                     </tr>
                     <tr>
                         <td class="tw-text-right">Total</td>
-                        <td>@{{ montantTotal }}</td>
+                        <td>@{{ montantTotal | currency }}</td>
                         <td></td>
                     </tr>
                 </tbody>

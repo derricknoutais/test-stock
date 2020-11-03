@@ -3174,19 +3174,29 @@ __webpack_require__.r(__webpack_exports__);
       sectionnable.displayDetails = !sectionnable.displayDetails;
       this.$forceUpdate();
     },
-    ajouterSectionnableABonCommande: function ajouterSectionnableABonCommande(element, index) {
-      element.demande_id = element.pivot.demande_id;
-      element.offre = element.pivot.offre;
-      element.quantite_offerte = element.pivot.quantite_offerte;
+    ajouterSectionnableABonCommande: function ajouterSectionnableABonCommande(element, index, dem) {
+      var _this6 = this;
+
+      dem.transfer_state = 'Enregistrement en Cours ...';
+      this.$forceUpdate();
+      console.log(element.demandes[index]);
+      element.demande_id = dem.id;
+      element.offre = dem.pivot.offre;
+      element.quantite_offerte = dem.pivot.quantite_offerte;
       element.sectionnable_id = element.pivot.sectionnable_id;
       axios.post('/commande/' + this.demande.commande_id + '/résoudre-conflit', {
         element: element
-      }).then(function (response) {})["catch"](function (error) {
+      }).then(function (response) {
+        dem.transfer_state = 'Fournisseur Sélectionné';
+
+        _this6.$forceUpdate();
+      })["catch"](function (error) {
+        sectionnable.transfer_state = 'Sauvegarde Échouée. Veuillez verifier votre connexion';
         console.log(error);
       });
     },
     openMoveModal: function openMoveModal(sectionnable, index) {
-      var _this6 = this;
+      var _this7 = this;
 
       // this.sectionnable_being_moved = sectionnable
       // $('#demande-move-modal').modal('show')
@@ -3201,25 +3211,25 @@ __webpack_require__.r(__webpack_exports__);
         sectionnable.editing = false;
         sectionnable.transfer_state = 'Produit Déplacé ...';
 
-        _this6.$forceUpdate();
+        _this7.$forceUpdate();
 
         setTimeout(function () {
-          _this6.demande.sectionnables.splice(index, 1);
+          _this7.demande.sectionnables.splice(index, 1);
 
-          _this6.$forceUpdate();
+          _this7.$forceUpdate();
         }, 2000);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     toggleAllDetails: function toggleAllDetails() {
-      var _this7 = this;
+      var _this8 = this;
 
       this.detailsState = !this.detailsState;
       this.demande.sectionnables.map(function (sect) {
-        sect.displayDetails = _this7.detailsState;
+        sect.displayDetails = _this8.detailsState;
 
-        _this7.$forceUpdate();
+        _this8.$forceUpdate();
       });
       this.$forceUpdate();
     },
@@ -3227,7 +3237,7 @@ __webpack_require__.r(__webpack_exports__);
       this.updateSectionnable(this.sectionnable_being_moved, 'demande_id', this.demande_to_move_to.id);
     },
     updateSectionnable: function updateSectionnable(sectionnable, field, value) {
-      var _this8 = this;
+      var _this9 = this;
 
       axios.patch('/demande-sectionnable', {
         id: sectionnable.pivot.id,
@@ -3238,9 +3248,30 @@ __webpack_require__.r(__webpack_exports__);
         sectionnable[field] = value;
         sectionnable.editing = false;
 
-        _this8.$forceUpdate();
+        _this9.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
+      });
+    },
+    transfererSectionnableABonCommande: function transfererSectionnableABonCommande(sectionnable, index, dem) {
+      var _this10 = this;
+
+      dem.transfer_state = 'Enregistrement en Cours ...';
+      this.$forceUpdate();
+      axios.patch('/transfer-sectionnable-to-bon-commandes', {
+        sectionnable: sectionnable,
+        dem: dem,
+        index: index
+      }).then(function (response) {
+        console.log(response.data);
+        dem.transfer_state = 'Fournisseur Sélectionné';
+
+        _this10.$forceUpdate();
+      })["catch"](function (error) {
+        console.log(error);
+        sectionnable.transfer_state = 'Sauvegarde Échouée. Veuillez verifier votre connexion';
+
+        _this10.$forceUpdate();
       });
     }
   },
