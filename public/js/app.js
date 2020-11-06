@@ -1910,7 +1910,7 @@ __webpack_require__.r(__webpack_exports__);
       sectionnable.pivot.prix_achat = this.$refs['prix_achat_aed_' + index][0].value * 165;
       this.$forceUpdate();
     },
-    addEdited: function addEdited(sectionnable) {
+    Edited: function Edited(sectionnable) {
       sectionnable.edited = true;
     },
     addNewProduct: function addNewProduct(location) {
@@ -3721,9 +3721,10 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['commande_prop', 'fournisseurs_prop'],
+  props: ['commande_prop', 'commandes_prop', 'fournisseurs_prop'],
   data: function data() {
     return {
+      commandes: this.commandes_prop,
       isLoading: {
         toutesDemandes: false
       },
@@ -3733,6 +3734,7 @@ __webpack_require__.r(__webpack_exports__);
       selected_products: [],
       selected_fournisseur: null,
       selected_demandes: [],
+      offre_commande: null,
       filtered: {
         sections: []
       }
@@ -3942,6 +3944,13 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/commande/' + this.commande.id + '/dispatch-produits-dans-demandes').then(function (response) {
         _this6.isLoading.toutesDemandes = false;
         window.location.reload();
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    prendreOffreDe: function prendreOffreDe(commande_id) {
+      axios.get('/prendre-offre-de/' + commande_id + '/pour/' + this.commande.id).then(function (response) {
+        console.log(response.data);
       })["catch"](function (error) {
         console.log(error);
       });

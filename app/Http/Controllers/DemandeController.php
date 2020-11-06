@@ -100,8 +100,9 @@ class DemandeController extends Controller
 
         $commande->loadMissing(['sections', 'sections.sectionnables', 'sections.sectionnables.demandes', 'sections.products', 'sections.articles', 'demandes', 'demandes.sectionnables', 'demandes.sectionnables.product']);
         $fournisseurs = Fournisseur::all();
+        $commandes = Commande::all();
 
-        return view('commande.prepa-demande', compact('commande', 'fournisseurs'));
+        return view('commande.prepa-demande', compact('commande', 'fournisseurs', 'commandes'));
 
     }
 

@@ -1,8 +1,9 @@
 <script>
 export default {
-    props: ['commande_prop', 'fournisseurs_prop'],
+    props: ['commande_prop', 'commandes_prop' ,'fournisseurs_prop'],
     data(){
         return {
+            commandes: this.commandes_prop,
             isLoading : {
                 toutesDemandes: false
             },
@@ -12,6 +13,7 @@ export default {
             selected_products: [],
             selected_fournisseur: null,
             selected_demandes: [],
+            offre_commande : null,
             filtered: {
                 sections: []
             }
@@ -226,6 +228,14 @@ export default {
             axios.get('/commande/'+ this.commande.id + '/dispatch-produits-dans-demandes').then(response => {
                 this.isLoading.toutesDemandes = false
                 window.location.reload()
+
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        prendreOffreDe(commande_id){
+            axios.get('/prendre-offre-de/' + commande_id + '/pour/' + this.commande.id).then(response => {
+                console.log(response.data);
 
             }).catch(error => {
                 console.log(error);

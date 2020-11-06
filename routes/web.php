@@ -99,7 +99,34 @@ Route::post('/product-section', 'SectionController@addProduct');
         return $var;
     });
 
+    Route::get('/prendre-offre-de/{commande_offre}/pour/{this_commande}', function(Commande $commande_offre, Commande $this_commande){
 
+        $this_commande->loadMissing('sections', 'sections.sectionnables', 'sections.sectionnables.demandes');
+        $this_sectionnables = Sectionnable::whereIn('section_id', Section::where('commande_id', $this_commande->id)->pluck('id') )->with('demandes')->get();
+        $offre_sectionnables = Sectionnable::whereIn('section_id', Section::where('commande_id', $commande_offre->id)->pluck('id') )->with('demandes')->get();
+        $array = [];
+        foreach ($this_sectionnables as $sectionnable ) {
+            foreach($offre_sectionnables as $sectionnable_correspondant){
+                if($sectionnable_correspondant['sectionnable_id'] === $sectionnable->sectionnable_id){
+
+                    foreach ($sectionnable_correspondant->demandes as $demande_trouvee) {
+
+                        foreach($sectionnable->demandes as $demande_cherchee){
+                            if($demande_trouvee->fournisseur_id === $demande_cherchee->fournisseur_id){
+                                array_push($array, $demande_cherchee->id);
+                                DB::table('demande_sectionnable')->where('id', $demande_cherchee->pivot->id)->update([
+                                    'offre' => $demande_trouvee->pivot->offre
+                                ]);
+                            }
+                        }
+
+                    }
+
+                }
+            }
+        }
+        return $array;
+    });
 
 // Prépa-Demande
 Route::get('/commande/{commande}/prepa-demande', 'DemandeController@showPrepaDemande');

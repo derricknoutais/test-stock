@@ -38,7 +38,8 @@ export default {
             sectionnable.pivot.prix_achat = this.$refs['prix_achat_aed_' + index ][0].value * 165
             this.$forceUpdate()
         },
-        addEdited(sectionnable){
+
+        Edited(sectionnable){
             sectionnable.edited = true
         },
         addNewProduct(location){

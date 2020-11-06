@@ -102,25 +102,22 @@
 
             </div> --}}
 
-            <div class="tw-flex tw-w-screen tw-justify-center tw-items-center tw-ml-2 tw-mt-6" >
+            {{-- <div class="tw-flex tw-w-screen tw-justify-center tw-items-center tw-ml-2 tw-mt-6" >
                 <div class="tw-w-1/2 tw-flex tw-justify-center collapse" id="addTemplate">
                     <div class="tw-w-1/2 tw-mr-4">
                         <multiselect v-model="selected_template" :options="{{ $templates }}" :searchable="true" :close-on-select="true" :show-labels="false"
                         placeholder="Pick a value" label="name"></multiselect>
                     </div>
-
                     <button class="tw-btn tw-btn-white tw-leading-none" @click="addTemplate()">Ajouter Templates</button>
                 </div>
-
                 <div class="tw-w-1/2 tw-flex tw-justify-center collapse" id="addProduct">
                     <div class="tw-w-1/2 tw-mr-4">
                         <multiselect v-model="selected_product" :options="{{ $products }}" :searchable="true" :close-on-select="true" :show-labels="false"
                         placeholder="Pick a value" label="name"></multiselect>
                     </div>
-
                     <button class="tw-btn tw-btn-white tw-leading-none" @click="addProduct()">Ajouter Produit</button>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Modal -->
         </header>

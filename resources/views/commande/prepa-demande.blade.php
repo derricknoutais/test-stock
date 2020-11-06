@@ -2,7 +2,7 @@
 
 
 @section('content')
-<prepa-demande :commande_prop="{{$commande}}" :fournisseurs_prop="{{$fournisseurs}}" inline-template>
+<prepa-demande :commande_prop="{{$commande}}" :commandes_prop="{{ $commandes }}" :fournisseurs_prop="{{$fournisseurs}}" inline-template>
     <div class="tw-flex tw-flex-col">
 
         <div class="tw-flex">
@@ -123,12 +123,19 @@
             </div>
             {{-- Demandes --}}
             <div class="tw-mx-auto tw-container tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-bg-gray-300 tw-border tw-border-gray-400 tw-border-r-0 tw-border-t-0 tw-border-b-0">
+
                 <h1 class="tw-text-3xl tw-uppercase tw-tracking-wide tw-text-center tw-my-5 ">Demandes</h1>
 
                 <button type="button" name="" id="" class="tw-btn tw-btn-dark tw-uppercase" data-toggle="modal" data-target="#demande-modal">Ajouter Une Demande</button>
                 <button type="button" name="" id="" class="tw-mt-5 tw-btn tw-btn-dark tw-uppercase " @click="dispatchProduits()">
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.toutesDemandes"></i>
                     Génerer Toutes Les Demandes
+                </button>
+                <button type="button" class="tw-mt-5 tw-btn tw-btn-dark tw-uppercase"
+                    @click="prendreOffreDe(5)"
+                >
+                    {{-- <i class="fas fa-spinner fa-spin" v-if="isLoading.toutesDemandes"></i> --}}
+                    Offres a Partir de ...
                 </button>
 
                 <div class="tw-w-3/4">
@@ -147,7 +154,7 @@
                 </div>
             </div>
 
-            {{-- Modal --}}
+            {{-- Modal Demandes --}}
             <div class="modal fade" id="demande-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" @keydown.enter="saveDemande">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -169,6 +176,27 @@
                     </div>
                 </div>
             </div>
+            {{-- Modal Commandes --}}
+            {{-- <div class="modal fade" id="commandes-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">SELECTIONNER UNE COMMANDE</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="tw-px-5 tw-flex tw-items-center tw-h-6" v-for="commande_offre in commandes">
+                                <input type="checkbox" :value="commande_offre.id" v-model="offre_commande" class="tw-mx-5">
+                                <label for="">@{{ commande_offre.name }}</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            <button type="button" class="btn btn-primary" @click="saveDemande">Enregistrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
 
         </div>
         {{-- Boutons <-- Précédent - Suivant --> --}}
@@ -190,7 +218,6 @@
                         <div class="tw-px-5 tw-flex tw-items-center tw-h-6" v-for="demande in commande.demandes">
                             <input type="checkbox" :value="demande" v-model="selected_demandes" class="tw-mx-5">
                             <label for="">@{{ demande.nom }}</label>
-
                         </div>
                     </div>
                     <div class="modal-footer">
