@@ -242,58 +242,74 @@ class BonCommandeController extends Controller
 
     public function storeSectionnable(Request $request){
         //
-        $section = Section::where([ 'commande_id' => $request['bc']['commande_id'], 'nom' => '***Retard***' ])->first();
+        $sectionnables = Sectionnable::whereIn('section_id', Section::where('commande_id', $request['bc']['commande_id'])->pluck('id'))->get()->toArray();
+        $array = array_filter($sectionnables, function($sectionnable) use ($request){
+            return $sectionnable['sectionnable_id'] === $request['product']['id'];
+        });
+        if( isset($array) ){
+            //
+            $section = Section::where([ 'commande_id' => $request['bc']['commande_id'], 'nom' => '***Retard***' ])->first();
+            //
+            if($section){
+                // Crée le Sectionnable
+                $sectionnable = Sectionnable::create([
+                    'section_id' => $section->id,
+                    'sectionnable_id' => $request['product']['id'],
+                    'sectionnable_type' => 'App\Product',
+                    'quantite' => $request['product']['quantite'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'conflit' => 0
+                ]);
+                // Insère le sectionnable au bon de commande
 
-        if($section){
-            // Crée le Sectionnable
-            $sectionnable = Sectionnable::create([
-                'section_id' => $section->id,
-                'sectionnable_id' => $request['product']['id'],
-                'sectionnable_type' => 'App\Product',
-                'quantite' => $request['product']['quantite'],
-                'created_at' => now(),
-                'updated_at' => now(),
-                'conflit' => 0
-            ]);
-            // Insère le sectionnable au bon de commande
+                DB::table('bon_commande_sectionnable')->insert([
+                    'sectionnable_id' => $sectionnable->id,
+                    'bon_commande_id' => $request['bc']['id'],
+                    'quantite' => $request['product']['quantite'],
+                    'prix_achat' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
 
+
+            } else {
+                $section = Section::create([
+                    'commande_id' => $request['bc']['commande_id'],
+                    'nom' => '***Retard***',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                // Crée le Sectionnable
+                $sectionnable = Sectionnable::create([
+                    'section_id' => $section->id,
+                    'sectionnable_id' => $request['product']['id'],
+                    'sectionnable_type' => 'App\Product',
+                    'quantite' => $request['product']['quantite'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'conflit' => 0
+                ]);
+                // Insère le sectionnable au bon de commande
+                DB::table('bon_commande_sectionnable')->insert([
+                    'sectionnable_id' => $sectionnable->id,
+                    'bon_commande_id' => $request['bc']['id'],
+                    'quantite' => $request['product']['quantite'],
+                    'prix_achat' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            }
+        } else  {
             DB::table('bon_commande_sectionnable')->insert([
-                'sectionnable_id' => $sectionnable->id,
+                'sectionnable_id' => $array['sectionnable_id'],
                 'bon_commande_id' => $request['bc']['id'],
                 'quantite' => $request['product']['quantite'],
-                'prix_achat' => 0,
+                'prix_achat' => $array['offre'],
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
-
-
-        } else {
-            $section = Section::create([
-                'commande_id' => $request['bc']['commande_id'],
-                'nom' => '***Retard***',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-            // Crée le Sectionnable
-            $sectionnable = Sectionnable::create([
-                'section_id' => $section->id,
-                'sectionnable_id' => $request['product']['id'],
-                'sectionnable_type' => 'App\Product',
-                'quantite' => $request['product']['quantite'],
-                'created_at' => now(),
-                'updated_at' => now(),
-                'conflit' => 0
-            ]);
-            // Insère le sectionnable au bon de commande
-            DB::table('bon_commande_sectionnable')->insert([
-                'sectionnable_id' => $sectionnable->id,
-                'bon_commande_id' => $request['bc']['id'],
-                'quantite' => $request['product']['quantite'],
-                'prix_achat' => 0,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
         }
 
         return $sectionnable;
