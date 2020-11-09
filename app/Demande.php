@@ -15,6 +15,6 @@ class Demande extends Model
 
     public function sectionnables()
     {
-        return $this->belongsToMany('App\Sectionnable', 'demande_sectionnable', 'demande_id', 'sectionnable_id')->withPivot('offre', 'id', 'checked', 'quantite_offerte', 'traduction', 'differente_offre', 'reference_differente_offre');
+        return $this->belongsToMany('App\Sectionnable', 'demande_sectionnable', 'demande_id', 'sectionnable_id')->withPivot('quantite', 'offre', 'id', 'checked', 'quantite_offerte', 'traduction', 'differente_offre', 'reference_differente_offre');
     }
 }
