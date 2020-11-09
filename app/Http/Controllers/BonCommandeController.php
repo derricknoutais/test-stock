@@ -49,7 +49,9 @@ class BonCommandeController extends Controller
 
         $all = array();
         // Pour Chaque Demande d'Offre de Cette Commande...
-        for ( $i = 45; $i < 54; $i++ ) {
+        for (
+            $i = 0; $i < 30; $i++
+        ) {
 
             // Pour Chaque Sectionnable de Chaque Demande d'offre
             foreach($commande->demandes[$i]->sectionnables as $sectionnable){
