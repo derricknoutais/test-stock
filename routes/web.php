@@ -115,6 +115,7 @@ Route::post('/product-section', 'SectionController@addProduct');
                             if($demande_trouvee->fournisseur_id === $demande_cherchee->fournisseur_id){
                                 array_push($array, $demande_cherchee->id);
                                 DB::table('demande_sectionnable')->where('id', $demande_cherchee->pivot->id)->update([
+                                    'quantite_offerte' => $demande_cherchee->pivot->quantite_offerte,
                                     'offre' => $demande_trouvee->pivot->offre,
                                     'differente_offre' => $demande_trouvee->pivot->differente_offre,
                                     'reference_differente_offre' => $demande_trouvee->pivot->differente_offre
