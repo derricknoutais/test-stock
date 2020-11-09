@@ -50,7 +50,7 @@ class BonCommandeController extends Controller
         $all = array();
         // Pour Chaque Demande d'Offre de Cette Commande...
         for (
-            $i = 10; $i < 30; $i++
+            $i = 10; $i < 20; $i++
         ) {
 
             // Pour Chaque Sectionnable de Chaque Demande d'offre
