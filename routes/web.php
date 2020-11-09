@@ -118,7 +118,7 @@ Route::post('/product-section', 'SectionController@addProduct');
                                     'quantite_offerte' => $sectionnable->quantite,
                                     'offre' => $demande_trouvee->pivot->offre,
                                     'differente_offre' => $demande_trouvee->pivot->differente_offre,
-                                    'reference_differente_offre' => $demande_trouvee->pivot->differente_offre
+                                    'reference_differente_offre' => $demande_trouvee->pivot->reference_differente_offre
                                 ]);
                             }
                         }
