@@ -232,7 +232,7 @@ class BonCommandeController extends Controller
 
     public function export(BonCommande $bonCommande)
     {
-        return Excel::download(new BCommandeExport($bonCommande->id), $bonCommande->nom . '.xlsx');
+        return Excel::download(new BCommandeExport($bonCommande->id), $bonCommande->nom . '-pog.xlsx');
     }
 
     public function exportall(Commande $commande){
