@@ -18,9 +18,8 @@ class FactureController extends Controller
     {
         $commande->loadMissing(['bonsCommandes', 'bonsCommandes.sectionnables', 'bonsCommandes.sectionnables.product', 'factures', 'factures.sectionnables']);
 
-        $factures = Facture::with('sectionnables')->latest()->get();
 
-        return view('facture.index', compact('factures', 'commande'));
+        return view('facture.index', compact('commande'));
     }
 
     public function show(Facture $facture)

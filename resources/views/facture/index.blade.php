@@ -2,7 +2,7 @@
 
 
 @section('content')
-    <facture :data="{{ $factures }}" inline-template>
+    <facture :data="{{ $commande->factures }}" inline-template>
         <div class="tw-container tw-mx-auto">
             <div>
                 <table class="table">
