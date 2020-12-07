@@ -28,18 +28,32 @@
         @if ($sectionnable->sectionnable_type === 'App\\Product')
         <tr>
             <td>{{ $sectionnable->pivot->id }}</td>
-            <td>{{ $sectionnable->product->name }}</td>
+            @if($sectionnable->product->handle)
+                <td >
+                    {{ $sectionnable->product->handle->translation }}
+                    @if ($sectionnable->product->handle->display1)
+                        <span>/ {{ $sectionnable->product[$sectionnable->product->handle->display1] }}</span>
+                    @endif
+                    @if ($sectionnable->product->handle->display2)
+                        <span>/ {{ $sectionnable->product[$sectionnable->product->handle->display2] }}</span>
+                    @endif
+                    @if ($sectionnable->product->handle->display3)
+                        <span>/ {{ $sectionnable->product[$sectionnable->product->handle->display3] }}</span>
+                    @endif
+
+                </td>
+            @endif
             <td>{{ $sectionnable->quantite}}</td>
-            <td>{{ $sectionnable->pivot->prix_achat }}</td>
-            <td>{{ $sectionnable->pivot->prix_achat * $sectionnable->quantite }}</td>
+            <td>{{ $sectionnable->pivot->prix_achat / 165 }}</td>
+            <td>{{ ($sectionnable->pivot->prix_achat /165) * $sectionnable->quantite }}</td>
         </tr>
         @else
         <tr>
             <td>{{ $sectionnable->pivot->id }}</td>
             <td>{{ $sectionnable->article->nom }}</td>
             <td>{{ $sectionnable->quantite}}</td>
-            <td>{{ $sectionnable->pivot->prix_achat }}</td>
-            <td>{{ $sectionnable->pivot->prix_achat * $sectionnable->quantite }}</td>
+            <td>{{ $sectionnable->pivot->prix_achat / 165 }}</td>
+            <td>{{ ($sectionnable->pivot->prix_achat /165) * $sectionnable->quantite }}</td>
         </tr>
         @endif
         @endforeach
