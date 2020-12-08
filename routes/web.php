@@ -529,7 +529,7 @@ Route::get('/api/produits', function () {
 
                 $prod = Product::create([
                     'id' => $product['id'],
-                    'handle' => $product['handle'],
+                    // 'handle' => $product['handle'],
                     'name' => $product['name'],
                     'sku' => $product['sku'],
                     'price' => $product['price'],
