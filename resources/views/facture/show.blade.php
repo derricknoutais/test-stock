@@ -149,7 +149,7 @@
                             class="tw-input focus:tw-border-gray-600 tw-text-black" type="number"
                             @keyup="convertToXaf(sectionnable, index)" :ref="'prix_achat_aed_' + index"
                         >
-                        <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
+                        <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(2) }}</span>
                         <span v-if=" ! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 === 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
                     </td>
                     {{-- Prix Achat Total XAF --}}
