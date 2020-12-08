@@ -65,7 +65,6 @@
                             class="tw-input focus:tw-border-gray-600" type="text" v-model="sectionnable.pivot.quantite">
                         <span v-else>@{{ sectionnable.pivot.quantite }}</span>
                     </td>
-
                     {{-- Prix Achat (XAF) --}}
                     <td class="tw-bg-teal-600 tw-text-white">
                         {{-- En Mode Edit --}}
@@ -77,8 +76,7 @@
                         {{-- En Mode Normal --}}
                         <span v-else>@{{ sectionnable.pivot.prix_achat }}</span>
                     </td>
-
-                    {{-- Total XAF --}}
+                    {{-- Total (XAF) --}}
                     <td class="tw-bg-teal-700 tw-text-white">
                         <animated-number :value="sectionnable.pivot.quantite * sectionnable.pivot.prix_achat"
                             :format-value="formatToPrice" :duration="500" />
@@ -93,12 +91,12 @@
                         <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
                         <span v-if=" ! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 === 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
                     </td>
-
                     {{-- Total AED --}}
                     <td class=" tw-bg-indigo-700 tw-text-white">
                         AED <animated-number :value="(sectionnable.pivot.quantite * (sectionnable.pivot.prix_achat / 165)).toFixed(0)"
                              :duration="500" />
                     </td>
+                    {{-- Actions --}}
                     <td class="tw-bg-gray-200">
                         {{-- Edit Mode --}}
                         <i v-if="! sectionnable.editMode && !editMode "
@@ -114,27 +112,65 @@
                             @click="deleteSectionnable(sectionnable, 'facture')"></i>
                     </td>
                 </tr>
+
+
+
                 {{-- Articles --}}
-                <tr v-for="sectionnable in bc.sectionnables" v-if="sectionnable.article">
+                <tr v-for="(sectionnable, index) in bc.sectionnables" v-if="sectionnable.article">
                     {{-- Nom du Produit --}}
                     <td scope="row" class="tw-bg-indigo-300 tw-border tw-border-gray-400">@{{ sectionnable.article.nom }} </td>
                     {{-- Quantité --}}
-                    <td class="tw-border tw-border-gray-400">@{{ sectionnable.pivot.quantite }}</td>
+                    <td class="tw-border tw-border-gray-400">
+                        <input v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                            class="tw-input focus:tw-border-gray-600" type="text" v-model="sectionnable.pivot.quantite">
+                        <span v-else>@{{ sectionnable.pivot.quantite }}</span>
+                    </td>
                     {{-- Prix Achat XAF --}}
-                    <td class="tw-border tw-bg-orange-300 tw-border-orange-500">XAF @{{ sectionnable.pivot.prix_achat }}</td>
+                    <td class="tw-border tw-bg-orange-300 tw-border-orange-500">
+                        {{-- En Mode Edit --}}
+                        <span class="tw-mr-1">XAF</span>
+
+                        <input v-if="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                            class="tw-input tw-text-black focus:tw-border-gray-600 tw-rounded-sm" type="text"
+                            v-model="sectionnable.pivot.prix_achat">
+                        {{-- En Mode Normal --}}
+                        <span v-else>@{{ sectionnable.pivot.prix_achat }}</span>
+                    </td>
                     {{-- Prix Achat Total XAF --}}
                     <td class="tw-border tw-bg-orange-400 tw-border-orange-500">
                         XAF @{{ sectionnable.pivot.prix_achat * sectionnable.pivot.quantite }}
                     </td>
                     {{-- Prix Achat AED --}}
-                    <td class="tw-border tw-bg-gray-500 tw-border-gray-400 tw-text-dark ">
-                        AED @{{ sectionnable.pivot.prix_achat / 165 }}
+                    <td class="tw-border tw-bg-gray-500 tw-border-gray-400 tw-text-dark "
+                        @keyup="convertToXaf(sectionnable, index)" :ref="'prix_achat_aed_' + index"
+                    >
+                        <input
+                            v-show="editMode || sectionnable.editMode" @input="addEdited(sectionnable)"
+                            class="tw-input focus:tw-border-gray-600 tw-text-black" type="number"
+                            @keyup="convertToXaf(sectionnable, index)" :ref="'prix_achat_aed_' + index"
+                        >
+                        <span v-if="! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 !== 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(1) }}</span>
+                        <span v-if=" ! (editMode || sectionnable.editMode) && sectionnable.pivot.prix_achat%165 === 0">AED @{{ (sectionnable.pivot.prix_achat / 165 ).toFixed(0) }}</span>
                     </td>
                     {{-- Prix Achat Total XAF --}}
                     <td class="tw-border tw-bg-gray-600 tw-border-gray-400 tw-text-white">
                         AED
-                        <animated-number :value="sectionnable.pivot.quantite * sectionnable.pivot.prix_achat"
-                             :duration="500" />
+                        <animated-number :value="sectionnable.pivot.quantite * (sectionnable.pivot.prix_achat/165)"
+                             :duration="1000" />
+                    </td>
+                    <td class="tw-bg-gray-200">
+                        {{-- Edit Mode --}}
+                        <i v-if="! sectionnable.editMode && !editMode "
+                            class="fas fa-edit tw-text-blue-700 tw-cursor-pointer"
+                            @click="enableSectionnableEditMode(sectionnable, index)">
+                        </i>
+
+                        {{-- Enregistrer --}}
+                        <i v-if="sectionnable.editMode" class="fas fa-save tw-text-green-700 tw-cursor-pointer"
+                            @click="updateSectionnable(sectionnable, 'facture')"></i>
+
+                        <i class="fas fa-trash tw-text-red-700 tw-ml-5 tw-cursor-pointer"
+                            @click="deleteSectionnable(sectionnable, 'facture')"></i>
                     </td>
                 </tr>
                 {{-- Total --}}
