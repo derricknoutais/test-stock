@@ -216,8 +216,8 @@
                             @{{ section.nom }}
                         </h5>
                         <div class="tw-w-1/3">
-                            <span class="tw-w-1/2">@{{ section.products.length  }} Produits</span>
-                            <span class="tw-w-1/2 tw-ml-5">@{{ section.articles.length  }} Nouveaux Produits</span>
+                            <span class="tw-w-1/2" v-if="section.products.length > 0">@{{ section.products.length  }} Produits</span>
+                            <span class="tw-w-1/2 tw-ml-5" v-if="section.articles.length > 0">@{{ section.articles.length  }} Nouveaux Produits</span>
                         </div>
                         <div>
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
