@@ -90,7 +90,7 @@ class DemandeController extends Controller
 
     public function show(Demande $demande)
     {
-        $demande->loadMissing(['sectionnables', 'sectionnables.product', 'sectionnables.product.handle', 'sectionnables.product.handle.brands' , 'sectionnables.article', 'sectionnables.bon_commande', 'sectionnables.demandes']);
+        $demande->loadMissing(['fournisseur', 'bonCommande' ,'sectionnables', 'sectionnables.product', 'sectionnables.product.handle', 'sectionnables.product.handle.brands' , 'sectionnables.article', 'sectionnables.bon_commande', 'sectionnables.demandes']);
         // return $demande->loadMissing(['sectionnables', 'sectionnables.product']);
         $demandes = Demande::all();
         return view('demande.show', compact('demande', 'demandes'));

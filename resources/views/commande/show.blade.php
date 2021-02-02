@@ -5,7 +5,6 @@
 
 <commande-show :articles_prop="{{ $id_articles }}" :commande_prop="{{ $commande }}" :products_prop="{{ $products }}" :templates_prop="{{ $templates }}"  inline-template>
     <section>
-
         <header class="tw-flex tw-flex-col tw-items-center tw-bg-gray-600 tw-text-white tw-py-10">
             <p class="tw-text-black tw-text-4xl tw-text-bold tw-mt-6 tw-leading-none">Prépa - {{ $commande->name }}</p>
             <p class="tw-text-black tw-mt-6 tw-leading-none tw-text-2xl">
@@ -134,7 +133,6 @@
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.majStock"></i>
                 </button>
                 <button class="tw-btn tw-bg-gray-900 tw-text-white tw-leading-none tw-ml-5" data-toggle="modal" data-target="#tableauDesDifférences">Tableau des différences</button>
-
             </div>
 
 
@@ -214,8 +212,13 @@
                 <div class="card" v-for="section in commande.sections">
                     {{-- En-Tête de Section --}}
                     <div  class="tw-border tw-border-gray-400 tw-shadow tw-cursor-pointer card-header tw-flex tw-justify-between tw-items-center tw-bg-gray-200 tw-text-gray-800" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">
-                        <h5 class="mb-0 tw-text-xl " data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">@{{section.nom}}
+                        <h5 class="mb-0 tw-text-xl tw-w-1/3" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">
+                            @{{ section.nom }}
                         </h5>
+                        <div class="tw-w-1/3">
+                            <span class="tw-w-1/2">@{{ section.products.length  }} Produits</span>
+                            <span class="tw-w-1/2 tw-ml-5">@{{ section.articles.length  }} Nouveaux Produits</span>
+                        </div>
                         <div>
                             <i class="fas fa-edit tw-mx-3 tw-text-blue-700 tw-cursor-pointer" @click="openEditModal(section)"></i>
                             <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="openDeleteModal(section)"></i>

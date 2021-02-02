@@ -6,10 +6,12 @@
 <demande-show :demande_prop="{{$demande}}" :demandes_prop="{{$demandes}}" inline-template>
     <div class="tw-container-fluid tw-mx-10">
         <en-tete bg-color="tw-bg-green-500"></en-tete>
+        
 
         <h1 class="tw-text-5xl tw-text-center tw-mt-20 tw-uppercase">Demande @{{ demande.nom }}</h1>
         <div class="tw-mt-10">
             <a :href="'/demande/export/' + demande.id" class="tw-btn tw-btn-dark" >Télécharger .xlsx</a>
+            <button class="tw-btn tw-btn-dark" @click="creerBonCommande(demande)" >Créer Bon Commande</button>
         </div>
 
 
@@ -33,6 +35,7 @@
                 </tr>
             </thead>
 
+            
             <tbody>
                 {{-- PRODUCT --}}
                 <template v-for="(sectionnable, index) in demande.sectionnables" v-if="sectionnable.product">
@@ -318,6 +321,7 @@
                 </tr>
 
             </tbody>
+
 
         </table>
 

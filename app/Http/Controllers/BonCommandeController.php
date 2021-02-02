@@ -324,7 +324,7 @@ class BonCommandeController extends Controller
 
     public function createInvoice(BonCommande $bc ){
         $facture = Facture::create([
-            'nom' => $bc->nom,
+            'nom' => 'Facture ' . $bc->nom,
             'commande_id' => $bc->commande_id,
             'demande_id' => $bc->demande_id,
             'fournisseur_id' => $bc->fournisseur_id,

@@ -3091,6 +3091,13 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    creerBonCommande: function creerBonCommande(demande) {
+      axios.post('/creer-bon-commande', demande).then(function (response) {
+        console.log(response.data);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
     enregisterOffre: function enregisterOffre(sectionnable) {
       var _this = this;
 

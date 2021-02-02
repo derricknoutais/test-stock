@@ -210,6 +210,18 @@ Route::get('/erase-conflits', function(){
 
 
 // Bons de Commandes
+Route::post('/creer-bon-commande', function(Request $request){
+    $bc = BonCommande::create([
+        'nom' => 'Bon Commande ' . $request['fournisseur']['nom'],
+        'commande_id' => $request['commande_id'],
+        'demande_id' => $request['id'],
+        'fournisseur_id' => $request['fournisseur']['id'],
+        'facture_id' => NULL
+    ]);
+    Demande::find($request['id'])->update([
+        'bon_commande_id' => $bc->id
+    ]);
+});
 Route::patch('/transfer-sectionnable-to-bon-commandes', function(Request $request){
     if(
         $bc = BonCommande::where([

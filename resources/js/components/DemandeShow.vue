@@ -26,6 +26,14 @@ export default {
         }
     },
     methods:{
+        creerBonCommande(demande){
+            axios.post('/creer-bon-commande', demande ).then(response => {
+                console.log(response.data);
+
+            }).catch(error => {
+                console.log(error);
+            });
+        },
         enregisterOffre(sectionnable){
 
                 sectionnable.hasError = false
