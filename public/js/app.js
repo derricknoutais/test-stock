@@ -2409,8 +2409,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.isLoading.article = true;
       axios.get('https://azimuts.ga/article/api/search/' + query).then(function (response) {
-        console.log(response.data); // this.sectionnable_type === 'ArticleAPI'
-
+        console.log(response.data);
         _this2.articlesApi = response.data;
       })["catch"](function (error) {
         console.log(error);
@@ -2992,39 +2991,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.commande.sections.forEach(function (section) {
       section.articles = [];
-    }); // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
-    //     this.articles = response.data
-    //     this.articles.map( article => {
-    //         if(article.fiche_renseignement){
-    //             if(article.fiche_renseignement.marque){
-    //                 article.marque = article.fiche_renseignement.marque.nom
-    //                 article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom
-    //             }
-    //             if(article.fiche_renseignement.type){
-    //                 article.type = article.fiche_renseignement.type.nom
-    //                 article.search_name += ' ' + article.fiche_renseignement.type.nom
-    //             }
-    //             if(article.fiche_renseignement.moteur){
-    //                 article.moteur = article.fiche_renseignement.moteur.nom
-    //                 article.search_name += ' ' + article.fiche_renseignement.moteur.nom
-    //             }
-    //         }
-    //     })
-    // }).catch(error => {
-    //     console.log(error);
-    // });
+    });
+    var ids = []; // console.log(this.articles_prop)
 
-    console.log(this.articles_prop);
     var article_ids = [];
     this.articles_prop.forEach(function (article) {
       article_ids.push(article.sectionnable_id);
-    }); // axios.post('https://azimuts.ga/article/api/bulk-fetch',  {articles: article_ids} ).then(response => {
-    //     this.articlesFetched = response.data ;
-    // }).catch( error => {
-    //     console.log(error);
-    // });
-
+    });
     axios.post('https://azimuts.ga/article/api/bulk-fetch', article_ids).then(function (response) {
+      console.log(response.data);
       _this15.articlesFetched = response.data;
 
       _this15.articlesFetched.forEach(function (artFetched) {

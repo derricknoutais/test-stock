@@ -110,9 +110,7 @@ export default {
             this.isLoading.article = true
             axios.get('https://azimuts.ga/article/api/search/' + query).then(response => {
                 console.log(response.data);
-                // this.sectionnable_type === 'ArticleAPI'
                 this.articlesApi = response.data
-
             }).catch(error => {
                 console.log(error);
             });
@@ -653,6 +651,7 @@ export default {
         }
     },
     created(){
+
         this.sectionnable_type = 'Product'
         if (this.commande_prop) {
             this.commande = this.commande_prop
@@ -667,50 +666,21 @@ export default {
         this.commande.sections.forEach( section => {
             section.articles = []
         })
-        // axios.get('https://azimuts.ga/article/api/non-commandé').then(response => {
-        //     this.articles = response.data
-        //     this.articles.map( article => {
-        //         if(article.fiche_renseignement){
-
-        //             if(article.fiche_renseignement.marque){
-        //                 article.marque = article.fiche_renseignement.marque.nom
-        //                 article.search_name = article.nom + ' ' + article.fiche_renseignement.marque.nom
-        //             }
-
-        //             if(article.fiche_renseignement.type){
-        //                 article.type = article.fiche_renseignement.type.nom
-        //                 article.search_name += ' ' + article.fiche_renseignement.type.nom
-        //             }
-
-        //             if(article.fiche_renseignement.moteur){
-        //                 article.moteur = article.fiche_renseignement.moteur.nom
-        //                 article.search_name += ' ' + article.fiche_renseignement.moteur.nom
-        //             }
-
-        //         }
-        //     })
+        var ids = []
 
 
-        // }).catch(error => {
-        //     console.log(error);
-        // });
 
-        console.log(this.articles_prop)
+
+        // console.log(this.articles_prop)
         var article_ids = []
+
         this.articles_prop.forEach( article => {
             article_ids.push(article.sectionnable_id)
         });
 
 
-
-        // axios.post('https://azimuts.ga/article/api/bulk-fetch',  {articles: article_ids} ).then(response => {
-        //     this.articlesFetched = response.data ;
-        // }).catch( error => {
-        //     console.log(error);
-        // });
-
         axios.post('https://azimuts.ga/article/api/bulk-fetch',  article_ids ).then( response => {
-
+            console.log(response.data)
             this.articlesFetched = response.data;
 
             this.articlesFetched.forEach( artFetched => {
