@@ -15,8 +15,11 @@ class CreateHandleBrandsTable extends Migration
     {
         Schema::create('handle_brands', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreign('handle_id')->references('handles')->on('id');
-            $table->foreign('brand_id')->references('handles')->on('id');
+            $table->unsignedBigInteger('handle_id');
+            $table->unsignedBigInteger('brand_id');
+
+            $table->foreign('handle_id')->references('id')->on('handles');
+            $table->foreign('brand_id')->references('id')->on('handles');
             $table->unique(['handle_id', 'brand_id']);
             $table->timestamps();
         });

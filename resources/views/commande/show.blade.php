@@ -212,10 +212,10 @@
                 <div class="card" v-for="section in commande.sections">
                     {{-- En-Tête de Section --}}
                     <div  class="tw-border tw-border-gray-400 tw-shadow tw-cursor-pointer card-header tw-flex tw-justify-between tw-items-center tw-bg-gray-200 tw-text-gray-800" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " aria-expanded="true" aria-controls="section1ContentId">
-                        <h5 class="mb-0 tw-text-xl tw-w-1/3" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">
+                        <h5 class="mb-0 tw-text-xl tw-w-3/5" data-toggle="collapse" data-parent="#accordianId" :href="'#section' + section.id " role="tab" id="section1HeaderId">
                             @{{ section.nom }}
                         </h5>
-                        <div class="tw-w-1/3">
+                        <div class="tw-w-1/5">
                             <span class="tw-w-1/2" v-if="section.products.length > 0">@{{ section.products.length  }} Produits</span>
                             <span class="tw-w-1/2 tw-ml-5" v-if="section.articles.length > 0">@{{ section.articles.length  }} Nouveaux Produits</span>
                         </div>
