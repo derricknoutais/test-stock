@@ -124,14 +124,16 @@ class SectionController extends Controller
     public function destroy(Section $section)
     {
         $section->delete();
+    }
 
+    public function destroySectionnable ($sectionnable, $section){
+        $sectionnables = Sectionnable::where(['sectionnable_id' => $sectionnable, 'section_id' => $section])->get();
+        foreach ($sectionnables as $sectionnable ) {
+            $sectionnable->delete();
+        }
+        // $sectionnable->delete();
     }
-    public function destroyProduct(Sectionnable $product){
-        $product->delete();
-    }
-    public function destroyArticle(Sectionnable $article){
-        $article->delete();
-    }
+
     public function patchSectionnable(Request $request){
         DB::table('sectionnables')->where('id', $request['id'])->update([
             $request['field'] => $request['value']

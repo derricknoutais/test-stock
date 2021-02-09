@@ -91,14 +91,13 @@ Route::post('/product-section', 'SectionController@addProduct');
 // Sectionnables
 
     // Supprimer des sectionnables
-    Route::delete('/sectionnable/{product}', 'SectionController@destroyProduct');
-    Route::delete('/sectionnable/{article}', 'SectionController@destroyArticle');
+    Route::delete('/sectionnable/{sectionnable}/{section}', 'SectionController@destroySectionnable');
+
     Route::patch('/sectionnable', 'SectionController@patchSectionnable');
     Route::get('/section-product/delete/{article}/{section}', function($article, $section){
         $var = DB::table('sectionnables')->where(['section_id' => $section, 'sectionnable_id' => $article])->delete();
         return $var;
     });
-
     Route::get('/prendre-offre-de/{commande_offre}/pour/{this_commande}', function(Commande $commande_offre, Commande $this_commande){
 
         $this_commande->loadMissing('sections', 'sections.sectionnables', 'sections.sectionnables.demandes');

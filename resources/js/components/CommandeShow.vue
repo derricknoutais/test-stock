@@ -242,7 +242,7 @@ export default {
                         });
                         this.$forceUpdate()
 
-                        axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/commandé').then(response => {
+                        axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/demandé').then(response => {
                             console.log(response.data);
 
                         }).catch(error => {
@@ -482,14 +482,11 @@ export default {
             });
         },
         removeProduct(section, produit, type){
-
-            axios.delete('/sectionnable/' + produit.pivot.id).then(response => {
-
+            axios.delete('/sectionnable/' + produit.id + '/' + section.id) .then(response => {
+                console.log(response.data)
                 if(type === 'Product'){
-
                     var index = section.products.indexOf(produit)
                     section.products.splice(index, 1)
-
                 } else {
                     axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(response => {
                         console.log(response.data);
@@ -678,7 +675,6 @@ export default {
             article_ids.push(article.sectionnable_id)
         });
 
-
         axios.post('https://azimuts.ga/article/api/bulk-fetch',  article_ids ).then( response => {
             console.log(response.data)
             this.articlesFetched = response.data;
@@ -686,7 +682,6 @@ export default {
             this.articlesFetched.forEach( artFetched => {
                 this.articles_prop.forEach( artProp => {
                     if( artFetched.id == artProp.sectionnable_id ){
-
                         artFetched.pivot =  {
                             section_id: artProp.section_id,
                             quantite : artProp.quantite,
@@ -695,21 +690,14 @@ export default {
 
                     }
                 })
-
-
             })
-
             this.articlesFetched.forEach( (article, index) => {
-
                 this.commande.sections.forEach( section => {
-
                     if( section.id === article.pivot.section_id ){
                         section.articles.push(article)
                     }
-
                 })
             })
-
         }).catch( error => {
             console.log(error);
         });

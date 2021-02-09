@@ -2559,7 +2559,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
             _this6.$forceUpdate();
 
-            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_element.id + '/commandé').then(function (response) {
+            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_element.id + '/demandé').then(function (response) {
               console.log(response.data);
             })["catch"](function (error) {
               console.log(error);
@@ -2806,7 +2806,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     removeProduct: function removeProduct(section, produit, type) {
       var _this12 = this;
 
-      axios["delete"]('/sectionnable/' + produit.pivot.id).then(function (response) {
+      axios["delete"]('/sectionnable/' + produit.id + '/' + section.id).then(function (response) {
+        console.log(response.data);
+
         if (type === 'Product') {
           var index = section.products.indexOf(produit);
           section.products.splice(index, 1);
