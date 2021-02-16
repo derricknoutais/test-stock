@@ -2559,7 +2559,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
             _this6.$forceUpdate();
 
-            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_element.id + '/demandé').then(function (response) {
+            axios.get('https://azimuts.ga/article/api/changer-etat/' + _this6.selected_element.id + '/wished').then(function (response) {
               console.log(response.data);
             })["catch"](function (error) {
               console.log(error);
@@ -2709,51 +2709,74 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }
     },
+    // Supprimer les produits d'une section
     deleteProductSection: function deleteProductSection(section, article, type) {
       var _this9 = this;
 
-      axios.get('/section-product/delete/' + article.id + '/' + section.id).then(function (response) {
-        console.log(response.data);
+      console.log('deleted');
+      this.$swal({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          axios.get('/section-product/delete/' + article.id + '/' + section.id).then(function (response) {
+            console.log(response.data);
 
-        if (response.data === 0) {
-          alert('Article Pas Supprimé. Veuillez Reesayé');
-        } else {
-          var section_trouvée = _this9.commande.sections.find(function (sect) {
-            return sect.id === section.id;
+            if (response.data === 0) {
+              alert('Article Pas Supprimé. Veuillez Reesayé');
+            } else {
+              var section_trouvée = _this9.commande.sections.find(function (sect) {
+                return sect.id === section.id;
+              });
+
+              if (type === 'Article') {
+                var article_trouvée = section_trouvée.articles.find(function (art) {
+                  return art.id === article.id;
+                });
+                var index = section_trouvée.articles.indexOf(article_trouvée);
+                section_trouvée.articles.splice(index, 1);
+
+                _this9.$forceUpdate();
+              } else if (type === 'Product') {
+                var article_trouvée = section_trouvée.products.find(function (prod) {
+                  return prod.id === article.id;
+                });
+                var index = section_trouvée.products.indexOf(article_trouvée);
+                section_trouvée.products.splice(index, 1);
+
+                _this9.$forceUpdate();
+              } // alert('Article Suprrimé')
+
+            }
+          })["catch"](function (error) {
+            console.log(error);
           });
-
-          if (type === 'Article') {
-            var article_trouvée = section_trouvée.articles.find(function (art) {
-              return art.id === article.id;
-            });
-            var index = section_trouvée.articles.indexOf(article_trouvée);
-            section_trouvée.articles.splice(index, 1);
-
-            _this9.$forceUpdate();
-          } else if (type === 'Product') {
-            var article_trouvée = section_trouvée.products.find(function (prod) {
-              return prod.id === article.id;
-            });
-            var index = section_trouvée.products.indexOf(article_trouvée);
-            section_trouvée.products.splice(index, 1);
-
-            _this9.$forceUpdate();
-          } // alert('Article Suprrimé')
-
         }
-      })["catch"](function (error) {
-        console.log(error);
       });
     },
     saveQuantity: function saveQuantity(section, article) {
-      console.log(article);
+      var _this10 = this;
+
+      article.message = 'Sauvegarde en Cours...';
+      this.$forceUpdate();
       axios.put('/article-update', {
         section: section,
         article: article
       }).then(function (response) {
         console.log(response.data);
+        article.message = 'Sauvegarde Réussie.';
+
+        _this10.$forceUpdate();
       })["catch"](function (error) {
         console.log(error);
+        article.error = 'Sauvegarde Échouée. Veuillez vérifier votre connexion Internet';
+
+        _this10.$forceUpdate();
       });
     },
     openEditModal: function openEditModal(section) {
@@ -2768,18 +2791,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       $('#sectionDelete').modal('show');
     },
     updateSection: function updateSection(section) {
-      var _this10 = this;
+      var _this11 = this;
 
       axios.put('/section/' + this.section_being_updated.id, {
         nom: this.new_section
       }).then(function (response) {
         console.log(response.data);
-        _this10.section_being_updated.nom = _this10.new_section;
-        _this10.isUpdating = false;
-        _this10.section_being_updated = false;
-        _this10.new_section = false;
+        _this11.section_being_updated.nom = _this11.new_section;
+        _this11.isUpdating = false;
+        _this11.section_being_updated = false;
+        _this11.new_section = false;
 
-        _this10.$forceUpdate();
+        _this11.$forceUpdate();
 
         $('#section').modal('hide');
       })["catch"](function (error) {
@@ -2787,16 +2810,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeSection: function removeSection(section) {
-      var _this11 = this;
+      var _this12 = this;
 
       axios["delete"]('/section/' + this.section_being_deleted.id).then(function (response) {
-        var index = _this11.commande.sections.indexOf(section);
+        var index = _this12.commande.sections.indexOf(section);
 
-        _this11.commande.sections.splice(index, 1);
+        _this12.commande.sections.splice(index, 1);
 
         $('#sectionDelete').modal('hide');
 
-        _this11.$forceUpdate();
+        _this12.$forceUpdate();
 
         console.log(response.data);
       })["catch"](function (error) {
@@ -2804,60 +2827,75 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeProduct: function removeProduct(section, produit, type) {
-      var _this12 = this;
+      var _this13 = this;
 
-      axios["delete"]('/sectionnable/' + produit.id + '/' + section.id).then(function (response) {
-        console.log(response.data);
+      this.$swal({
+        title: 'Êtes-vous sûr de vouloir supprimer cette ressource?',
+        text: "Cette action est irréversible!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Oui, Supprimer!',
+        cancelButtonText: 'Annuler'
+      }).then(function (result) {
+        if (result.value) {
+          axios["delete"]('/sectionnable/' + produit.id + '/' + section.id).then(function (response) {
+            if (type === 'Product') {
+              var index = section.products.indexOf(produit);
+              section.products.splice(index, 1);
+            } else {
+              axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(function (response) {
+                console.log(response.data);
+                var index = section.articles.indexOf(produit);
+                section.articles.splice(index, 1);
 
-        if (type === 'Product') {
-          var index = section.products.indexOf(produit);
-          section.products.splice(index, 1);
-        } else {
-          axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(function (response) {
-            console.log(response.data);
-            var index = section.articles.indexOf(produit);
-            section.articles.splice(index, 1);
+                _this13.$forceUpdate();
+              })["catch"](function (error) {
+                console.log(error);
+              });
+            }
+
+            _this13.$forceUpdate();
+
+            _this13.$swal('Produit Supprimé');
           })["catch"](function (error) {
             console.log(error);
           });
         }
-
-        _this12.$forceUpdate();
-      })["catch"](function (error) {
-        console.log(error);
       });
     }
   }, _defineProperty(_methods, "majStock", function majStock() {
-    var _this13 = this;
+    var _this14 = this;
 
     this.isLoading.majStock = true;
     axios.get('/vend/update-quantities').then(function (response) {
       console.log(response.data);
-      _this13.isLoading.majStock = false;
+      _this14.isLoading.majStock = false;
     })["catch"](function (error) {
       console.log(error);
     });
   }), _defineProperty(_methods, "addReorderPoint", function addReorderPoint() {
-    var _this14 = this;
+    var _this15 = this;
 
     axios.get('/api/vend/commande/' + this.commande.id + '/reorderpoint/' + this.reorder_point_id).then(function (response) {
       console.log(response.data);
       $('#reorderpoint').modal('hide');
 
       if (response.data.inserted === 0 || response.data.inserted < response.data.products) {
-        _this14.$swal({
+        _this15.$swal({
           icon: 'error',
           title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés.',
           text: 'Il existe ' + (response.data.products - response.data.inserted) + ' Produits déjà enregistrés. Aucun Duplicata n est accepté'
         });
       } else {
-        _this14.$swal({
+        _this15.$swal({
           icon: 'success',
           title: response.data.inserted + '/' + response.data.products + ' Produits Enregistrés'
         });
       }
     })["catch"](function (error) {
-      _this14.$swal({
+      _this15.$swal({
         icon: 'error',
         title: 'Oops...',
         text: 'Une erreur est survenue veuillez vous assurer ',
@@ -2975,7 +3013,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   created: function created() {
-    var _this15 = this;
+    var _this16 = this;
 
     this.sectionnable_type = 'Product';
 
@@ -2985,6 +3023,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     if (this.products_prop) {
       this.products = this.products_prop;
+      this.products.map(function (product) {
+        product.message = {
+          text: '',
+          color: ''
+        };
+      });
     }
 
     if (this.templates_prop) {
@@ -3002,10 +3046,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     });
     axios.post('https://azimuts.ga/article/api/bulk-fetch', article_ids).then(function (response) {
       console.log(response.data);
-      _this15.articlesFetched = response.data;
+      _this16.articlesFetched = response.data;
 
-      _this15.articlesFetched.forEach(function (artFetched) {
-        _this15.articles_prop.forEach(function (artProp) {
+      _this16.articlesFetched.forEach(function (artFetched) {
+        _this16.articles_prop.forEach(function (artProp) {
           if (artFetched.id == artProp.sectionnable_id) {
             artFetched.pivot = {
               section_id: artProp.section_id,
@@ -3016,8 +3060,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       });
 
-      _this15.articlesFetched.forEach(function (article, index) {
-        _this15.commande.sections.forEach(function (section) {
+      _this16.articlesFetched.forEach(function (article, index) {
+        article.message = {
+          text: '',
+          color: ''
+        };
+
+        _this16.commande.sections.forEach(function (section) {
           if (section.id === article.pivot.section_id) {
             section.articles.push(article);
           }
@@ -3878,9 +3927,17 @@ __webpack_require__.r(__webpack_exports__);
                   products: sel_prod,
                   demandes: sel_dem
                 }).then(function (response) {
-                  // console.log(response.data);
+                  if (sel_prod.pivot.sectionnable_type === 'App\\Article') {
+                    axios.get('https://azimuts.ga/article/api/changer-etat/' + _this5.selected_element.id + '/demandé').then(function (response) {
+                      console.log(response.data);
+                    })["catch"](function (error) {
+                      console.log(error);
+                    });
+                  } // console.log(response.data);
                   // location.reload()
                   // Insère Chaque produit selectionné dans la demande qui correspond
+
+
                   _this5.commande.demandes.forEach(function (demande) {
                     _this5.selected_demandes.forEach(function (dem) {
                       if (dem.id === demande.id) {
@@ -3908,6 +3965,14 @@ __webpack_require__.r(__webpack_exports__);
 
                   _this5.$forceUpdate();
                 })["catch"](function (error) {
+                  if (sel_prod.pivot.sectionnable_type === 'App\\Article') {
+                    axios.get('https://azimuts.ga/article/api/changer-etat/' + _this5.selected_element.id + '/demandé').then(function (response) {
+                      console.log(response.data);
+                    })["catch"](function (error) {
+                      console.log(error);
+                    });
+                  }
+
                   location.reload();
                   alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement');
                 });
@@ -3926,8 +3991,8 @@ __webpack_require__.r(__webpack_exports__);
 
       this.isLoading.toutesDemandes = true;
       axios.get('/commande/' + this.commande.id + '/dispatch-produits-dans-demandes').then(function (response) {
-        _this6.isLoading.toutesDemandes = false;
-        window.location.reload();
+        console.log(response.data);
+        _this6.isLoading.toutesDemandes = false; // window.location.reload()
       })["catch"](function (error) {
         console.log(error);
       });

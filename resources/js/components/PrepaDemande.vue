@@ -171,6 +171,14 @@ export default {
 
                                 if(! found){
                                     axios.post('/demande-sectionnable', { products: sel_prod, demandes: sel_dem}).then(response => {
+                                        if(sel_prod.pivot.sectionnable_type === 'App\\Article'){
+                                            axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/demandé').then(response => {
+                                                console.log(response.data);
+
+                                            }).catch(error => {
+                                                console.log(error);
+                                            });
+                                        }
                                         // console.log(response.data);
                                         // location.reload()
                                         // Insère Chaque produit selectionné dans la demande qui correspond
@@ -206,6 +214,14 @@ export default {
                                         $('#ajouter-demande-modal').modal('hide')
                                         this.$forceUpdate()
                                     }).catch( error => {
+                                        if(sel_prod.pivot.sectionnable_type === 'App\\Article'){
+                                            axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/demandé').then(response => {
+                                                console.log(response.data);
+
+                                            }).catch(error => {
+                                                console.log(error);
+                                            });
+                                        }
                                         location.reload();
                                         alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement')
                                     });
@@ -224,10 +240,12 @@ export default {
 
         },
         dispatchProduits(){
+
             this.isLoading.toutesDemandes = true
             axios.get('/commande/'+ this.commande.id + '/dispatch-produits-dans-demandes').then(response => {
+                console.log(response.data)
                 this.isLoading.toutesDemandes = false
-                window.location.reload()
+                // window.location.reload()
 
             }).catch(error => {
                 console.log(error);

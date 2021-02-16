@@ -8,6 +8,7 @@ use App\Fournisseur;
 use Illuminate\Http\Request;
 use App\Exports\DemandeExport;
 use App\Imports\DemandeImport;
+use App\Jobs\GenererDemandes;
 use Maatwebsite\Excel\Facades\Excel;
 use DB;
 
@@ -22,55 +23,9 @@ class DemandeController extends Controller
 
     public function dispatchSectionnables(Commande $commande)
     {
-        $commande->loadMissing('sections', 'sections.sectionnables', 'sections.sectionnables.product', 'sections.sectionnables.product.fournisseurs');
-        /***
-            Pour chaque section de la commande
-            Exemple : Toyota C... / Avensis / Joints / Nouveaux Produits sont des sections
-        */
-        foreach($commande->sections as $section){
-            /***
-                Chaque Section a des sectionnables. Les sectionnables sont des éléments qui appartiennent à des sections
-                Il existe 2 types de sectionnables : Les Produits Vend & Les Articles Demandées par les clients dans Fiche de Renseignement
-                Donc Pour chaque sectionnable de chaque Section
-            */
-            foreach($section->sectionnables as $sectionnable){
-                if($sectionnable->sectionnable_type === 'App\\Product'){
-                    if(isset($sectionnable->product->fournisseurs)){
-                        foreach($sectionnable->product->fournisseurs as $fournisseur){
-                            if($demande = Demande::where( ['fournisseur_id' => $fournisseur->id, 'commande_id' => $commande->id])->first() ){
-                                DB::table('demande_sectionnable')->insert([
-                                    'sectionnable_id' => $sectionnable->id,
-                                    'demande_id' => $demande->id,
-                                    'offre' => 0,
-                                    'quantite_offerte' => 0,
-                                    'created_at' => now(),
-                                    'updated_at' => now()
-                                    // 'offre' => rand(1, 9) * 1000,
-                                    // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
-                                ]);
-                            } else {
-                                $demande = Demande::create([
-                                    'nom' => $fournisseur->nom,
-                                    'commande_id' => $commande->id,
-                                    'fournisseur_id' => $fournisseur->id
-                                ]);
-                                DB::table('demande_sectionnable')->insert([
-                                    'sectionnable_id' => $sectionnable->id,
-                                    'demande_id' => $demande->id,
-                                    'offre' => 0,
-                                    'quantite_offerte' => 0,
-                                    'created_at' => now(),
-                                    'updated_at' => now()
-                                    // 'offre' => rand(1, 9) * 1000,
-                                    // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return 'OK';
+
+        dispatch(new GenererDemandes($commande));
+
     }
 
     public function destroySectionnable($id)

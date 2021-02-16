@@ -256,7 +256,6 @@
                                         placeholder="Pick a value" :label="label"
                                         id="select" @search-change="asyncFind"
                                     >
-
                                     </multiselect>
                                     <input type="text" v-model.number="selected_element.quantite" id="quantiteInput" class="tw-ml-5  form-control tw-w-1/4 " placeholder="Quantité" @keydown.enter="addProductToSection(section.id)">
 
@@ -331,7 +330,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <i class="fas fa-times tw-text-red-500" @click="removeProduct(section, article, 'Article')"></i>
+                                                <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, article, 'Article')"></i>
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -349,17 +349,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="article in section.products">
+                                        <tr v-for="product in section.products">
                                             <td scope="row">
-                                                <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + article.fiche_renseignement_id" >@{{article.name}}</a>
+                                                <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + product.fiche_renseignement_id" >@{{product.name}}</a>
                                             </td>
                                             <td>
                                                 <div class="form-group">
-                                                    <input type="text" class="form-control" v-model.number="article.pivot.quantite" placeholder="" @input="saveQuantity(section, article)">
+                                                    <input type="text" class="form-control" v-model.number="product.pivot.quantite" placeholder="" @input="saveQuantity(section, product)">
+                                                    <p class="tw-text-green-500" v-if="product.message">@{{ product.message }}</p>
+                                                    <p class="tw-text-red-500" v-if="product.error">@{{ product.error }}</p>
                                                 </div>
                                             </td>
                                             <td>
-                                                <i class="fas fa-times tw-text-red-500" @click="removeProduct(section, article, 'Product')"></i>
+
+                                                {{-- <i class="fas fa-edit tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, product, 'Product')"></i> --}}
+                                                <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, product, 'Product')"></i>
                                             </td>
                                         </tr>
                                     </tbody>

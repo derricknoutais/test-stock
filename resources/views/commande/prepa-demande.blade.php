@@ -129,7 +129,9 @@
                 <button type="button" name="" id="" class="tw-btn tw-btn-dark tw-uppercase" data-toggle="modal" data-target="#demande-modal">Ajouter Une Demande</button>
                 <button type="button" name="" id="" class="tw-mt-5 tw-btn tw-btn-dark tw-uppercase " @click="dispatchProduits()">
                     <i class="fas fa-spinner fa-spin" v-if="isLoading.toutesDemandes"></i>
-                    Génerer Toutes Les Demandes
+                    <span>
+                        Génerer Toutes Les Demandes
+                    </span>
                 </button>
                 <button type="button" class="tw-mt-5 tw-btn tw-btn-dark tw-uppercase"
                     @click="prendreOffreDe(5)"
