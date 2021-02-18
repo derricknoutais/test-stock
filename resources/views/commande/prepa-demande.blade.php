@@ -178,34 +178,21 @@
                     </div>
                 </div>
             </div>
-            {{-- Modal Commandes --}}
-            {{-- <div class="modal fade" id="commandes-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">SELECTIONNER UNE COMMANDE</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="tw-px-5 tw-flex tw-items-center tw-h-6" v-for="commande_offre in commandes">
-                                <input type="checkbox" :value="commande_offre.id" v-model="offre_commande" class="tw-mx-5">
-                                <label for="">@{{ commande_offre.name }}</label>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                            <button type="button" class="btn btn-primary" @click="saveDemande">Enregistrer</button>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
 
         </div>
         {{-- Boutons <-- Précédent - Suivant --> --}}
-        <div class="tw-flex tw-py-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0 tw-bg-gray-500">
-            <a href="/commande/{{$commande->id}}" class="tw-btn tw-btn-dark tw-leading-none">Précédent</a>
-            <a href="/commande/{{$commande->id}}/demandes" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5">Suivant</a>
-        </div>
+        <div class="tw-flex tw-p-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0 tw-bg-gray-500">
+            <div class="tw-w-1/3 ">
+                <p class="tw-text-lg">Transfert @{{ transfert.ajoute }}/@{{ transfert.nombreAjouts }}</p>
+            </div>
+            <div class="tw-w-1/3 tw-text-center">
+                <a href="/commande/{{$commande->id}}" class="tw-btn tw-btn-dark tw-leading-none">Précédent</a>
+                <a href="/commande/{{$commande->id}}/demandes" class="tw-btn tw-btn-dark tw-leading-none tw-ml-5">Suivant</a>
+            </div>
+            <div class="tw-w-1/3">
+
+            </div>
+        </div>`
 
         <div class="modal fade" id="ajouter-demande-modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
             <div class="modal-dialog" role="document">

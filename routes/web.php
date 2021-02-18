@@ -14,6 +14,20 @@ use App\Sectionnable;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
+Route::get('/azimuts-state', function(){
+    $sectionnables = Sectionnable::where('sectionnable_type', 'App\\Article')->skip(200)->take(200)->get();
+    $client = new Client();
+    foreach( $sectionnables as $sectionnable){
+        $response = $client->request('GET', 'https://azimuts.ga/article/api/changer-etat/' . $sectionnable->sectionnable_id . '/wished' );
+    }
+    return 'done';
+
+    // $data = json_decode((string) $response->getBody(), true);
+    // return $data['data'][0]['inventory_level'];
+
+});
+
+
 
 // Welcome
 Route::get('/', function () {

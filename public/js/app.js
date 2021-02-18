@@ -2762,22 +2762,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     saveQuantity: function saveQuantity(section, article) {
       var _this10 = this;
 
-      article.message = 'Sauvegarde en Cours...';
       this.$forceUpdate();
-      axios.put('/article-update', {
-        section: section,
-        article: article
-      }).then(function (response) {
-        console.log(response.data);
-        article.message = 'Sauvegarde Réussie.';
 
-        _this10.$forceUpdate();
-      })["catch"](function (error) {
-        console.log(error);
-        article.error = 'Sauvegarde Échouée. Veuillez vérifier votre connexion Internet';
+      if (article.pivot.quantite !== null || article.pivotk.quantite !== '') {
+        article.message = 'Sauvegarde en Cours...';
+        article.color = 'tw-text-green-500';
+        this.$forceUpdate();
+        axios.put('/article-update', {
+          section: section,
+          article: article
+        }).then(function (response) {
+          console.log(response.data);
+          article.message = 'Sauvegarde Réussie.';
+          article.color = 'tw-text-green-500';
 
-        _this10.$forceUpdate();
-      });
+          _this10.$forceUpdate();
+        })["catch"](function (error) {
+          console.log(error);
+          article.message = 'Sauvegarde Échouée. Veuillez vérifier votre connexion Internet ou la Quantité Entrée';
+          article.color = 'tw-text-red-500';
+
+          _this10.$forceUpdate();
+        });
+      }
     },
     openEditModal: function openEditModal(section) {
       this.isUpdating = true;
@@ -3770,6 +3777,10 @@ __webpack_require__.r(__webpack_exports__);
       offre_commande: null,
       filtered: {
         sections: []
+      },
+      transfert: {
+        nombreAjouts: 0,
+        ajoute: 0
       }
     };
   },
@@ -3902,7 +3913,10 @@ __webpack_require__.r(__webpack_exports__);
     addProductsToDemandes: function addProductsToDemandes() {
       var _this5 = this;
 
-      // Pour chaque demande selectionnée
+      this.transfert.nombreAjouts = this.selected_demandes.length * this.selected_products.length;
+      this.$forceUpdate();
+      var problems = []; // Pour chaque demande selectionnée
+
       this.selected_demandes.forEach(function (sel_dem) {
         // Pour chaque demande de cette commande
         _this5.commande.demandes.forEach(function (demande) {
@@ -3916,8 +3930,9 @@ __webpack_require__.r(__webpack_exports__);
               for (var index = 0; index < demande.sectionnables.length; index++) {
                 // Si un des sectionnables correspond à un des produits selectionnés
                 if (sel_prod.id == demande.sectionnables[index].sectionnable_id) {
-                  // Donc ca existe déja dans la base de données
+                  // Donc ça existe déja dans la demande
                   found = true;
+                  problems.push(sel_prod);
                   break;
                 }
               }
@@ -3928,9 +3943,7 @@ __webpack_require__.r(__webpack_exports__);
                   demandes: sel_dem
                 }).then(function (response) {
                   if (sel_prod.pivot.sectionnable_type === 'App\\Article') {
-                    axios.get('https://azimuts.ga/article/api/changer-etat/' + _this5.selected_element.id + '/demandé').then(function (response) {
-                      console.log(response.data);
-                    })["catch"](function (error) {
+                    axios.get('https://azimuts.ga/article/api/changer-etat/' + _this5.selected_element.id + '/demandé').then(function (response) {})["catch"](function (error) {
                       console.log(error);
                     });
                   } // console.log(response.data);
@@ -3955,6 +3968,9 @@ __webpack_require__.r(__webpack_exports__);
                               demande_id: dem.id,
                               sectionnable_id: prod.id
                             });
+                            _this5.transfert.ajoute += 1;
+
+                            _this5.$forceUpdate();
                           } else {}
                         });
                       }
@@ -3962,19 +3978,12 @@ __webpack_require__.r(__webpack_exports__);
                   });
 
                   $('#ajouter-demande-modal').modal('hide');
+                  _this5.transfert.ajoute += 1;
 
                   _this5.$forceUpdate();
                 })["catch"](function (error) {
-                  if (sel_prod.pivot.sectionnable_type === 'App\\Article') {
-                    axios.get('https://azimuts.ga/article/api/changer-etat/' + _this5.selected_element.id + '/demandé').then(function (response) {
-                      console.log(response.data);
-                    })["catch"](function (error) {
-                      console.log(error);
-                    });
-                  }
-
-                  location.reload();
-                  alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement');
+                  problems.push(sel_prod);
+                  alert("Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement.");
                 });
               } else {
                 _this5.$swal({
@@ -3985,6 +3994,9 @@ __webpack_require__.r(__webpack_exports__);
           }
         });
       });
+      console.log(problems);
+      this.selected_products = problems;
+      this.$forceUpdate();
     },
     dispatchProduits: function dispatchProduits() {
       var _this6 = this;

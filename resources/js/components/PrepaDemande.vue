@@ -16,6 +16,10 @@ export default {
             offre_commande : null,
             filtered: {
                 sections: []
+            },
+            transfert: {
+                nombreAjouts: 0,
+                ajoute: 0
             }
         }
     },
@@ -148,7 +152,9 @@ export default {
 
         },
         addProductsToDemandes(){
-
+                this.transfert.nombreAjouts = this.selected_demandes.length * this.selected_products.length
+                this.$forceUpdate()
+                var problems = [];
                 // Pour chaque demande selectionnée
                 this.selected_demandes.forEach( sel_dem => {
                     // Pour chaque demande de cette commande
@@ -163,8 +169,9 @@ export default {
                                 for (let index = 0; index < demande.sectionnables.length; index++) {
                                     // Si un des sectionnables correspond à un des produits selectionnés
                                     if(sel_prod.id == demande.sectionnables[index].sectionnable_id){
-                                        // Donc ca existe déja dans la base de données
+                                        // Donc ça existe déja dans la demande
                                         found = true;
+                                        problems.push(sel_prod)
                                         break;
                                     }
                                 }
@@ -173,8 +180,6 @@ export default {
                                     axios.post('/demande-sectionnable', { products: sel_prod, demandes: sel_dem}).then(response => {
                                         if(sel_prod.pivot.sectionnable_type === 'App\\Article'){
                                             axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/demandé').then(response => {
-                                                console.log(response.data);
-
                                             }).catch(error => {
                                                 console.log(error);
                                             });
@@ -183,11 +188,8 @@ export default {
                                         // location.reload()
                                         // Insère Chaque produit selectionné dans la demande qui correspond
                                         this.commande.demandes.forEach( demande => {
-
                                             this.selected_demandes.forEach( dem => {
-
                                                 if( dem.id === demande.id ){
-
                                                     this.selected_products.forEach( prod => {
                                                         var found = false
                                                         demande.sectionnables.forEach( sectionnable => {
@@ -201,6 +203,8 @@ export default {
                                                                 demande_id: dem.id,
                                                                 sectionnable_id : prod.id
                                                             });
+                                                            this.transfert.ajoute += 1
+                                                            this.$forceUpdate();
                                                         } else {
 
                                                         }
@@ -210,20 +214,15 @@ export default {
 
                                                 }
                                             })
-                                        })
-                                        $('#ajouter-demande-modal').modal('hide')
+                                        });
+
+                                        $('#ajouter-demande-modal').modal('hide');
+                                        this.transfert.ajoute += 1;
                                         this.$forceUpdate()
                                     }).catch( error => {
-                                        if(sel_prod.pivot.sectionnable_type === 'App\\Article'){
-                                            axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/demandé').then(response => {
-                                                console.log(response.data);
+                                        problems.push(sel_prod)
 
-                                            }).catch(error => {
-                                                console.log(error);
-                                            });
-                                        }
-                                        location.reload();
-                                        alert('Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement')
+                                        alert("Tous les produits nont pas été entrés. Les duplicatas ont été supprimés automatiquement.")
                                     });
                                 } else {
                                     this.$swal({
@@ -237,6 +236,10 @@ export default {
                     })
                 });
 
+                console.log(problems)
+
+                this.selected_products = problems;
+                this.$forceUpdate();
 
         },
         dispatchProduits(){

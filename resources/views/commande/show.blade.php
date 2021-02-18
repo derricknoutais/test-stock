@@ -305,7 +305,7 @@
 
                             </div>
                             {{-- Nouveaux Produits --}}
-                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="articlesFetched.length > 0">
+                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="section.articles.length > 0">
                                 <table class="table">
                                     <h4 class="tw-text-2xl tw-my-5 tw-font-bold tw-underline tw-tracking-wide">Nouveaux Produits</h4>
                                     <thead>
@@ -331,7 +331,7 @@
                                             </td>
                                             <td>
                                                 <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, article, 'Article')"></i>
-
+                                                <p :class="article.color" v-if="article.message">@{{ article.message }}</p>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -356,8 +356,7 @@
                                             <td>
                                                 <div class="form-group">
                                                     <input type="text" class="form-control" v-model.number="product.pivot.quantite" placeholder="" @input="saveQuantity(section, product)">
-                                                    <p class="tw-text-green-500" v-if="product.message">@{{ product.message }}</p>
-                                                    <p class="tw-text-red-500" v-if="product.error">@{{ product.error }}</p>
+                                                    <p :class="product.color" v-if="product.message">@{{ product.message }}</p>
                                                 </div>
                                             </td>
                                             <td>

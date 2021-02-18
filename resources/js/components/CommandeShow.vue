@@ -447,17 +447,24 @@ export default {
 
         },
         saveQuantity(section, article){
-            article.message = 'Sauvegarde en Cours...'
             this.$forceUpdate()
-            axios.put('/article-update',  {section : section, article: article}).then(response => {
-                console.log(response.data);
-                article.message = 'Sauvegarde Réussie.'
+            if(article.pivot.quantite !== null || article.pivotk.quantite !== ''){
+                article.message = 'Sauvegarde en Cours...'
+                article.color = 'tw-text-green-500'
                 this.$forceUpdate()
-            }).catch(error => {
-                console.log(error);
-                article.error = 'Sauvegarde Échouée. Veuillez vérifier votre connexion Internet'
-                this.$forceUpdate()
-            });
+                axios.put('/article-update',  {section : section, article: article}).then(response => {
+                    console.log(response.data);
+                    article.message = 'Sauvegarde Réussie.'
+                    article.color = 'tw-text-green-500'
+                    this.$forceUpdate()
+                }).catch(error => {
+                    console.log(error);
+                    article.message = 'Sauvegarde Échouée. Veuillez vérifier votre connexion Internet ou la Quantité Entrée'
+                    article.color = 'tw-text-red-500'
+                    this.$forceUpdate()
+                });
+            }
+
         },
         openEditModal(section){
             this.isUpdating = true
