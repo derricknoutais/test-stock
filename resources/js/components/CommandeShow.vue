@@ -735,7 +735,6 @@ export default {
                             quantite : artProp.quantite,
                             id: +artProp.sectionnable_id
                         }
-
                     }
                 })
             })
@@ -750,13 +749,10 @@ export default {
                     }
                 })
             })
+            this.$forceUpdate()
         }).catch( error => {
             console.log(error);
         });
-
-
-
-
 
         this.mapArrays()
 

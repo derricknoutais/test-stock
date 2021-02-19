@@ -32,5 +32,8 @@ class Sectionnable extends Pivot
     public function bon_commande(){
         return $this->belongsToMany('App\BonCommande', 'bon_commande_sectionnable', 'sectionnable_id')->withPivot('id');
     }
+    public function factures(){
+        return $this->belongsToMany('App\Facture', 'facture_sectionnable', 'sectionnable_id')->withPivot('id');
+    }
 
 }

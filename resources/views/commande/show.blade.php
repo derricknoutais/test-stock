@@ -317,7 +317,7 @@
                                     <tbody>
                                         <tr v-for="article in section.articles">
                                             <td scope="row">
-                                                {{-- <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + article.fiche_renseignement_id" >@{{article.nom}}</a> --}}
+                                                <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + article.fiche_renseignement_id" >@{{article.nom}}</a>
                                                 <span>@{{article.nom}}</span>
                                                 <span v-if="article.fiche_renseignement && article.fiche_renseignement.marque"> @{{article.fiche_renseignement.marque.nom}}</span>
                                                 <span v-if="article.fiche_renseignement && article.fiche_renseignement.type"> @{{article.fiche_renseignement.type.nom}}</span>

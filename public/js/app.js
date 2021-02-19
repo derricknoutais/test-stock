@@ -3079,6 +3079,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         });
       });
+
+      _this16.$forceUpdate();
     })["catch"](function (error) {
       console.log(error);
     });
