@@ -331,7 +331,7 @@
                                             </td>
                                             <td>
                                                 <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, article, 'Article')"></i>
-                                                <p :class="article.color" v-if="article.message">@{{ article.message }}</p>
+                                                <p :class="article.color" v-if="article.message">@{{ article.message.text }}</p>
                                             </td>
                                         </tr>
                                     </tbody>
