@@ -6,6 +6,7 @@ import VueCurrencyFilter from 'vue-currency-filter'
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import AnimatedNumber from "animated-number-vue";
+import 'animate.css';
 
 Vue.use(VueCurrencyFilter,{
     symbol: 'XAF',

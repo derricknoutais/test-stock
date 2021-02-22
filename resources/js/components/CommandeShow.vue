@@ -241,14 +241,37 @@ export default {
                             },
                         });
                         this.$forceUpdate()
-
                         axios.get('https://azimuts.ga/article/api/changer-etat/' + this.selected_element.id + '/wished').then(response => {
-                            console.log(response.data);
+                            this.$swal({
+                                icon: 'success',
+                                title: 'Succès',
+                                text: "L'état de votre produit a changé dans Azimuts",
+                                position: 'top-end',
+                                showClass: {
+                                  popup: 'animate__animated animate__fadeInDown'
+                                },
+                                hideClass: {
+                                  popup: 'animate__animated animate__fadeOutUp'
+                                },
+                                timer: 1500
+                            })
 
                         }).catch(error => {
                             console.log(error);
                         });
-
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Succès',
+                            text: 'Votre Produit a été ajouté avec suuccès',
+                            position: 'top-end',
+                            showClass: {
+                              popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                              popup: 'animate__animated animate__fadeOutUp'
+                            },
+                            timer: 1500
+                        })
 
                     }
                     else if(this.sectionnable_type === 'Template'){
@@ -273,7 +296,15 @@ export default {
                         this.$swal({
                             icon: 'success',
                             title: 'Succès',
-                            text: 'Votre template a été ajouté avec suuccès'
+                            text: 'Votre Produit a été ajouté avec suuccès',
+                            position: 'top-end',
+                            showClass: {
+                              popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                              popup: 'animate__animated animate__fadeOutUp'
+                            },
+                            timer: 1500
                         })
                     }
 
@@ -397,55 +428,7 @@ export default {
                 })
             }
         },
-        // Supprimer les produits d'une section
-        deleteProductSection(section, article, type){
-            console.log('deleted')
-            this.$swal({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed){
-                    axios.get('/section-product/delete/' + article.id + '/' + section.id ).then(response => {
-                        console.log(response.data);
-                        if(response.data === 0){
-                            alert('Article Pas Supprimé. Veuillez Reesayé')
-                        } else {
-                            var section_trouvée = this.commande.sections.find(sect => {
-                                return sect.id === section.id
-                            })
-                            if(type === 'Article'){
-                                var article_trouvée = section_trouvée.articles.find( art => {
-                                    return art.id === article.id
-                                })
-                                var index = section_trouvée.articles.indexOf(article_trouvée)
-                                section_trouvée.articles.splice(index, 1)
-                                this.$forceUpdate()
 
-                            } else if (type === 'Product'){
-                                var article_trouvée = section_trouvée.products.find( prod => {
-                                    return prod.id === article.id
-                                })
-
-                                var index = section_trouvée.products.indexOf(article_trouvée)
-                                section_trouvée.products.splice(index, 1)
-                                this.$forceUpdate()
-                            }
-
-
-                            // alert('Article Suprrimé')
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                }
-            })
-
-        },
         saveQuantity(section, article){
             this.$forceUpdate()
             if(article.pivot.quantite !== null || article.pivotk.quantite !== ''){
@@ -519,7 +502,7 @@ export default {
                     cancelButtonText: 'Annuler'
                 }).then((result) => {
                     if (result.value) {
-                        axios.delete('/sectionnable/' + produit.id + '/' + section.id) .then(response => {
+                        axios.delete('/sectionnable/' + produit.id + '/' + section.id).then(response => {
                             if(type === 'Product'){
                                 var index = section.products.indexOf(produit)
                                 section.products.splice(index, 1)
@@ -536,7 +519,19 @@ export default {
                             }
 
                             this.$forceUpdate()
-                            this.$swal('Produit Supprimé')
+                            this.$swal({
+                                icon: 'success',
+                                title: 'Succès',
+                                text: 'Le produit a été supprimé ',
+                                position: 'top-end',
+                                showClass: {
+                                  popup: 'animate__animated animate__fadeInDown'
+                                },
+                                hideClass: {
+                                  popup: 'animate__animated animate__fadeOutUp'
+                                },
+                                timer: 1500
+                            })
                         }).catch(error => {
                             console.log(error);
                         });
@@ -722,11 +717,9 @@ export default {
         this.articles_prop.forEach( article => {
             article_ids.push(article.sectionnable_id)
         });
-
         axios.post('https://azimuts.ga/article/api/bulk-fetch',  article_ids ).then( response => {
             console.log(response.data)
             this.articlesFetched = response.data;
-
             this.articlesFetched.forEach( artFetched => {
                 this.articles_prop.forEach( artProp => {
                     if( artFetched.id == artProp.sectionnable_id ){
@@ -737,7 +730,7 @@ export default {
                         }
                     }
                 })
-            })
+            });
             this.articlesFetched.forEach( (article, index) => {
                 article.message = {
                     text : '',
@@ -753,10 +746,7 @@ export default {
         }).catch( error => {
             console.log(error);
         });
-
         this.mapArrays()
-
-
     }
 }
 </script>

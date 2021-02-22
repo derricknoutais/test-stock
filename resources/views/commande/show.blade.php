@@ -314,8 +314,11 @@
                                             <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Quantité</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="article in section.articles">
+                                    <tbody is="transition-group"
+                                        enter-active-class="animate__animated animate__fadeInUp"
+                                        leave-active-class="animate__animated animate__fadeOutDown"
+                                    >
+                                        <tr v-for="article in section.articles" :key="article.pivot.id">
                                             <td scope="row">
                                                 <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + article.fiche_renseignement_id" >@{{article.nom}}</a>
                                                 {{-- <span>@{{article.nom}}</span> --}}
@@ -348,8 +351,11 @@
                                             <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Quantité</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="product in section.products">
+                                    <tbody is="transition-group"
+                                        enter-active-class="animate__animated animate__fadeInUp"
+                                        leave-active-class="animate__animated animate__fadeOutDown"
+                                    >
+                                        <tr v-for="(product) in section.products" :key="product.pivot.id" >
                                             <td scope="row">
                                                 <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + product.fiche_renseignement_id" >@{{product.name}}</a>
                                             </td>
