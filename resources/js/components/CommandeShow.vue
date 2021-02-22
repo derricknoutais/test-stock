@@ -506,12 +506,38 @@ export default {
                             if(type === 'Product'){
                                 var index = section.products.indexOf(produit)
                                 section.products.splice(index, 1)
+                                this.$swal({
+                                    icon: 'success',
+                                    title: 'Succès',
+                                    text: 'Le produit a été supprimé ',
+                                    position: 'top-end',
+                                    showClass: {
+                                      popup: 'animate__animated animate__fadeInDown'
+                                    },
+                                    hideClass: {
+                                      popup: 'animate__animated animate__fadeOutUp'
+                                    },
+                                    timer: 1500
+                                })
                             } else {
                                 axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(response => {
                                     console.log(response.data);
                                     var index = section.articles.indexOf(produit)
                                     section.articles.splice(index, 1)
                                     this.$forceUpdate()
+                                    this.$swal({
+                                        icon: 'success',
+                                        title: 'Succès',
+                                        text: 'Le produit a été supprimé ',
+                                        position: 'top-end',
+                                        showClass: {
+                                          popup: 'animate__animated animate__fadeInDown'
+                                        },
+                                        hideClass: {
+                                          popup: 'animate__animated animate__fadeOutUp'
+                                        },
+                                        timer: 1500
+                                    })
                                 }).catch(error => {
                                     console.log(error);
                                 });
@@ -519,19 +545,7 @@ export default {
                             }
 
                             this.$forceUpdate()
-                            this.$swal({
-                                icon: 'success',
-                                title: 'Succès',
-                                text: 'Le produit a été supprimé ',
-                                position: 'top-end',
-                                showClass: {
-                                  popup: 'animate__animated animate__fadeInDown'
-                                },
-                                hideClass: {
-                                  popup: 'animate__animated animate__fadeOutUp'
-                                },
-                                timer: 1500
-                            })
+
                         }).catch(error => {
                             console.log(error);
                         });
@@ -706,10 +720,6 @@ export default {
         this.commande.sections.forEach( section => {
             section.articles = []
         })
-        var ids = []
-
-
-
 
         // console.log(this.articles_prop)
         var article_ids = []

@@ -2865,6 +2865,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             if (type === 'Product') {
               var index = section.products.indexOf(produit);
               section.products.splice(index, 1);
+
+              _this12.$swal({
+                icon: 'success',
+                title: 'Succès',
+                text: 'Le produit a été supprimé ',
+                position: 'top-end',
+                showClass: {
+                  popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                  popup: 'animate__animated animate__fadeOutUp'
+                },
+                timer: 1500
+              });
             } else {
               axios.get('https://azimuts.ga/article/api/changer-etat/' + produit.pivot.id + '/enregistré').then(function (response) {
                 console.log(response.data);
@@ -2872,26 +2886,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 section.articles.splice(index, 1);
 
                 _this12.$forceUpdate();
+
+                _this12.$swal({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Le produit a été supprimé ',
+                  position: 'top-end',
+                  showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                  },
+                  hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                  },
+                  timer: 1500
+                });
               })["catch"](function (error) {
                 console.log(error);
               });
             }
 
             _this12.$forceUpdate();
-
-            _this12.$swal({
-              icon: 'success',
-              title: 'Succès',
-              text: 'Le produit a été supprimé ',
-              position: 'top-end',
-              showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-              },
-              hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-              },
-              timer: 1500
-            });
           })["catch"](function (error) {
             console.log(error);
           });
@@ -3070,8 +3084,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.commande.sections.forEach(function (section) {
       section.articles = [];
-    });
-    var ids = []; // console.log(this.articles_prop)
+    }); // console.log(this.articles_prop)
 
     var article_ids = [];
     this.articles_prop.forEach(function (article) {

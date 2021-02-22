@@ -304,14 +304,50 @@
                                 </div>
 
                             </div>
+                            {{-- Produits Vend --}}
+                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-w-full tw-px-12 tw-mt-5" v-if="section.products.length > 0">
+                                <table class="table">
+                                    <h4 class="tw-text-2xl tw-font-bold tw-underline tw-tracking-wide">Produits VEND</h4>
+                                    <thead>
+                                        <tr class="">
+                                            <th class="tw-text-xl tw-my-5 tw-font-bold tw-w-3/4  tw-tracking-normal">Produit</th>
+                                            <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Quantité</th>
+                                            <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody is="transition-group"
+                                        enter-active-class="animate__animated animate__fadeInUp"
+                                        leave-active-class="animate__animated animate__fadeOutDown"
+                                    >
+                                        <tr v-for="(product) in section.products" :key="product.pivot.id" >
+                                            <td scope="row">
+                                                <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + product.fiche_renseignement_id" >@{{product.name}}</a>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" v-model.number="product.pivot.quantite" placeholder="" @input="saveQuantity(section, product)">
+                                                    <p :class="product.color" v-if="product.message">@{{ product.message }}</p>
+                                                </div>
+                                            </td>
+                                            <td>
+
+                                                {{-- <i class="fas fa-edit tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, product, 'Product')"></i> --}}
+                                                <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, product, 'Product')"></i>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
                             {{-- Nouveaux Produits --}}
-                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-mt-10 tw-w-full tw-p-16" v-if="section.articles.length > 0">
+                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-w-full tw-px-12 tw-mt-5" v-if="section.articles.length > 0">
                                 <table class="table">
                                     <h4 class="tw-text-2xl tw-my-5 tw-font-bold tw-underline tw-tracking-wide">Nouveaux Produits</h4>
                                     <thead>
                                         <tr>
                                             <th class="tw-text-xl tw-my-5 tw-font-bold tw-w-3/4  tw-tracking-normal">Produit</th>
                                             <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Quantité</th>
+                                            <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody is="transition-group"
@@ -335,40 +371,6 @@
                                             <td>
                                                 <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, article, 'Article')"></i>
                                                 <p :class="article.color" v-if="article.message">@{{ article.message.text }}</p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{-- Produits Vend --}}
-                            <div class="tw-flex tw-flex-col tw-justify-items-center tw-w-full tw-px-32 tw-py-12" v-if="section.products.length > 0">
-                                <table class="table">
-                                    <h4 class="tw-text-2xl tw-font-bold tw-underline tw-tracking-wide">Produits VEND</h4>
-                                    <thead>
-                                        <tr class="">
-                                            <th class="tw-text-xl tw-my-5 tw-font-bold tw-w-3/4  tw-tracking-normal">Produit</th>
-                                            <th class="tw-text-xl tw-my-5 tw-font-bold  tw-tracking-normal">Quantité</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody is="transition-group"
-                                        enter-active-class="animate__animated animate__fadeInUp"
-                                        leave-active-class="animate__animated animate__fadeOutDown"
-                                    >
-                                        <tr v-for="(product) in section.products" :key="product.pivot.id" >
-                                            <td scope="row">
-                                                <a :href=" 'http://azimuts.ga/fiche-renseignement/'  + product.fiche_renseignement_id" >@{{product.name}}</a>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" v-model.number="product.pivot.quantite" placeholder="" @input="saveQuantity(section, product)">
-                                                    <p :class="product.color" v-if="product.message">@{{ product.message }}</p>
-                                                </div>
-                                            </td>
-                                            <td>
-
-                                                {{-- <i class="fas fa-edit tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, product, 'Product')"></i> --}}
-                                                <i class="fas fa-trash tw-text-red-500 tw-cursor-pointer" @click="removeProduct(section, product, 'Product')"></i>
                                             </td>
                                         </tr>
                                     </tbody>
