@@ -3848,6 +3848,10 @@ __webpack_require__.r(__webpack_exports__);
       section.show = !section.show;
       this.$forceUpdate();
     },
+    toggleRow: function toggleRow(produit) {
+      produit.displayDetails = !produit.displayDetails;
+      this.$forceUpdate();
+    },
     filter_demandé: function filter_demand() {
       var _this = this;
 
@@ -4056,6 +4060,19 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    remove: function remove(sectionnable, demande) {
+      var _this7 = this;
+
+      axios["delete"]('/demande-sectionnable/' + demande.pivot.id).then(function (response) {
+        console.log(response.data);
+        var index = sectionnable.demandes.indexOf(demande);
+        sectionnable.demandes.splice(index, 1);
+
+        _this7.$forceUpdate();
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   },
   created: function created() {
@@ -4066,7 +4083,7 @@ __webpack_require__.r(__webpack_exports__);
     });
     this.commande.sections.forEach(function (section) {
       section.products.map(function (prod) {
-        prod.show = false;
+        prod.displayDetails = false;
         var found = section.sectionnables.find(function (sectionnable) {
           if (sectionnable.sectionnable_type === "App\\Product" && sectionnable.sectionnable_id === prod.id) {
             return sectionnable;
@@ -4075,7 +4092,7 @@ __webpack_require__.r(__webpack_exports__);
         prod.demandes = found.demandes;
       });
       section.articles.map(function (prod) {
-        prod.show = false;
+        prod.displayDetails = false;
         var found = section.sectionnables.find(function (sectionnable) {
           if (sectionnable.sectionnable_type === "App\\Article") {}
 

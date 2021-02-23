@@ -49,6 +49,10 @@ export default {
             section.show = !section.show
             this.$forceUpdate()
         },
+        toggleRow(produit){
+            produit.displayDetails = ! produit.displayDetails;
+            this.$forceUpdate()
+        },
         filter_demandé(){
             this.filtered.sections = []
             // Pour chaque section
@@ -261,6 +265,18 @@ export default {
             }).catch(error => {
                 console.log(error);
             });
+        },
+        remove(sectionnable, demande){
+            axios.delete('/demande-sectionnable/' + demande.pivot.id).then(response => {
+                console.log(response.data);
+                var index = sectionnable.demandes.indexOf(demande)
+
+                sectionnable.demandes.splice(index, 1)
+                this.$forceUpdate()
+
+            }).catch(error => {
+                console.log(error);
+            });
         }
 
     },
@@ -272,7 +288,7 @@ export default {
         });
         this.commande.sections.forEach( section => {
             section.products.map( prod => {
-                prod.show = false
+                prod.displayDetails = false
                 var found = section.sectionnables.find( sectionnable => {
                     if(sectionnable.sectionnable_type === "App\\Product" && sectionnable.sectionnable_id === prod.id){
                         return sectionnable;
@@ -281,7 +297,7 @@ export default {
                 prod.demandes = found.demandes
             })
             section.articles.map( prod => {
-                prod.show = false
+                prod.displayDetails = false
                 var found = section.sectionnables.find( sectionnable => {
                     if( sectionnable.sectionnable_type === "App\\Article" )
                     {

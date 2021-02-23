@@ -15,6 +15,7 @@ class GenererDemandes implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $commande;
+    protected $response;
     /**
      * Create a new job instance.
      *
@@ -46,6 +47,7 @@ class GenererDemandes implements ShouldQueue
             */
 
             foreach($section->sectionnables as $sectionnable){
+
                 if($sectionnable->sectionnable_type === 'App\\Product'){
                     if(isset($sectionnable->product->fournisseurs)){
 
@@ -58,15 +60,15 @@ class GenererDemandes implements ShouldQueue
                                     'quantite_offerte' => 0,
                                     'created_at' => now(),
                                     'updated_at' => now()
-                                    // 'offre' => rand(1, 9) * 1000,
-                                    // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
                                 ]);
                                 $i++;
                             } else {
                                 $demande = Demande::create([
                                     'nom' => $fournisseur->nom,
                                     'commande_id' => $this->commande->id,
-                                    'fournisseur_id' => $fournisseur->id
+                                    'fournisseur_id' => $fournisseur->id,
+									'created_at' => now(),
+									'updated_at' => now()
                                 ]);
                                 DB::table('demande_sectionnable')->insert([
                                     'sectionnable_id' => $sectionnable->id,
@@ -75,8 +77,6 @@ class GenererDemandes implements ShouldQueue
                                     'quantite_offerte' => 0,
                                     'created_at' => now(),
                                     'updated_at' => now()
-                                    // 'offre' => rand(1, 9) * 1000,
-                                    // 'quantite_offerte' => round( (rand(1, 10)/10) * $sectionnable->quantite)
                                 ]);
                                 $i++;
                             }
@@ -85,6 +85,10 @@ class GenererDemandes implements ShouldQueue
                 }
             }
         }
-        return $i;
+        $this->response = $i;
+    }
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

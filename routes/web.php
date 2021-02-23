@@ -14,6 +14,19 @@ use App\Sectionnable;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
+// Route::get('/non-disponible/{commande}', function(Commande $commande){
+//     $count = 0;
+//     foreach($commande->sections as $section){
+//         foreach($section->sectionnables as $sectionnable){
+//             if(sizeof($sectionnable->factures) <= 0 ){
+//                 $count ++;
+//             }
+//         }
+//     }
+//     return $count;
+// });
+
+
 // Route::get('/azimuts-state', function(){
 //     $sectionnables = Sectionnable::where('sectionnable_type', 'App\\Article')->skip(0)->take(512)->get();
 //     $client = new Client();

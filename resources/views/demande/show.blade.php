@@ -172,8 +172,6 @@
                             </div>
                         </td>
                     </tr> --}}
-
-
                 </template>
 
                 {{-- ARTICLES --}}

@@ -24,7 +24,8 @@ class DemandeController extends Controller
     public function dispatchSectionnables(Commande $commande)
     {
 
-        dispatch(new GenererDemandes($commande));
+        dispatch($job = new GenererDemandes($commande));
+        return $job->getResponse();
 
     }
 
@@ -63,6 +64,7 @@ class DemandeController extends Controller
 
     public function addSectionnable(Request $request)
     {
+
         DB::table('demande_sectionnable')->insert([
             'demande_id' => $request['demandes']['id'],
             'sectionnable_id' => $request['products']['pivot']['id'],

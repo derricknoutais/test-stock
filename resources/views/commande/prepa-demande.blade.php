@@ -21,12 +21,14 @@
 
                     <button class="tw-btn tw-btn-dark tw-leading-none tw-ml-5" @click="réinitialiser()" >Réinitialiser</button>
                 </div>
+
+
                 {{-- Sections --}}
                 <div class="tw-bg-gray-300 tw-px-32" v-for="section in commande.sections" v-show="filtered.sections.length <= 0">
 
-                    <div class="tw-flex tw-items-center tw-mt-24" @click="toggleSection(section)">
-                        <i class="fas fa-chevron-down tw-cursor-pointer" @click="toggleSection(section)" v-if="section.show"></i>
-                        <i class="fas fa-chevron-right tw-cursor-pointer" @click="toggleSection(section)" v-else></i>
+                    <div class="tw-flex tw-items-center tw-mt-24 tw-cursor-pointer" @click="toggleSection(section)">
+                        <i class="fas fa-chevron-down"  v-if="section.show"></i>
+                        <i class="fas fa-chevron-right" v-else></i>
                         <h4 class="tw-text-2xl tw-ml-4 tw-font-thin tw-tracking-wide">@{{ section.nom }} [ <span class="tw-text-blue-500">@{{ niveauDAchevement(section, 'niveau') }}</span> <span class="tw-text-red-500">@{{ niveauDAchevement(section, 'pourcentage') }}%</span> ]</h4>
                     </div>
 
@@ -36,6 +38,9 @@
                                 <th>
                                     <input type="checkbox" @click="checkAll(section)" v-model="section.checkAll">
                                 </th>
+                                <th>
+
+                                </th>
                                 <th>Identifiant</th>
                                 <th>Nom </th>
                                 <th>Quantité</th>
@@ -43,22 +48,40 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="produit in section.products" :class=" produit.demandes.length > 0 ? 'tw-text-red-500' : '' ">
-                                <td class="tw-flex tw-items-center">
-                                    {{-- <i class="fas fa-chevron-down tw-cursor-pointer" @click="toggleSection(section)" v-if="produit.show"></i>
-                                    <i class="fas fa-chevron-right tw-cursor-pointer" @click="toggleSection(section)" v-else></i> --}}
-                                    <input type="checkbox" v-model="selected_products"  :value="produit">
-                                </td>
-                                <td scope="row">
-                                    <a :href=" 'https://stapog.vendhq.com/product/' + produit.id " target="_blank">
-                                        @{{ produit.id }}
-                                    </a>
-                                </td>
-                                <td>@{{ produit.name }}</td>
-                                <td>@{{ produit.pivot.quantite }}</td>
-                                <td>@{{produit.demandes.length}}</td>
-                            </tr>
-                            {{-- :class=" produit.demandes.length > 0 ? 'tw-text-red-500' : '' " --}}
+                            <template v-for="produit in section.products" >
+                                <tr :class="produit.demandes.length > 0 ? 'tw-text-red-500' : '' ">
+                                    <td class="tw-flex tw-items-center">
+                                        <input type="checkbox" v-model="selected_products"  :value="produit">
+                                    </td>
+                                    <td class="tw-ml-3">
+                                        <i class="fas fa-chevron-down tw-cursor-pointer"  v-if="produit.displayDetails" @click="toggleRow(produit)"></i>
+                                        <i class="fas fa-chevron-right tw-cursor-pointer" v-else @click="toggleRow(produit)"></i>
+                                    </td>
+                                    <td scope="row">
+                                        <a :href=" 'https://stapog.vendhq.com/product/' + produit.id " target="_blank">
+                                            @{{ produit.id }}
+                                        </a>
+                                    </td>
+                                    <td>@{{ produit.name }}</td>
+                                    <td>@{{ produit.pivot.quantite }}</td>
+                                    <td>@{{produit.demandes.length}}</td>
+                                </tr>
+                                {{-- Ligne des Détails --}}
+                                <tr v-if="produit.displayDetails"  >
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan=1 class=" tw-bg-gray-700 tw-text-white">
+
+                                        <ul>
+                                            <li v-for="demande in produit.demandes" class="tw-flex tw-items-center tw-justify-between">
+                                                <span>@{{ demande.nom }}</span>
+                                                <i class="tw-text-red-500 fas fa-trash tw-cursor-pointer tw-ml-3" @click="remove(produit, demande)"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </template>
+
                             <tr v-for="produit in section.articles" :class=" produit.demandes.length > 0 ? 'tw-text-red-500' : '' ">
                                 <td>
                                     <input type="checkbox" v-model="selected_products"  :value="produit">
@@ -180,6 +203,7 @@
             </div>
 
         </div>
+
         {{-- Boutons <-- Précédent - Suivant --> --}}
         <div class="tw-flex tw-p-5 tw-justify-center tw-items-center tw-sticky tw-bottom-0 tw-bg-gray-500">
             <div class="tw-w-1/3 ">
