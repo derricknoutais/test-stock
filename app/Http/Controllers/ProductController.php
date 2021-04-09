@@ -13,7 +13,7 @@ class ProductController extends Controller
         if(isset($request->handle)){
             $products = Product::where('handle_id', $request->handle )->with('fournisseurs')->get();
         } else {
-            $products = Product::with('fournisseurs')->get();
+            $products = Product::where('handle_id', 1)->with('fournisseurs')->get();
         }
         $handles = Handle::all();
         $fournisseurs = Fournisseur::orderBy('nom')->get();
