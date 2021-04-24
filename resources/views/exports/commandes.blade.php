@@ -43,7 +43,7 @@
 
                 </td>
             @endif
-            <td>{{ $sectionnable->quantite}}</td>
+            <td>{{ $sectionnable->pivot->quantite }}</td>
             <td>{{ $sectionnable->pivot->prix_achat / 165 }}</td>
             <td>{{ ($sectionnable->pivot->prix_achat /165) * $sectionnable->quantite }}</td>
         </tr>
@@ -51,7 +51,7 @@
         <tr>
             <td>{{ $sectionnable->pivot->id }}</td>
             <td>{{ $sectionnable->article->nom }}</td>
-            <td>{{ $sectionnable->quantite}}</td>
+            <td>{{ $sectionnable->pivot->quantite }}</td>
             <td>{{ $sectionnable->pivot->prix_achat / 165 }}</td>
             <td>{{ ($sectionnable->pivot->prix_achat /165) * $sectionnable->quantite }}</td>
         </tr>
